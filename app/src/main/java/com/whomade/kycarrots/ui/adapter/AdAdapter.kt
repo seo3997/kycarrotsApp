@@ -31,8 +31,8 @@ class AdAdapter(private val items: List<AdItem>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
 
-        holder.title.text = item.ad_nm
-        holder.brief.text = item.ad_brief
+        holder.title.text = item.title
+        holder.brief.text = item.description
 
         holder.itemView.setOnClickListener { v ->
             val context = v.context
@@ -43,7 +43,7 @@ class AdAdapter(private val items: List<AdItem>) :
 
 
         Glide.with(holder.image.context)
-            .load(item.ad_mainurl)
+            .load(item.imageUrl)
             .placeholder(R.drawable.cheese_1) // 로딩 중
             .error(R.drawable.cheese_1)       // 실패 시
             .diskCacheStrategy(DiskCacheStrategy.ALL)

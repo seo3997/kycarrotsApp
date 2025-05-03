@@ -27,9 +27,9 @@ class AdAdapter(private val items: List<AdItem>) :
 
     override fun onBindViewHolder(holder: AdViewHolder, position: Int) {
         val item = items[position]
-        holder.title.text = item.ad_nm
-        holder.brief.text = item.ad_brief
-        Glide.with(holder.image.context).load(item.ad_mainurl).into(holder.image)
+        holder.title.text = item.title
+        holder.brief.text = item.description
+        Glide.with(holder.image.context).load(item.imageUrl).into(holder.image)
     }
 
     override fun getItemCount(): Int = items.size
