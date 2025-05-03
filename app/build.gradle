@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+android {
+    compileSdk = 35
+    namespace 'com.whomade.kycarrots'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    defaultConfig {
+        applicationId "com.whomade.kycarrots"
+        minSdk  = 21
+        targetSdk = 35
+        versionCode  = 1
+        versionName = "1.0"
+
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.core:core-ktx:1.16.0'
+
+    // 이미지 로딩 (Glide)
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
+
+    // 기존 라이브러리들...
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+
+
+    // 코루틴 + Retrofit 통신용 (선택)
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+
+}

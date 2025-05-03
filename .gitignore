@@ -1,0 +1,41 @@
+# 빌드 결과물
+/build/
+/app/build/
+/.gradle/
+/local.properties
+
+# IDE 설정
+.idea/
+*.iml
+
+# Gradle 캐시
+.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# 로그, 임시파일
+*.log
+*.tmp
+*.swp
+*.DS_Store
+
+# Keystore
+*.jks
+*.keystore
+
+# OS 파일
+Thumbs.db
+.DS_Store
+
+# Kotlin specific
+*.kotlin_module
+
+# Sign key (절대 푸시 금지!)
+**/debug.keystore
+
+# Android Studio Navigation safe args
+navigation.xml
+
+# Crashlytics / Firebase
+fabric.properties
+crashlytics.properties
