@@ -1,4 +1,4 @@
-![alt text](https://raw.githubusercontent.com/chrisbanes/cheesesquare/master/art/icon.png)
+![alt text](http://52.231.229.156/app/app_icon.png)
 
 Carrot Market KY
 ===================================
