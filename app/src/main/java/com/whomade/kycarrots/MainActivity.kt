@@ -1,5 +1,6 @@
 package com.whomade.kycarrots
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -18,6 +19,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.whomade.kycarrots.ui.ad.AdListFragment
+import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import java.util.ArrayList
 
 class MainActivity : AppCompatActivity() {
@@ -46,8 +48,10 @@ class MainActivity : AppCompatActivity() {
 
         val floatingActionButton: FloatingActionButton = findViewById(R.id.fab)
         floatingActionButton.setOnClickListener { view ->
-            Snackbar.make(view, "광고 데이터를 불러옵니다.", Snackbar.LENGTH_LONG)
-                .setAction("닫기", null).show()
+            //Snackbar.make(view, "광고 데이터를 불러옵니다.", Snackbar.LENGTH_LONG).setAction("닫기", null).show()
+            val context = view.context
+            val intent = Intent(context, MakeADMainActivity::class.java)
+            context.startActivity(intent)
         }
 
         val tabLayout: TabLayout = findViewById(R.id.tabs)

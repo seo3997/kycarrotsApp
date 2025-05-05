@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="group">
+        <item>지역</item>
+        <item>전체(All)</item>
+    </string-array>
+
+    <string-array name="first_phone_num">
+        <item>010</item>
+        <item>011</item>
+        <item>016</item>
+        <item>017</item>
+        <item>018</item>
+        <item>019</item>
+    </string-array>
+</resources>

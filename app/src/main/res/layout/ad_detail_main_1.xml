@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.whomade.kycarrots.TitleBar
+            android:id="@+id/title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ScrollView
+            android:id="@+id/sv_ad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/iv_ad_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/make_ad_title_img_height" />
+
+                    <ProgressBar
+                        android:id="@+id/pb_title_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:visibility="gone" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:layout_marginTop="@dimen/agreement_margin"
+                    android:background="@drawable/ad_item_bg"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:id="@+id/txt_grade"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.0"
+                        android:textColor="@color/color_main_friend_txt"
+                        android:textSize="@dimen/input_info_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/iv_grade1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_margin_left"
+                        android:src="@drawable/star_normal" />
+
+                    <ImageView
+                        android:id="@+id/iv_grade2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_padding"
+                        android:src="@drawable/star_normal" />
+
+                    <ImageView
+                        android:id="@+id/iv_grade3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_padding"
+                        android:src="@drawable/star_normal" />
+
+                    <ImageView
+                        android:id="@+id/iv_grade4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_padding"
+                        android:src="@drawable/star_normal" />
+
+                    <ImageView
+                        android:id="@+id/iv_grade5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_padding"
+                        android:layout_marginRight="@dimen/agreement_margin"
+                        android:src="@drawable/star_normal" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:layout_marginTop="@dimen/agreement_margin"
+                    android:background="@drawable/ad_list_item_selector"
+                    android:orientation="vertical"
+                    android:padding="@dimen/item_margin_left">
+
+                    <!-- 광고명-->
+                    <TextView
+                        android:id="@+id/txt_ad_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/color_main_friend_txt"
+                        android:textSize="@dimen/input_info_txt_size"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/item_margin_left"
+                        android:background="@drawable/bar4" />
+
+                    <TextView
+                        android:id="@+id/txt_ad_detail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/item_padding"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/authentication_txt_size"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:layout_marginTop="@dimen/item_margin_left"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/ad_detail_btn_height"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_send_call"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/btn_ad_detail_call_selector"
+                            android:clickable="false" />
+
+                        <Button
+                            android:id="@+id/btn_send_sms"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="@dimen/item_padding"
+                            android:background="@drawable/btn_ad_detail_sms_selector"
+                            android:clickable="false" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btn_homepage"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/ad_detail_btn_height"
+                        android:layout_marginLeft="@dimen/item_padding"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_button_selector"
+                        android:clickable="false"
+                        android:text="@string/str_homepage"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/ad_detail_btn_txt_size"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btn_appraisal"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/ad_detail_btn_height"
+                        android:layout_marginLeft="@dimen/item_padding"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_button_selector"
+                        android:clickable="false"
+                        android:text="@string/str_ad_appraisal"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/ad_detail_btn_txt_size"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btn_add_my_ad"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/ad_detail_btn_height"
+                        android:layout_marginLeft="@dimen/item_padding"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_button_selector"
+                        android:clickable="false"
+                        android:text="@string/str_interest_ad"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/ad_detail_btn_txt_size"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_ad_detail_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/item_margin_left"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/ad_map_err_img_height"
+                    android:layout_marginBottom="@dimen/item_margin_left"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_map_err"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/error_img"
+                        android:visibility="visible" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_map"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_two"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/agreement_margin"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/btn_ad_stop"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_membership_selector"
+                        android:gravity="center"
+                        android:paddingBottom="@dimen/item_margin_left"
+                        android:paddingTop="@dimen/item_margin_left"
+                        android:text="@string/str_ad_status_p"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/login_txt_size" />
+
+                    <Button
+                        android:id="@+id/btn_ad_push"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_margin_left"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_button_selector"
+                        android:gravity="center"
+                        android:paddingBottom="@dimen/item_margin_left"
+                        android:paddingTop="@dimen/item_margin_left"
+                        android:text="@string/str_ad_push_send"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/login_txt_size" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_three"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/agreement_margin"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/btn_ad_modify"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_button_selector"
+                        android:gravity="center"
+                        android:paddingBottom="@dimen/item_margin_left"
+                        android:paddingTop="@dimen/item_margin_left"
+                        android:text="@string/str_modify"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/login_txt_size" />
+
+                    <Button
+                        android:id="@+id/btn_ad_return"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_margin_left"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_button_selector"
+                        android:gravity="center"
+                        android:paddingBottom="@dimen/item_margin_left"
+                        android:paddingTop="@dimen/item_margin_left"
+                        android:text="@string/str_ad_cost_return"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/login_txt_size" />
+
+                    <Button
+                        android:id="@+id/btn_ad_restart"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_margin_left"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_button_selector"
+                        android:gravity="center"
+                        android:paddingBottom="@dimen/item_margin_left"
+                        android:paddingTop="@dimen/item_margin_left"
+                        android:text="@string/str_ad_cost_restart"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/login_txt_size" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_q"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/agreement_margin"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/btn_ad_q_modify"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_membership_selector"
+                        android:gravity="center"
+                        android:paddingBottom="@dimen/item_margin_left"
+                        android:paddingTop="@dimen/item_margin_left"
+                        android:text="@string/str_modify"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/login_txt_size" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_margin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/item_margin_left" />
+
+                    <Button
+                        android:id="@+id/btn_request_cancel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_button_selector"
+                        android:paddingBottom="@dimen/item_margin_left"
+                        android:paddingTop="@dimen/item_margin_left"
+                        android:text="@string/str_ad_approval_cancellation"
+                        android:visibility="gone"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/input_info_txt_size" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_one"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/agreement_margin"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:layout_marginTop="@dimen/item_margin_left"
+                    android:background="@drawable/btn_button_selector"
+                    android:paddingBottom="@dimen/item_margin_left"
+                    android:paddingTop="@dimen/item_margin_left"
+                    android:text="@string/str_ad_registration_request"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/input_info_txt_size"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_progress_circle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/item_margin_left"
+    android:layout_marginRight="@dimen/item_margin_left"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/popbg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/iv_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/item_margin_left"
+                android:background="@drawable/logo" />
+
+            <TextView
+                android:id="@+id/txt_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/item_padding"
+                android:layout_marginRight="@dimen/item_padding"
+                android:layout_toLeftOf="@+id/ib_close"
+                android:layout_toRightOf="@+id/iv_logo"
+                android:ellipsize="marquee"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="@string/str_preview_character_title"
+                android:textColor="@color/color_bell_title"
+                android:textSize="@dimen/authentication_txt_size" />
+
+            <ImageButton
+                android:id="@+id/ib_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="@dimen/item_padding"
+                android:background="@drawable/btn_preview_charater_select"
+                android:padding="@dimen/item_padding"
+                android:src="@drawable/close_btn" />
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/iv_ad_img"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8"
+            android:clickable="false" />
+
+        <TextView
+            android:id="@+id/txt_send_msg"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/item_padding"
+            android:layout_marginTop="@dimen/item_padding"
+            android:layout_weight="1"
+            android:background="@drawable/write"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/item_padding"
+            android:paddingRight="@dimen/item_padding"
+            android:text="@string/str_preview_character_send_msg"
+            android:textColor="@color/color_charater_send_msg"
+            android:textSize="@dimen/dlg_title_txt_size" />
+    </LinearLayout>
+
+    <!--<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/color_call_popup_line" />-->
+</LinearLayout>

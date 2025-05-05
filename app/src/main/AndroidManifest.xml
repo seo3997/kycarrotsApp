@@ -17,7 +17,36 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.whomade.kycarrots"
     >
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <!--<protected-broadcast android:name="android.intent.action.MEDIA_MOUNTED" />-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-feature android:name="android.hardware.telephony" android:required="true" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <uses-permission android:name="android.permission.RECEIVE_SMS"  android:required="true"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" android:required="true"/>
+
+    <!-- GCM 사용을 위해 추가 되는 permission -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/app_icon"
@@ -43,6 +72,26 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.whomade.kycarrots.MainActivity" />
         </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:configChanges="screenSize|smallestScreenSize|orientation"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <activity
+            android:name="com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity"/>
+        <activity
+            android:name="com.whomade.kycarrots.ui.ad.makead.MakeADPreviewActivity"/>
+        <activity
+            android:name="com.whomade.kycarrots.ui.dialog.DlgBtnActivity"/>
 
     </application>
 

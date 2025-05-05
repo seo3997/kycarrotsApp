@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fl_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.whomade.kycarrots.MainTitleBar
+            android:id="@+id/main_title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.whomade.kycarrots.TitleBar
+            android:id="@+id/title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_title_bar" />
+
+        <LinearLayout
+            android:id="@+id/ll_make_ad_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title_bar"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/txt_ad_detail_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/color_main_friend_txt"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/item_margin_left"
+                    android:paddingTop="@dimen/item_margin_left"
+                    android:text="@string/str_make_ad_detail"
+                    android:textColor="@color/color_input_point_request"
+                    android:textSize="@dimen/tab_title_txt_size"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/ll_ad_detail_info_under"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/login_divider_height"
+                    android:layout_alignBottom="@+id/txt_ad_detail_info"
+                    android:background="@color/color_tab_under_color"
+                    android:orientation="horizontal" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/txt_regi_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/color_white"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/item_margin_left"
+                    android:paddingTop="@dimen/item_margin_left"
+                    android:text="@string/str_make_ad_img_registration"
+                    android:textColor="@color/color_input_point_request"
+                    android:textSize="@dimen/tab_title_txt_size"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/ll_regi_img_under"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/login_divider_height"
+                    android:layout_alignBottom="@+id/txt_regi_img"
+                    android:background="@color/color_tab_under_color"
+                    android:orientation="horizontal"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_makd_ad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/ll_make_ad_title"
+            android:orientation="vertical">
+
+            <com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
+                android:id="@+id/make_ad_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="visible" />
+
+            <com.whomade.kycarrots.ui.ad.makead.MakeADImgRegi2
+                android:id="@+id/make_ad_img_regi"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_progress_circle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/loading_intro_animation"
+            />
+    </LinearLayout>
+</FrameLayout>

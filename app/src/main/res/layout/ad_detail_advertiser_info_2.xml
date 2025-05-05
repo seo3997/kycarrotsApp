@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/str_advertiser_info_err"
+            android:textColor="@color/color_white"
+            android:textSize="@dimen/change_pwd_txt_size" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/item_margin_left"
+            android:background="@drawable/backimg" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/sv_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/make_ad_img_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:layout_marginTop="@dimen/agreement_margin"
+                    android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/pb_advetiser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_img"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/make_ad_img_height"
+                android:layout_marginLeft="@dimen/agreement_margin"
+                android:layout_marginRight="@dimen/agreement_margin"
+                android:layout_marginTop="@dimen/agreement_margin"
+                android:background="@drawable/bg6">
+
+                <TextView
+                    android:id="@+id/txt_advertiser_err"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/str_advertiser_err"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/dlg_title_txt_size"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <!-- 상호명 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/agreement_margin"
+                android:paddingRight="@dimen/agreement_margin">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:background="@drawable/number"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/item_margin_left"
+                    android:paddingTop="@dimen/item_margin_left"
+                    android:text="@string/str_trade_name"
+                    android:textColor="@color/color_main_friend_txt"
+                    android:textSize="@dimen/login_find_txt_size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_trade_nm"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:background="@drawable/fixed2"
+                    android:padding="@dimen/item_margin_left"
+                    android:singleLine="true"
+                    android:textColor="@color/color_input_point_request"
+                    android:textSize="@dimen/login_find_txt_size" />
+            </LinearLayout>
+
+            <!-- 대표자 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/agreement_margin"
+                android:paddingRight="@dimen/agreement_margin">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:background="@drawable/number"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/item_margin_left"
+                    android:paddingTop="@dimen/item_margin_left"
+                    android:text="@string/str_representative_name"
+                    android:textColor="@color/color_main_friend_txt"
+                    android:textSize="@dimen/login_find_txt_size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_representative_nm"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:background="@drawable/fixed2"
+                    android:padding="@dimen/item_margin_left"
+                    android:singleLine="true"
+                    android:textColor="@color/color_input_point_request"
+                    android:textSize="@dimen/login_find_txt_size" />
+            </LinearLayout>
+
+            <!-- 대표전화 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/agreement_margin"
+                android:paddingRight="@dimen/agreement_margin">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:background="@drawable/number"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/item_margin_left"
+                    android:paddingTop="@dimen/item_margin_left"
+                    android:text="@string/str_representative_tel"
+                    android:textColor="@color/color_main_friend_txt"
+                    android:textSize="@dimen/login_find_txt_size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_representative_tel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:background="@drawable/fixed2"
+                    android:padding="@dimen/item_margin_left"
+                    android:singleLine="true"
+                    android:textColor="@color/color_input_point_request"
+                    android:textSize="@dimen/login_find_txt_size" />
+            </LinearLayout>
+
+            <!-- 주소 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/agreement_margin"
+                android:paddingRight="@dimen/agreement_margin">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:background="@drawable/number"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/item_margin_left"
+                    android:paddingTop="@dimen/item_margin_left"
+                    android:text="@string/str_address"
+                    android:textColor="@color/color_main_friend_txt"
+                    android:textSize="@dimen/login_find_txt_size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_address"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:background="@drawable/fixed2"
+                    android:ellipsize="marquee"
+                    android:padding="@dimen/item_margin_left"
+                    android:singleLine="true"
+                    android:textColor="@color/color_input_point_request"
+                    android:textSize="@dimen/login_find_txt_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ad_map_err_img_height"
+                android:layout_marginBottom="@dimen/item_margin_left"
+                android:layout_marginLeft="@dimen/agreement_margin"
+                android:layout_marginRight="@dimen/agreement_margin"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/iv_map_err"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/error_img"
+                    android:visibility="visible" />
+
+                <LinearLayout
+                    android:id="@+id/ll_map"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

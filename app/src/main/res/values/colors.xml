@@ -17,4 +17,78 @@
 
 <resources>
     <color name="window_background">#FFF5F5F5</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="color_white">#ffffff</color>
+    <color name="color_black">#000000</color>
+    <color name="color_login_edit_hint">#fbeed6</color>
+
+    <color name="color_main_title">#2fb1a0</color>
+    <color name="color_main_tab_selector_txt">#0f7e6f</color>
+    <color name="color_main_tab_bar_selector">#fdb800</color>
+
+    <color name="color_ad_group_bg">#e7decb</color>
+
+    <color name="color_ad_list_item_bg1">#ddece4</color>
+    <color name="color_ad_list_item_bg2">#f2f2f2</color>
+
+    <color name="color_agreement">#138f7f</color>
+    <color name="color_dlg_msg">#616161</color>
+    <color name="color_hint_txt">#adadad</color>
+
+    <color name="color_point_list_click_bg">#c0e3de</color>
+    <color name="color_membership_sub_title">#c0e2de</color>
+    <color name="color_membership_info_txt">#097264</color>
+    <color name="color_main_info_title_txt">#39b9b8</color>
+
+    <color name="color_main_kakao_txt">#faab12</color>
+    <color name="color_main_sms_txt">#2688f5</color>
+    <color name="color_main_copy_url_txt">#686868</color>
+
+    <color name="color_point_list_divider">#cccccc</color>
+    <color name="color_point_list_advice_title">#11675c</color>
+    <color name="color_point_list_info_txt">#3d736f</color>
+    <color name="color_point_list_title_txt">#052622</color>
+    <color name="color_find_press_txt">#5c3513</color>
+
+    <color name="color_empty_txt">#565656</color>
+    <color name="color_call_popup_line">#dddddd</color>
+
+    <color name="color_bell_title">#362a2c</color>
+
+    <color name="color_my_point">#232323</color>
+    <color name="color_main_friend_txt">#ffba00</color>
+    <color name="color_point_list_nm_txt">#c7f1ff</color>
+    <color name="color_ad_dlg_info_txt">#11100d</color>
+    <color name="color_ad_dlg_info_bg">#d8d8d8</color>
+    <color name="color_input_point_request">#3d3d3d</color>
+    <color name="color_input_point_request_txt">#b3b3b3</color>
+    <color name="color_login_press_txt">#b68400</color>
+    <color name="color_find_id_pwd_txt">#969696</color>
+    <color name="color_terms_agree_all_press_txt">#5c3513</color>
+    <color name="color_tab_under_color">#ffa200</color>
+    <color name="color_process_complete">#ff8767</color>
+    <color name="color_process_waiting">#67e8ff</color>
+    <color name="color_character_popup_txt">#9a9a9a</color>
+    <color name="color_character_popup_line">#d6d6d6</color>
+    <color name="color_charater_send_msg">#3f3f3f</color>
+    <color name="color_charater_send_msg_hint_txt">#b7b7b7</color>
+
+    <color name="color_main_event_en_txt">#aaa8a6</color>
+    <color name="color_setting_info_txt">#ebebeb</color>
+
+    <color name="color_ad_status_q">#59c3d7</color>
+    <color name="color_ad_status_a">#ff8767</color>
+    <color name="color_ad_status_r">#e63e3d</color>
+    <color name="color_ad_status_i">#41eb79</color>
+    <color name="color_ad_status_op">#cfaa86</color>
+    <color name="color_ad_status_p">#8981da</color>
+    <color name="color_ad_status_eq">#ff639e</color>
+    <color name="color_ad_status_cl">#e29985</color>
+
+    <color name="color_push_back">#b3000000</color>
+    <color name="color_ad_main">#302c32</color>
+
 </resources>
