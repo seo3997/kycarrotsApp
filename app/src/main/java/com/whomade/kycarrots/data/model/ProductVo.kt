@@ -1,6 +1,6 @@
 package com.whomade.kycarrots.data.model
 
-data class ProductVo(
+data class ProductVo @JvmOverloads constructor(
     val productId: String? = null,
     val userNo: String,
     val title: String,

@@ -41,8 +41,10 @@ class AdListFragment : Fragment() {
         val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
         val repository = RemoteRepository(adApi)
         appService = AppService(repository)
+        fetchAdvertiseList();
+    }
 
-        // 실제 호출
+    private fun fetchAdvertiseList() {
         val token = "%2FV%2F26xyieYwgQKUf6wFvdeMy3O%2Fw%2Fc6g0sAskcxhDZq1I3kiw2GIHmlt3Mm5SSL0ymBfgmxLIjjymbiDmbC%2B3JpMkWY9xcCFUXUJj2RWO5XKMqJ5YxuYevAntPPC1hbIRy6tcFp2lVZwIiGu%2Be6hsL6B2yufbYBF5rxE78nRNuB2JGGFm6RPyuhdQGtnaPCWwsmMOYd1q3eG0uXH91j4hHtyU7HiGqVfQ0nGiqRXY3PC50wIRtH5zalLw6Lq4Bqrwlq79dfIhOTkcNP3RCItWyZd5lgqlFPh5Z4q98Rvfw2v6hT4JnlIWEs7fMJ2M0RYaKfvpuxsFsgQPQ1Qvxs22vwY7iypqbii5GAa413Dk0A%3D"
 
         lifecycleScope.launch {
@@ -54,5 +56,10 @@ class AdListFragment : Fragment() {
                 Log.e("AdListFragment", "API 호출 실패: ${e.message}")
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchAdvertiseList()
     }
 }

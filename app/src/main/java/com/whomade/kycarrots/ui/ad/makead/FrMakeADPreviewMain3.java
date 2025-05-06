@@ -30,6 +30,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.whomade.kycarrots.R;
 import com.whomade.kycarrots.TitleBar;
+import com.whomade.kycarrots.common.AppServiceProvider;
+import com.whomade.kycarrots.data.model.ProductImageVo;
+import com.whomade.kycarrots.data.model.ProductVo;
+import com.whomade.kycarrots.domain.Helper.AppServiceHelper;
+import com.whomade.kycarrots.domain.service.AppService;
 import com.whomade.kycarrots.ui.common.ImageLoader;
 import com.whomade.kycarrots.ui.dialog.DlgBtnActivity;
 
@@ -214,9 +219,114 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_one) {
-            if (llProgress != null && !llProgress.isShown()) llProgress.setVisibility(View.VISIBLE);
+            //if (llProgress != null && !llProgress.isShown()) llProgress.setVisibility(View.VISIBLE);
+            DataRequest();
         }
     }
+
+    public void DataRequest() {
+        // 1. 광고 정보 객체 생성
+        ProductVo productVo = new ProductVo(
+                "",          // productId
+                "1",                    // userNo
+                strADName,              // title
+                strADDetail,            // description
+                strADAmount,            // price
+                "R010600",              // categoryGroup
+                strADCategory,          // categoryMid
+                "",                     // categoryScls
+                "1",                    // saleStatus
+                "1",                    // registerNo
+                "",                     // registDt
+                "1",                    // updusrNo
+                ""                      // imageUrl
+                 );
+
+        // 2. 이미지 파일 리스트 생성
+        ArrayList<File> detailFiles = new ArrayList<>();
+        int mContentDetail = 0;
+        for (int i = 0; i < arrDetailImg.size(); i++) {
+            if (arrIsChangeDetaillmg[i]) {
+                detailFiles.add(contentDetail.get(mContentDetail++));
+            } else {
+                detailFiles.add(new File(arrDetailImg.get(i)));
+            }
+        }
+
+        // 3. imageMetaList 생성 (imageType: "DETAIL", fileName 기준)
+        ProductImageVo productImageVo;
+        List<ProductImageVo> imageMetaList = new ArrayList<>();
+        for (File file : detailFiles) {
+            productImageVo = new ProductImageVo(
+                    null,   // imageId
+                    null,   // productId
+                    null,   // imageCd
+                    null,   // imageUrl
+                    null,   // imageName
+                    "0",    // represent (★ 꼭 입력)
+                    null,   // imageSize
+                    null,   // imageText
+                    null,   // imageType
+                    "",     // registerNo
+                    null,   // registDt
+                    "",     // updusrNo
+                    null    // updtDt
+            );
+            imageMetaList.add(productImageVo);
+        }
+
+        // 4. 제목 이미지 추가 (예: strTitleImgPath)
+        if (strTitleImgPath != null && !strTitleImgPath.isEmpty()) {
+            File titleFile = isChangeTitleIlmg ? new File(strTitleImgPath) : new File(strTitleImgPath); // 필요시 수정
+            detailFiles.add(0, titleFile); // 맨 앞에 제목 이미지 삽입
+
+             productImageVo = new ProductImageVo(
+                    null,   // imageId
+                    null,   // productId
+                    null,   // imageCd
+                    null,   // imageUrl
+                    null,   // imageName
+                    "1",    // represent (★ 꼭 입력)
+                    null,   // imageSize
+                    null,   // imageText
+                    null,   // imageType
+                    "",     // registerNo
+                    null,   // registDt
+                    "",     // updusrNo
+                    null    // updtDt
+            );
+            imageMetaList.add(0, productImageVo);
+        }
+
+        // 5. 서버 등록 요청
+        AppService appService = AppServiceProvider.INSTANCE.getInstance();
+        AppServiceHelper.registerAdvertise(
+                appService,
+                productVo,
+                imageMetaList,
+                detailFiles,
+                () -> {
+                    if (llProgress != null && !llProgress.isShown())
+                        llProgress.setVisibility(View.GONE);
+
+                    Toast.makeText(mActivity, getResources().getString(R.string.str_ad_regi_success), Toast.LENGTH_SHORT).show();
+                    ((MakeADPreviewActivity) getActivity()).finishAdd();
+                    return null;
+                },
+                throwable -> {
+                    if (llProgress != null && llProgress.isShown())
+                        llProgress.setVisibility(View.GONE);
+
+                    Toast.makeText(mActivity, getResources().getString(R.string.str_http_error), Toast.LENGTH_SHORT).show();
+                    Log.e("registerAdvertise", "등록 실패", throwable);
+                    return null;
+                }
+        );
+
+        if (llProgress != null && !llProgress.isShown())
+            llProgress.setVisibility(View.VISIBLE);
+    }
+
 
     @Override
     public void onPause() {

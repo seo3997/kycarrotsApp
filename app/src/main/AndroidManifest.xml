@@ -56,6 +56,7 @@
         >
 
         <activity android:name="com.whomade.kycarrots.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -67,6 +68,7 @@
 
         <activity
             android:name="com.whomade.kycarrots.AdDetailActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.whomade.kycarrots.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -87,9 +89,13 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <activity
-            android:name="com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity"/>
+            android:name="com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity"
+            android:screenOrientation="portrait"
+            />
         <activity
-            android:name="com.whomade.kycarrots.ui.ad.makead.MakeADPreviewActivity"/>
+            android:name="com.whomade.kycarrots.ui.ad.makead.MakeADPreviewActivity"
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name="com.whomade.kycarrots.ui.dialog.DlgBtnActivity"/>
 

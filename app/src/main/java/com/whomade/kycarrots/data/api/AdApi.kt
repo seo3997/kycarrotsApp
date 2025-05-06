@@ -27,7 +27,7 @@ interface AdApi {
     ): Response<AdResponse>
 
     @Multipart
-    @POST("advertise/register")
+    @POST("advertises/register")
     suspend fun registerAdvertise(
         @Part("product") product: RequestBody,
         @Part("imageMetas") imageMetas: RequestBody,

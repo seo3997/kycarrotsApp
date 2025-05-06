@@ -1,17 +1,17 @@
 package com.whomade.kycarrots.data.model
 
-data class ProductImageVo(
-    val imageId: Long? = null,
-    val productId: Long? = null,
-    val imageCd: String,
+data class ProductImageVo @JvmOverloads constructor(
+    val imageId: String? = null,
+    val productId: String? = null,
+    val imageCd: String?  = null,
     val imageUrl: String? = null,
     val imageName: String? = null,
-    val represent: Int = 0, // 대표 여부 (0/1)
+    val represent: String, // 대표 여부 (0/1)
     val imageSize: Long? = null,
     val imageText: String? = null,
     val imageType: String? = null,
-    val registerNo: Int,
+    val registerNo: String = "",
     val registDt: String? = null,
-    val updusrNo: Int,
+    val updusrNo: String = "",
     val updtDt: String? = null
 )

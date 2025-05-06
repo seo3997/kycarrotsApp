@@ -123,6 +123,8 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
        }
     }
 
+
+
     @Override
     protected void onPause() {
         super.onPause();
