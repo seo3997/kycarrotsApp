@@ -1,6 +1,7 @@
 package com.whomade.kycarrots.data.api
 
 import com.whomade.kycarrots.data.model.AdResponse
+import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -10,6 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AdApi {
@@ -19,7 +21,7 @@ interface AdApi {
         @Query("groupId") groupId: String
     ): Response<List<TxtListDataInfo>>
 
-    @POST("advertises")
+    @POST("product")
     suspend fun getAdItems(
         @Query("token") token: String,
         @Query("ad_code") adCode: Int,
@@ -27,12 +29,13 @@ interface AdApi {
     ): Response<AdResponse>
 
     @Multipart
-    @POST("advertises/register")
+    @POST("product/register")
     suspend fun registerAdvertise(
         @Part("product") product: RequestBody,
         @Part("imageMetas") imageMetas: RequestBody,
         @Part images: List<MultipartBody.Part>
     ): Response<ResponseBody>
 
-
+    @GET("product/detail/{productId}")
+    suspend fun getProductDetail(@Path("productId") productId: Long): Response<ProductDetailResponse>
 }

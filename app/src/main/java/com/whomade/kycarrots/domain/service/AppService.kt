@@ -1,6 +1,7 @@
 package com.whomade.kycarrots.domain.service
 
 import com.whomade.kycarrots.data.model.AdItem
+import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.repository.RemoteRepository
@@ -36,6 +37,15 @@ class AppService(
             response.body() ?: emptyList()
         } else {
             emptyList() // 또는 throw Exception("API Error: ${response.code()}")
+        }
+    }
+
+    suspend fun getProductDetail(productId: Long): ProductDetailResponse? {
+        val response = repository.fetchProductDetail(productId)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
         }
     }
 }

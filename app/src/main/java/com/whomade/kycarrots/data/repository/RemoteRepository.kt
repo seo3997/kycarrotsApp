@@ -3,6 +3,7 @@ package com.whomade.kycarrots.data.repository
 import com.google.gson.Gson
 import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.AdResponse
+import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
@@ -54,4 +55,7 @@ class RemoteRepository(
         return adApi.getCodeList(groupId)
     }
 
+    suspend fun fetchProductDetail(productId: Long): Response<ProductDetailResponse> {
+        return adApi.getProductDetail(productId)
+    }
 }

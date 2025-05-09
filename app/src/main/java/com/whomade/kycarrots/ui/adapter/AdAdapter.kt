@@ -37,7 +37,7 @@ class AdAdapter(private val items: List<AdItem>) :
         holder.itemView.setOnClickListener { v ->
             val context = v.context
             val intent = Intent(context, AdDetailActivity::class.java)
-            intent.putExtra(AdDetailActivity.EXTRA_NAME, holder.title.text)
+            intent.putExtra(AdDetailActivity.EXTRA_PRODUCT_ID,item.productId)
             context.startActivity(intent)
         }
 
