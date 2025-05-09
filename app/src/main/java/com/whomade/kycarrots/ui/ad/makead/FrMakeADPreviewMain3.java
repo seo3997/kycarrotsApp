@@ -148,11 +148,12 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
         arrIsChangeDetaillmg = getArguments().getBooleanArray(STR_CHANGE_DETAIL_IMG);
         isChangeTitleIlmg = getArguments().getBoolean(STR_CHANGE_TITLE_IMG);
 
-        ArrayList<String> arrDetailImgTemp = (ArrayList<String>) getArguments().getStringArrayList(STR_DETAIL_IMG);
-        if(arrDetailImgTemp!=null && arrDetailImgTemp.size()>0) {
-            arrDetailImg.addAll((ArrayList<String>) getArguments().getStringArrayList(STR_DETAIL_IMG));
+        /*
+        ArrayList<String> arrDetailImgTemp = getArguments().getStringArrayList(STR_DETAIL_IMG);
+        if (arrDetailImgTemp != null && !arrDetailImgTemp.isEmpty()) {
+            arrDetailImg.addAll(arrDetailImgTemp);
         }
-
+         */
         SetDetailImg();
         return view;
     }

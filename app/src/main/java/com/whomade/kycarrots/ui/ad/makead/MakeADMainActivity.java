@@ -219,16 +219,17 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
             Uri cropUri = null;
             Intent intent = null;
             int mRequestCode = -1;
+            // Crop한 이미지를 저장할 Path
+            File cropFile = null;
             switch (requestCode) {
                 case MAKE_AD_COMPLETE:
                     finish();
                     break;
                 case DlgSelImg.PICK_FROM_CAMERA:
+                    /*
                     intent = new Intent("com.android.camera.action.CROP");
                     intent.setDataAndType(mSelDlg.mImageUri, "image/*");
 
-                    // Crop한 이미지를 저장할 Path
-                    File cropFile = null;
                     try {
                         cropFile = mSelDlg.createImageFile();
                     } catch (IOException ex) {
@@ -257,12 +258,19 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
                     intent.putExtra("aspectY", 9); // crop 박스의 y축 비율
                     mRequestCode = DlgSelImg.CROP_FROM_GALLERY;
 
+                     */
+                    if (mSelDlg.mImageUri != null) {
+                        Log.d("Camera URI", "Captured URI: " + mSelDlg.mImageUri);
+                        startCrop(mSelDlg.mImageUri);
+                    }
                     break;
+                /*
                 case DlgSelImg.CROP_FROM_CAMERA:
                     File file = new File(mSelDlg.mImageUri.getPath());
                     if(file.exists()){
                         file.delete();
                     }
+                 */
                 case DlgSelImg.PICK_FROM_GALLERY:
                     imageUri = data.getData();
                     Log.d("Gallery URI", "Selected URI: " + imageUri);
