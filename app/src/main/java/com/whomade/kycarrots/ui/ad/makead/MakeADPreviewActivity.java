@@ -30,8 +30,10 @@ public class MakeADPreviewActivity extends FragmentActivity {
     private PreviewPagerAdapter mPreviewAdapter;
 
     private String strTitle = null; //타이틀 이미지
+    private String strTitleId = null; //타이틀 이미지
     private boolean isChangeTitleImg = false; //타이틀 이미지
     private ArrayList<String> arrDetailImg = new ArrayList<String>(); //광고 상세 이미지
+    private ArrayList<String> arrDetailImgId = new ArrayList<String>(); //광고 상세 이미지
 
     private final int THIS_PAGE_1=1;
     private final int THIS_PAGE_2=0; //2번째 페이지가 왼쪽에 보이기 위해서 값이 '0' 임
@@ -65,8 +67,10 @@ public class MakeADPreviewActivity extends FragmentActivity {
             strADAmount = intent.getStringExtra(MakeADDetail1.STR_PUT_AD_AMOUNT); //광고 할 금액
 
             strTitle = (String) intent.getStringExtra("Title_Img");
+            strTitleId = (String) intent.getStringExtra("Title_ImgId");
             isChangeTitleImg = (boolean) intent.getBooleanExtra("ChangeTitleImg", false);
             arrDetailImg = (ArrayList<String>) intent.getExtras().get("Detail_Img");
+            arrDetailImgId = (ArrayList<String>) intent.getExtras().get("Detail_ImgId");
             ArrayList<Boolean> arrIsChangeDetailImg = (ArrayList<Boolean>) intent.getExtras().get("ChangeDetailImg");
             if(arrIsChangeDetailImg!=null && arrIsChangeDetailImg.size()>0) {
                 isChangeDetailImg = new boolean[arrIsChangeDetailImg.size()];
@@ -190,8 +194,10 @@ public class MakeADPreviewActivity extends FragmentActivity {
                     bundle.putString(MakeADDetail1.STR_PUT_AD_AMOUNT, strADAmount);
 
                     bundle.putString("TITLE_IMG", strTitle);
+                    bundle.putString("TITLE_IMGID", strTitleId);
                     bundle.putBoolean("CHANGE_TITLE_IMG", isChangeTitleImg);
                     bundle.putStringArrayList("DTAIL_IMG", arrDetailImg);
+                    bundle.putStringArrayList("DTAIL_IMGID", arrDetailImgId);
                     bundle.putBooleanArray("CHANGE_DTAIL_IMG", isChangeDetailImg);
 
                     fragment.setArguments(bundle);

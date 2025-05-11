@@ -59,10 +59,12 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
     private LinearLayout llPreviewDetailImg; //광고 상세 이미지
     private ImageView ivPreviewTitle; //광고 타이틀 img view
     private String strTitleImgPath; //광고 타이틀 이미지
+    private String strTitleImgId; //광고 타이틀 이미지
     private boolean[] arrIsChangeDetaillmg;
     private boolean isChangeTitleIlmg;
     private boolean isRejudged = false; //재심사 여부
     private ArrayList<String> arrDetailImg = new ArrayList<String>();
+    private ArrayList<String> arrDetailImgId = new ArrayList<String>();
     private LinearLayout llProgress;
     private ProgressBar pbTitleImg;
 
@@ -73,8 +75,10 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
     private String strADAmount; //광고 할 금액
 
     public static final String STR_TITLE_IMG = "TITLE_IMG";
+    public static final String STR_TITLE_IMGID = "TITLE_IMGID";
     public static final String STR_CHANGE_TITLE_IMG = "CHANGE_TITLE_IMG";
     public static final String STR_DETAIL_IMG = "DTAIL_IMG";
+    public static final String STR_DETAIL_IMGID = "DTAIL_IMGID";
     public static final String STR_CHANGE_DETAIL_IMG = "CHANGE_DTAIL_IMG";
 
 
@@ -112,12 +116,14 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
             strADAmount = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_AMOUNT);
 
             strTitleImgPath = (String) getArguments().getString(STR_TITLE_IMG);
+            strTitleImgId = (String) getArguments().getString(STR_TITLE_IMGID);
             arrIsChangeDetaillmg = getArguments().getBooleanArray(STR_CHANGE_DETAIL_IMG);
             isChangeTitleIlmg = getArguments().getBoolean(STR_CHANGE_TITLE_IMG);
 
             ArrayList<String> arrDetailImgTemp = (ArrayList<String>) getArguments().getStringArrayList(STR_DETAIL_IMG);
             if (arrDetailImgTemp != null && arrDetailImgTemp.size() > 0) {
                 arrDetailImg.addAll((ArrayList<String>) getArguments().getStringArrayList(STR_DETAIL_IMG));
+                arrDetailImgId.addAll((ArrayList<String>) getArguments().getStringArrayList(STR_DETAIL_IMGID));
             }
         }
     }
@@ -148,12 +154,6 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
         arrIsChangeDetaillmg = getArguments().getBooleanArray(STR_CHANGE_DETAIL_IMG);
         isChangeTitleIlmg = getArguments().getBoolean(STR_CHANGE_TITLE_IMG);
 
-        /*
-        ArrayList<String> arrDetailImgTemp = getArguments().getStringArrayList(STR_DETAIL_IMG);
-        if (arrDetailImgTemp != null && !arrDetailImgTemp.isEmpty()) {
-            arrDetailImg.addAll(arrDetailImgTemp);
-        }
-         */
         SetDetailImg();
         return view;
     }
@@ -228,7 +228,7 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
     public void DataRequest() {
         // 1. 광고 정보 객체 생성
         ProductVo productVo = new ProductVo(
-                "",          // productId
+                strADIdx,               // productId
                 "1",                    // userNo
                 strADName,              // title
                 strADDetail,            // description
@@ -243,86 +243,109 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
                 ""                      // imageUrl
                  );
 
-        // 2. 이미지 파일 리스트 생성
+        // 2. 이미지 파일 리스트 + imageMetaList 생성
         ArrayList<File> detailFiles = new ArrayList<>();
-        int mContentDetail = 0;
+        List<ProductImageVo> imageMetaList = new ArrayList<>();
+        ProductImageVo productImageVo = null;
         for (int i = 0; i < arrDetailImg.size(); i++) {
             if (arrIsChangeDetaillmg[i]) {
-                detailFiles.add(contentDetail.get(mContentDetail++));
-            } else {
-                detailFiles.add(new File(arrDetailImg.get(i)));
+                File file = new File(arrDetailImg.get(i));
+                detailFiles.add(file);
+
+                String imageId = (arrDetailImgId.size() > i && arrDetailImgId.get(i) != null) ? arrDetailImgId.get(i) : "";
+
+                 productImageVo = new ProductImageVo(
+                        imageId,   // imageId
+                        null,      // productId
+                        "1",      // imageCd
+                        null,      // imageUrl
+                        null,      // imageName
+                        "0",       // represent
+                        null,      // imageSize
+                        null,      // imageText
+                        null,      // imageType
+                        "",        // registerNo
+                        null,      // registDt
+                        "",        // updusrNo
+                        null       // updtDt
+                );
+                imageMetaList.add(productImageVo);
+            }
+        }
+        // 3. 제목 이미지 추가 (예: strTitleImgPath)
+        if(isChangeTitleIlmg) {
+            if (strTitleImgPath != null && !strTitleImgPath.isEmpty()) {
+                File titleFile = isChangeTitleIlmg ? new File(strTitleImgPath) : new File(strTitleImgPath); // 필요시 수정
+                detailFiles.add(0, titleFile); // 맨 앞에 제목 이미지 삽입
+
+                productImageVo = new ProductImageVo(
+                        strTitleImgId,   // imageId
+                        null,   // productId
+                        "1",   // imageCd
+                        null,   // imageUrl
+                        null,   // imageName
+                        "1",    // represent (★ 꼭 입력)
+                        null,   // imageSize
+                        null,   // imageText
+                        null,   // imageType
+                        "",     // registerNo
+                        null,   // registDt
+                        "",     // updusrNo
+                        null    // updtDt
+                );
+                imageMetaList.add(0, productImageVo);
             }
         }
 
-        // 3. imageMetaList 생성 (imageType: "DETAIL", fileName 기준)
-        ProductImageVo productImageVo;
-        List<ProductImageVo> imageMetaList = new ArrayList<>();
-        for (File file : detailFiles) {
-            productImageVo = new ProductImageVo(
-                    null,   // imageId
-                    null,   // productId
-                    null,   // imageCd
-                    null,   // imageUrl
-                    null,   // imageName
-                    "0",    // represent (★ 꼭 입력)
-                    null,   // imageSize
-                    null,   // imageText
-                    null,   // imageType
-                    "",     // registerNo
-                    null,   // registDt
-                    "",     // updusrNo
-                    null    // updtDt
-            );
-            imageMetaList.add(productImageVo);
-        }
-
-        // 4. 제목 이미지 추가 (예: strTitleImgPath)
-        if (strTitleImgPath != null && !strTitleImgPath.isEmpty()) {
-            File titleFile = isChangeTitleIlmg ? new File(strTitleImgPath) : new File(strTitleImgPath); // 필요시 수정
-            detailFiles.add(0, titleFile); // 맨 앞에 제목 이미지 삽입
-
-             productImageVo = new ProductImageVo(
-                    null,   // imageId
-                    null,   // productId
-                    null,   // imageCd
-                    null,   // imageUrl
-                    null,   // imageName
-                    "1",    // represent (★ 꼭 입력)
-                    null,   // imageSize
-                    null,   // imageText
-                    null,   // imageType
-                    "",     // registerNo
-                    null,   // registDt
-                    "",     // updusrNo
-                    null    // updtDt
-            );
-            imageMetaList.add(0, productImageVo);
-        }
-
-        // 5. 서버 등록 요청
+        // 4. 서버 등록 요청
         AppService appService = AppServiceProvider.INSTANCE.getInstance();
-        AppServiceHelper.registerAdvertise(
-                appService,
-                productVo,
-                imageMetaList,
-                detailFiles,
-                () -> {
-                    if (llProgress != null && !llProgress.isShown())
-                        llProgress.setVisibility(View.GONE);
+        if (productVo.getProductId() == null || productVo.getProductId().isEmpty()) {
+            AppServiceHelper.registerAdvertise(
+                    appService,
+                    productVo,
+                    imageMetaList,
+                    detailFiles,
+                    () -> {
+                        if (llProgress != null && llProgress.isShown())
+                            llProgress.setVisibility(View.GONE);
 
-                    Toast.makeText(mActivity, getResources().getString(R.string.str_ad_regi_success), Toast.LENGTH_SHORT).show();
-                    ((MakeADPreviewActivity) getActivity()).finishAdd();
-                    return null;
-                },
-                throwable -> {
-                    if (llProgress != null && llProgress.isShown())
-                        llProgress.setVisibility(View.GONE);
+                        Toast.makeText(mActivity, getResources().getString(R.string.str_ad_regi_success), Toast.LENGTH_SHORT).show();
+                        ((MakeADPreviewActivity) getActivity()).finishAdd();
+                        return null;
+                    },
+                    throwable -> {
+                        if (llProgress != null && llProgress.isShown())
+                            llProgress.setVisibility(View.GONE);
 
-                    Toast.makeText(mActivity, getResources().getString(R.string.str_http_error), Toast.LENGTH_SHORT).show();
-                    Log.e("registerAdvertise", "등록 실패", throwable);
-                    return null;
-                }
-        );
+                        Toast.makeText(mActivity, getResources().getString(R.string.str_http_error), Toast.LENGTH_SHORT).show();
+                        Log.e("registerAdvertise", "등록 실패", throwable);
+                        return null;
+                    }
+            );
+        } else {
+            AppServiceHelper.updateAdvertise(
+                    appService,
+                    productVo,
+                    imageMetaList,
+                    detailFiles,
+                    () -> {
+                        if (llProgress != null && llProgress.isShown())
+                            llProgress.setVisibility(View.GONE);
+
+                        Toast.makeText(mActivity, "광고 수정 성공", Toast.LENGTH_SHORT).show();
+                        ((MakeADPreviewActivity) getActivity()).finishAdd();
+                        return null;
+                    },
+                    throwable -> {
+                        if (llProgress != null && llProgress.isShown())
+                            llProgress.setVisibility(View.GONE);
+
+                        Toast.makeText(mActivity, "광고 수정 실패", Toast.LENGTH_SHORT).show();
+                        Log.e("updateAdvertise", "수정 실패", throwable);
+                        return null;
+                    }
+            );
+        }
 
         if (llProgress != null && !llProgress.isShown())
             llProgress.setVisibility(View.VISIBLE);

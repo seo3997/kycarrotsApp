@@ -10,6 +10,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -36,6 +37,19 @@ interface AdApi {
         @Part images: List<MultipartBody.Part>
     ): Response<ResponseBody>
 
+    @Multipart
+    @POST("product/update")
+    suspend fun updateAdvertise(
+        @Part("product") product: RequestBody,
+        @Part("imageMetas") imageMetas: RequestBody,
+        @Part images: List<MultipartBody.Part>
+    ): Response<ResponseBody>
+
     @GET("product/detail/{productId}")
     suspend fun getProductDetail(@Path("productId") productId: Long): Response<ProductDetailResponse>
+
+    @POST("product/image/delete")
+    suspend fun deleteImageById(
+        @Query("imageId") imageId: String
+    ): Response<ResponseBody>
 }

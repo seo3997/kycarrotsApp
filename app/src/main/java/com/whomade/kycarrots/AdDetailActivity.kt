@@ -15,6 +15,7 @@
  */
 package com.whomade.kycarrots
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
@@ -33,16 +34,19 @@ import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
+import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
+import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import kotlinx.coroutines.launch
 
 class AdDetailActivity : AppCompatActivity() {
+    private lateinit var productIdStr: String
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
         val intent = intent
-        val productIdStr = intent.getStringExtra(EXTRA_PRODUCT_ID) ?: "0"
+        productIdStr = intent.getStringExtra(EXTRA_PRODUCT_ID) ?: "0"
         val productId = productIdStr.toLongOrNull()
         if (productId == null || productId <= 0) {
             finish() // 유효하지 않은 ID는 종료
@@ -53,16 +57,7 @@ class AdDetailActivity : AppCompatActivity() {
         val repository = RemoteRepository(adApi)
         val appService = AppService(repository)
 
-        lifecycleScope.launch {
-            try {
-                val detail = appService.getProductDetail(productId)
-                if (detail != null) {
-                    showProductDetail(detail)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+        loadProductDetail(productId)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
 
@@ -72,6 +67,14 @@ class AdDetailActivity : AppCompatActivity() {
         val collapsingToolbar: CollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar)
         //collapsingToolbar.title = cheeseName
         //loadBackdrop()
+
+        val fab: View = findViewById(R.id.fab_edit)
+        fab.setOnClickListener {
+            val intent = Intent(this, MakeADMainActivity::class.java)
+            intent.putExtra(MakeADDetail1.STR_PUT_AD_IDX, productIdStr) // 현재 ID 전달
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+        }
     }
     private fun showProductDetail(detail: ProductDetailResponse) {
         val collapsingToolbar: CollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar)
@@ -81,6 +84,11 @@ class AdDetailActivity : AppCompatActivity() {
         val descriptionTextView: TextView = findViewById(R.id.product_description)
         // 설명 텍스트 표시
         descriptionTextView.text = detail.product.description ?: "설명이 없습니다"
+
+        val priceTextView: TextView = findViewById(R.id.product_price)
+        val priceLong = detail.product.price?.toDoubleOrNull()?.toLong() ?: 0L
+        val formattedPrice = String.format("%,d원", priceLong)
+        priceTextView.text = "가격: $formattedPrice"
 
         // 대표 이미지 (represent == 1)
         val mainImageUrl = detail.imageMetas.firstOrNull { it.represent == "1" }?.imageUrl
@@ -135,5 +143,31 @@ class AdDetailActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PRODUCT_ID = "product_id"
+    }
+
+    private fun loadProductDetail(productId: Long) {
+        val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
+        val repository = RemoteRepository(adApi)
+        val appService = AppService(repository)
+
+        lifecycleScope.launch {
+            try {
+                val detail = appService.getProductDetail(productId)
+                if (detail != null) {
+                    showProductDetail(detail)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val productId = productIdStr.toLongOrNull()
+        if (productId != null && productId > 0) {
+            loadProductDetail(productId)
+        }
     }
 }

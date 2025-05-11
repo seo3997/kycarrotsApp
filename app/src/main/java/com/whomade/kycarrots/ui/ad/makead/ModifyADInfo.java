@@ -16,10 +16,15 @@ public class ModifyADInfo {
     private String registerNo;
     private String updusrNo;
 
+    private String aDTitleimageId;
     private String strADTitleImgUrl;
     private String strADDetailImgUrl1;
     private String strADDetailImgUrl2;
     private String strADDetailImgUrl3;
+
+    private String aDDetailimageId1;
+    private String aDDetailimageId2;
+    private String aDDetailimageId3;
 
     public String getProductId() {
         return productId;
@@ -139,5 +144,37 @@ public class ModifyADInfo {
 
     public void setStrADDetailImgUrl3(String strADDetailImgUrl3) {
         this.strADDetailImgUrl3 = strADDetailImgUrl3;
+    }
+
+    public String getaDTitleimageId() {
+        return aDTitleimageId;
+    }
+
+    public void setaDTitleimageId(String aDTitleimageId) {
+        this.aDTitleimageId = aDTitleimageId;
+    }
+
+    public String getaDDetailimageId1() {
+        return aDDetailimageId1;
+    }
+
+    public void setaDDetailimageId1(String aDDetailimageId1) {
+        this.aDDetailimageId1 = aDDetailimageId1;
+    }
+
+    public String getaDDetailimageId2() {
+        return aDDetailimageId2;
+    }
+
+    public void setaDDetailimageId2(String aDDetailimageId2) {
+        this.aDDetailimageId2 = aDDetailimageId2;
+    }
+
+    public String getaDDetailimageId3() {
+        return aDDetailimageId3;
+    }
+
+    public void setaDDetailimageId3(String aDDetailimageId3) {
+        this.aDDetailimageId3 = aDDetailimageId3;
     }
 }

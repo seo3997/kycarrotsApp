@@ -26,6 +26,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.whomade.kycarrots.R;
+import com.whomade.kycarrots.ui.common.ImageLoader;
 import com.whomade.kycarrots.ui.dialog.DlgBtnActivity;
 
 import java.io.ByteArrayOutputStream;
@@ -37,6 +38,8 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * 광고제작 - 2. 이미지 등록
@@ -59,6 +62,15 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
     private String STR_TITLE_IMG = "Title";
     private String STR_DETAIL_IMG = "Detail";
     private String imageFilePath; // imageFilePath 변수 선언 (클래스 멤버 변수)
+
+    private Map<String, View> viewsMap = new LinkedHashMap<>();
+    private Map<String, Boolean> isChangedMap = new LinkedHashMap<>();
+    private Map<String, String> imagePathMap = new LinkedHashMap<>();
+    private Map<String, String> imageIdMap = new LinkedHashMap<>();
+    private int imgCounter = 0; // 고유 키 생성용
+
+    private View selView;
+    private String selKey;
 
     public MakeADImgRegi2(Context context) {
         super(context);
@@ -103,6 +115,7 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
     }
     public void modifyAD(ModifyADInfo data){
         strTitleImgPath = data.getStrADTitleImgUrl().replace("\\", "//");
+        strTitleImgid = data.getaDTitleimageId();
 
         llTitleImg.setVisibility(View.GONE);
         ivTitle.setVisibility(View.VISIBLE);
@@ -140,20 +153,20 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
         String strDetailImgUrl3 = data.getStrADDetailImgUrl3();
 
         if(strDetailImgUrl1!=null && !strDetailImgUrl1.equals("")){
-            DetailAdd(strDetailImgUrl1.replace("\\", "//"));
+            DetailAdd(strDetailImgUrl1.replace("\\", "//"), data.getaDDetailimageId1());
         }
         if(strDetailImgUrl2!=null && !strDetailImgUrl2.equals("")){
-            DetailAdd(strDetailImgUrl2.replace("\\", "//"));
+            DetailAdd(strDetailImgUrl2.replace("\\", "//"), data.getaDDetailimageId2());
         }
         if(strDetailImgUrl3!=null && !strDetailImgUrl3.equals("")){
-            DetailAdd(strDetailImgUrl3.replace("\\", "//"));
+            DetailAdd(strDetailImgUrl3.replace("\\", "//"), data.getaDDetailimageId3());
         }
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_detail_img_add) {
-            DetailAdd("");
+            DetailAdd("","");
         }
     }
 
@@ -161,35 +174,34 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
      * 광고 세부이미지 추가
      */
     private SparseArray<View> views = new SparseArray<View>();
-    public void DetailAdd(String strUrl){
+    public void DetailAdd(String strUrl,String imageId){
         LayoutInflater inflaterDetailImg = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflaterDetailImg.inflate(R.layout.advertiser_make_ad_detail_img_add, null);
-        view.setTag(mDetailImgCnt);
+
+        String imgKey = "IMG_" + imgCounter++;
+        view.setTag(imgKey);
         view.setOnClickListener(mDetailImgClick);
-        LinearLayout llDeatilImg = (LinearLayout) view.findViewById(R.id.ll_detail_img);
+        LinearLayout llDetailImg = view.findViewById(R.id.ll_detail_img);
 
-        if(strUrl!=null && !strUrl.equals("")) {
-            llDeatilImg.setVisibility(View.GONE);
-
-            ImageView ivDetailImg = (ImageView) view.findViewById(R.id.iv_detail_img);
+        if(strUrl != null && !strUrl.isEmpty()) {
+            llDetailImg.setVisibility(View.GONE);
+            ImageView ivDetailImg = view.findViewById(R.id.iv_detail_img);
             ivDetailImg.setVisibility(View.VISIBLE);
-            final ProgressBar pbDetailImg = (ProgressBar) view.findViewById(R.id.pb_detail_img);
+            ProgressBar pbDetailImg = view.findViewById(R.id.pb_detail_img);
             if (pbDetailImg != null && !pbDetailImg.isShown()) pbDetailImg.setVisibility(View.VISIBLE);
-            //ImageLoader.loadImage(mContext, strUrl, ivDetailImg, pbDetailImg);
-
-            selView = view;
+            ImageLoader.loadImage(mContext, strUrl, ivDetailImg, pbDetailImg);
         }
-        llMakeDetailImg.addView(view);
-        views.put((Integer) view.getTag(), view);
-        arrIsChangeDetailImgTemp.add(false);
-        hmDetailPos.put((Integer) view.getTag(), strUrl);
 
-        mDetailImgCnt++;
-        if(views.size() >= DETAIL_IMG_ADD_MAX){
+        llMakeDetailImg.addView(view);
+        viewsMap.put(imgKey, view);
+        imagePathMap.put(imgKey, strUrl);
+        isChangedMap.put(imgKey, false);
+        imageIdMap.put(imgKey, imageId); // 초기값
+
+        if(viewsMap.size() >= DETAIL_IMG_ADD_MAX){
             btnDetailImgAdd.setVisibility(View.GONE);
         }
 
-        //호출하면 스크롤뷰의 레이아웃이 재설정됨.
         svDetailImg.invalidate();
         svDetailImg.requestLayout();
     }
@@ -205,30 +217,31 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
         mClick = listener;
     }
 
-    private View selView;
+
     public OnClickListener mDetailImgClick = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(v.getId() == R.id.ll_detail_title_img || v.getId() == R.id.iv_detail_title_img){
+            if (v.getId() == R.id.ll_detail_title_img || v.getId() == R.id.iv_detail_title_img) {
                 mClick.onDetailImgClick(!txtDetailTitle.isShown(), STR_TITLE_IMG);
-            }else {
-                int viewPos = (Integer)v.getTag();
-                ViewGroup ro = (ViewGroup) views.get(viewPos);
+            } else {
+                String key = (String) v.getTag();
+                ViewGroup ro = (ViewGroup) viewsMap.get(key);
+
                 selView = ro;
+                selKey = key;
 
                 mClick.onDetailImgClick(!((ImageView) ro.findViewById(R.id.iv_img_ad_detail)).isShown(), STR_DETAIL_IMG);
             }
         }
     };
-
     /**
      * 타이틀 or 세부 이미지 d/p
      * @param strPath
      */
-    private HashMap<Integer, String> hmDetailPos = new HashMap<Integer, String>();
     private String strTitleImgPath = "";
+    private String strTitleImgid = "";
     private boolean isChangeTitleImg = false;
-    private ArrayList<Boolean> arrIsChangeDetailImgTemp = new ArrayList<Boolean>();
+
     public void setImg(String fileDir, String fileName, String strKind){
 
         String strPath = fileDir+fileName;
@@ -257,8 +270,8 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
             ((ImageView) selView.findViewById(R.id.iv_img_ad_detail)).setVisibility(View.GONE);
             ((TextView) selView.findViewById(R.id.txt_detail)).setVisibility(View.GONE);
 
-            arrIsChangeDetailImgTemp.set((Integer) selView.getTag(), true);
-            hmDetailPos.put((Integer) selView.getTag(), strPath);
+            isChangedMap.put(selKey, true);
+            imagePathMap.put(selKey, strPath);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 llDeatilImg.setBackground(new BitmapDrawable(bitImgSize));
@@ -295,8 +308,8 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
             ((ImageView) selView.findViewById(R.id.iv_img_ad_detail)).setVisibility(View.GONE);
             ((TextView) selView.findViewById(R.id.txt_detail)).setVisibility(View.GONE);
 
-            arrIsChangeDetailImgTemp.set((Integer) selView.getTag(), true);
-            hmDetailPos.put((Integer) selView.getTag(), strPath);
+            isChangedMap.put(selKey, true);
+            imagePathMap.put(selKey, strPath);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 llDeatilImg.setBackground(new BitmapDrawable(bitImgSize));
@@ -310,33 +323,30 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
         String strPath = null;
 
         try {
-            // ContentResolver를 사용하여 Uri에서 InputStream을 얻습니다.
             InputStream inputStream = mContext.getContentResolver().openInputStream(fileUri);
             if (inputStream != null) {
-                // BitmapFactory.decodeStream()을 사용하여 InputStream에서 Bitmap을 생성합니다.
                 bitImgSize = BitmapFactory.decodeStream(inputStream);
-                //이미지 크기 조절
-                bitImgSize = Bitmap.createScaledBitmap(bitImgSize, Integer.parseInt(mContext.getResources().getString(R.string.str_ad_char_w)), Integer.parseInt(mContext.getResources().getString(R.string.str_ad_h)), false);
+                bitImgSize = Bitmap.createScaledBitmap(
+                        bitImgSize,
+                        Integer.parseInt(mContext.getResources().getString(R.string.str_ad_char_w)),
+                        Integer.parseInt(mContext.getResources().getString(R.string.str_ad_h)),
+                        false
+                );
                 inputStream.close();
             }
-            // Bitmap을 파일로 저장합니다.
+
             File file = createImageFile();
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             bitImgSize.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
             fileOutputStream.flush();
             fileOutputStream.close();
-            // 저장된 파일의 경로를 얻습니다.
+
             strPath = file.getAbsolutePath();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (bitImgSize == null) {
-            // Bitmap 생성 실패 처리
-            return;
-        }
+        if (bitImgSize == null) return;
 
         if (strKind.equals(STR_TITLE_IMG)) {
             ivDetailTitle.setVisibility(View.GONE);
@@ -352,23 +362,24 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
             } else {
                 llTitleImg.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), bitImgSize));
             }
+
         } else if (strKind.equals(STR_DETAIL_IMG)) {
-            LinearLayout llDeatilImg = (LinearLayout) selView.findViewById(R.id.ll_detail_img);
-            llDeatilImg.setVisibility(View.VISIBLE);
+            if (selKey == null || selView == null) return;
 
-            ImageView ivDetailImg = (ImageView) selView.findViewById(R.id.iv_detail_img);
-            ivDetailImg.setVisibility(View.GONE);
+            LinearLayout llDetailImg = selView.findViewById(R.id.ll_detail_img);
+            llDetailImg.setVisibility(View.VISIBLE);
 
-            ((ImageView) selView.findViewById(R.id.iv_img_ad_detail)).setVisibility(View.GONE);
-            ((TextView) selView.findViewById(R.id.txt_detail)).setVisibility(View.GONE);
+            selView.findViewById(R.id.iv_detail_img).setVisibility(View.GONE);
+            selView.findViewById(R.id.iv_img_ad_detail).setVisibility(View.GONE);
+            selView.findViewById(R.id.txt_detail).setVisibility(View.GONE);
 
-            arrIsChangeDetailImgTemp.set((Integer) selView.getTag(), true);
-            hmDetailPos.put((Integer) selView.getTag(), strPath);
+            isChangedMap.put(selKey, true);
+            imagePathMap.put(selKey, strPath);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                llDeatilImg.setBackground(new BitmapDrawable(mContext.getResources(), bitImgSize));
+                llDetailImg.setBackground(new BitmapDrawable(mContext.getResources(), bitImgSize));
             } else {
-                llDeatilImg.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), bitImgSize));
+                llDetailImg.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), bitImgSize));
             }
         }
     }
@@ -401,7 +412,7 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
         if(strKind.equals(STR_TITLE_IMG)){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 llTitleImg.setBackground(getResources().getDrawable(R.drawable.img));
-            }else{
+            } else {
                 llTitleImg.setBackgroundDrawable(getResources().getDrawable(R.drawable.img));
             }
             strTitleImgPath = "";
@@ -409,18 +420,28 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
             ivTitle.setVisibility(View.GONE);
             ivDetailTitle.setVisibility(View.VISIBLE);
             txtDetailTitle.setVisibility(View.VISIBLE);
-        }else if(strKind.equals(STR_DETAIL_IMG)) {
-            llMakeDetailImg.removeView(selView);
-            hmDetailPos.remove(selView);
-            arrIsChangeDetailImgTemp.remove((Integer) selView.getTag());
-            views.remove((Integer) selView.getTag());
+        } else if(strKind.equals(STR_DETAIL_IMG)) {
+            if (selKey == null || !viewsMap.containsKey(selKey)) return;
 
-            if(views.size() < DETAIL_IMG_ADD_MAX){
+            View viewToRemove = viewsMap.get(selKey);
+            llMakeDetailImg.removeView(viewToRemove);
+
+            viewsMap.remove(selKey);
+            imagePathMap.remove(selKey);
+            isChangedMap.remove(selKey);
+            imageIdMap.remove(selKey);
+
+            selKey = null;
+            selView = null;
+
+            if (viewsMap.size() < DETAIL_IMG_ADD_MAX) {
                 btnDetailImgAdd.setVisibility(View.VISIBLE);
             }
+
+            svDetailImg.invalidate();
+            svDetailImg.requestLayout();
         }
     }
-
     //다음 버튼 클릭
     public OnClickListener mNext = new OnClickListener() {
         @Override
@@ -432,7 +453,7 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
     private OnGetData mGetData;
     // 이벤트 인터페이스를 정의
     public interface OnGetData {
-        public void onGetData(ArrayList<Boolean> arrIsChangeDetailImg, boolean isChangeTitleImg, String strTitle, ArrayList<String> arrDetailImg);
+        public void onGetData(ArrayList<Boolean> arrIsChangeDetailImg, boolean isChangeTitleImg, String strTitle, ArrayList<String> arrDetailImg,String  titleImgId,ArrayList<String> arrDetailImgId);
     }
 
     public void getOnData(OnGetData getData)
@@ -444,26 +465,29 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
      * 세부이미지 추가 사항에 대한 list 구성 (이미지 전달 data 필요)
      */
     public void setData(){
-        Intent intent = null;
-        if(strTitleImgPath==null || strTitleImgPath.equals("")){
-            intent = new Intent(mContext, DlgBtnActivity.class);
+        if(strTitleImgPath == null || strTitleImgPath.isEmpty()) {
+            Intent intent = new Intent(mContext, DlgBtnActivity.class);
             intent.putExtra("BtnDlgMsg", getResources().getString(R.string.str_ad_title_img_err));
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             mContext.startActivity(intent);
             return;
         }
 
-        ArrayList<String> arrDetail = new ArrayList<String>();
-        ArrayList<Boolean> arrIsChangeDetail = new ArrayList<Boolean>();
-        for(int i=0; i<views.size(); i++){
-            int v = (int) views.get(views.keyAt(i)).getTag();
-            ViewGroup ro = (ViewGroup) views.get(v);
-            if (!((ImageView) ro.findViewById(R.id.iv_img_ad_detail)).isShown()) {
-                arrDetail.add(hmDetailPos.get(v));
-                arrIsChangeDetail.add(arrIsChangeDetailImgTemp.get(v));
+        ArrayList<String> arrDetail = new ArrayList<>();
+        ArrayList<Boolean> arrIsChangeDetail = new ArrayList<>();
+        ArrayList<String> arrDetailImgId = new ArrayList<>();
+
+        for (Map.Entry<String, View> entry : viewsMap.entrySet()) {
+            String key = entry.getKey();
+            ViewGroup ro = (ViewGroup) entry.getValue();
+            if (!ro.findViewById(R.id.iv_img_ad_detail).isShown()) {
+                arrDetail.add(imagePathMap.get(key));
+                arrIsChangeDetail.add(isChangedMap.get(key));
+                arrDetailImgId.add(imageIdMap.get(key));
             }
         }
-        mGetData.onGetData(arrIsChangeDetail, isChangeTitleImg, strTitleImgPath, arrDetail);
+
+        mGetData.onGetData(arrIsChangeDetail, isChangeTitleImg, strTitleImgPath, arrDetail, strTitleImgid, arrDetailImgId);
     }
 
     private Bitmap decodeSampledPreviewBitmapFromPath(String path, int reqWidth, int reqHeight) {
@@ -480,5 +504,13 @@ public class MakeADImgRegi2 extends LinearLayout implements View.OnClickListener
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         src.compress(Bitmap.CompressFormat.PNG, 100, bos);
         return src;
+    }
+
+    public String getTitleImgId() {
+        return strTitleImgid;
+    }
+
+    public String getSelectedDetailImgId() {
+        return selKey != null ? imageIdMap.get(selKey) : "";
     }
 }

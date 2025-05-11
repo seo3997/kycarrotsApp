@@ -89,7 +89,14 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/product_description"
                         android:text="" />
-
+                    <TextView
+                        android:id="@+id/product_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="16sp"
+                        android:textColor="@android:color/black"
+                        android:layout_marginTop="8dp"/>
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -172,6 +179,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        android:id="@+id/fab_edit"
         android:clickable="true"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end"

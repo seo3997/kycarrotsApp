@@ -43,7 +43,7 @@
                     android:background="@drawable/number2"
                     android:padding="@dimen/item_margin_left"
                     android:singleLine="true"
-                    android:text="aa"
+                    android:text=""
                     android:textColor="@color/color_input_point_request"
                     android:textColorHint="@color/color_hint_txt"
                     android:textSize="@dimen/tab_title_txt_size" />
@@ -82,7 +82,7 @@
                     android:maxLength="100"
                     android:maxLines="2"
                     android:padding="@dimen/item_margin_left"
-                    android:text="bb"
+                    android:text=""
                     android:textColor="@color/color_input_point_request"
                     android:textColorHint="@color/color_hint_txt"
                     android:textSize="@dimen/tab_title_txt_size" />
@@ -125,7 +125,7 @@
                         android:padding="@dimen/item_margin_left">
 
                         <TextView
-                            android:id="@+id/txt_category1"
+                            android:id="@+id/categoryMid"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/color_input_point_request"
@@ -193,7 +193,7 @@
                             android:inputType="number"
                             android:maxLength="19"
                             android:singleLine="true"
-                            android:text="50000"
+                            android:text=""
                             android:textColor="@color/color_input_point_request"
                             android:textColorHint="@color/color_hint_txt"
                             android:textSize="@dimen/tab_title_txt_size" />

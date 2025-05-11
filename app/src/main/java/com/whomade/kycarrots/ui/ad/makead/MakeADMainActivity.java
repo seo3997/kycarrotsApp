@@ -26,6 +26,10 @@ import androidx.core.content.FileProvider;
 import com.whomade.kycarrots.R;
 import com.whomade.kycarrots.TitleBar;
 import com.whomade.kycarrots.common.AppServiceProvider;
+import com.whomade.kycarrots.common.RetrofitProvider;
+import com.whomade.kycarrots.data.api.AdApi;
+import com.whomade.kycarrots.data.model.ProductImageVo;
+import com.whomade.kycarrots.data.repository.RemoteRepository;
 import com.whomade.kycarrots.domain.Helper.AppServiceHelper;
 import com.whomade.kycarrots.domain.service.AppService;
 import com.whomade.kycarrots.ui.dialog.DlgSelImg;
@@ -77,19 +81,26 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
         llRegiImgUnder = (LinearLayout) findViewById(R.id.ll_regi_img_under);
 
         Intent intent = getIntent();
-        if(intent!=null){
-            strADIdx = intent.getStringExtra("AD_IDX");
-            if(strADIdx!=null && !strADIdx.equals("")) isModify = true;
-            strADStatus = intent.getStringExtra("AD_STATUS");
-        }
+        strADIdx = intent.getStringExtra("AD_IDX");
+        strADStatus = intent.getStringExtra("AD_STATUS");
+        boolean isModify = strADIdx != null && !strADIdx.isEmpty();
+       AppService appService = AppServiceProvider.INSTANCE.getInstance();
 
-        AppService appService = AppServiceProvider.INSTANCE.getInstance();
+        // 코드 리스트 먼저 불러오기
         AppServiceHelper.fetchCodeList(
                 appService,
                 "R010600",
-                list -> makeADDetail.setCategoryList(list),
-                throwable -> Toast.makeText(MakeADMainActivity.this, "불러오기 실패", Toast.LENGTH_SHORT).show()
+                list -> {
+                    makeADDetail.setCategoryList(list);
+                    // 코드 목록 세팅 후 수정일 경우에만 데이터 로딩
+                    if (isModify) {
+                        loadModifyData(strADIdx);
+                    }
+                },
+                throwable -> Toast.makeText(MakeADMainActivity.this, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
         );
+
+
 
         //1. 세부정보 view
         makeADDetail =  (MakeADDetail1) findViewById(R.id.make_ad_detail);
@@ -161,13 +172,13 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
 
     private MakeADImgRegi2.OnGetData mNextClick = new MakeADImgRegi2.OnGetData() {
         @Override
-        public void onGetData(ArrayList<Boolean> arrIsChangeDetailImg, boolean isChangeTitleImg, String strTitle, ArrayList<String> arrDetailImg) {
+        public void onGetData(ArrayList<Boolean> arrIsChangeDetailImg, boolean isChangeTitleImg, String strTitle, ArrayList<String> arrDetailImg, String  titleImgId, ArrayList<String> arrDetailImgId) {
             if(llProgress!=null && !llProgress.isShown()) llProgress.setVisibility(View.VISIBLE);
-            DetailImgGetData(arrIsChangeDetailImg, isChangeTitleImg, strTitle, arrDetailImg);
+            DetailImgGetData(arrIsChangeDetailImg, isChangeTitleImg, strTitle, arrDetailImg,titleImgId,arrDetailImgId);
         }
     };
 
-    public void DetailImgGetData(ArrayList<Boolean> arrIsChangeDetailImg, boolean isChangeTitleImg, String strTitle, ArrayList<String> arrDetailImg){
+    public void DetailImgGetData(ArrayList<Boolean> arrIsChangeDetailImg, boolean isChangeTitleImg, String strTitle, ArrayList<String> arrDetailImg, String  titleImgId, ArrayList<String> arrDetailImgId){
         //1. 세부정보
         Intent intent = new Intent(MakeADMainActivity.this, MakeADPreviewActivity.class);
 
@@ -180,10 +191,12 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
         //2. 이미지 등록
         if(!strTitle.equals("")){
             intent.putExtra("Title_Img", strTitle);
+            intent.putExtra("Title_ImgId", titleImgId);
             intent.putExtra("ChangeTitleImg", isChangeTitleImg);
         }
         if(arrDetailImg!=null && arrDetailImg.size()>0){
             intent.putStringArrayListExtra("Detail_Img", arrDetailImg);
+            intent.putStringArrayListExtra("Detail_ImgId", arrDetailImgId);
             intent.putExtra("ChangeDetailImg", arrIsChangeDetailImg);
         }
 
@@ -205,11 +218,37 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        if(mSelDlg.getDelImg()){
-            makeADImgRegi.DelImg(strImgKind);
-        };
-    }
+        if (mSelDlg.getDelImg()) {
+            // 이미지 종류가 타이틀인지 상세인지 구분
+            String imageIdToDelete = null;
+            if ("Title".equals(strImgKind)) {
+                imageIdToDelete = makeADImgRegi.getTitleImgId(); // getter 필요
+            } else if ("Detail".equals(strImgKind)) {
+                imageIdToDelete = makeADImgRegi.getSelectedDetailImgId(); // getter 필요
+            }
 
+            if (imageIdToDelete != null && !imageIdToDelete.isEmpty()) {
+                // 서버 삭제 호출
+                AppService appService = AppServiceProvider.INSTANCE.getInstance();
+                AppServiceHelper.deleteImageById(
+                        appService,
+                        imageIdToDelete,
+                        () -> {
+                            makeADImgRegi.DelImg(strImgKind); // 서버 삭제 성공 후 UI 삭제
+                            return null;
+                        },
+                        throwable -> {
+                            Toast.makeText(mContext, "서버 이미지 삭제 실패", Toast.LENGTH_SHORT).show();
+                            Log.e("ImageDelete", "서버 이미지 삭제 실패", throwable);
+                            return null;
+                        }
+                );
+            } else {
+                // 로컬에서만 존재하는 이미지인 경우 그냥 삭제
+                makeADImgRegi.DelImg(strImgKind);
+            }
+        }
+    }
     private Uri imageUri;
 
     @Override
@@ -412,5 +451,60 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
                 .start(this);
     }
 
+    private void loadModifyData(String productId) {
+        AdApi adApi = RetrofitProvider.INSTANCE.getRetrofit().create(AdApi.class);
+        RemoteRepository repository = new RemoteRepository(adApi);
+        AppService appService = new AppService(repository);
+
+        AppServiceHelper.getProductDetailAsync(
+                appService,
+                Long.parseLong(productId),
+                result -> {
+                    ModifyADInfo modifyInfo = new ModifyADInfo();
+                    modifyInfo.setProductId(result.getProduct().getProductId());
+                    modifyInfo.setTitle(result.getProduct().getTitle());
+                    modifyInfo.setDescription(result.getProduct().getDescription());
+                    modifyInfo.setPrice(result.getProduct().getPrice());
+                    modifyInfo.setCategoryMid(result.getProduct().getCategoryMid());
+
+                    List<ProductImageVo> images = result.getImageMetas();
+                    for (ProductImageVo vo : images) {
+                        if ("1".equals(vo.getRepresent())) {
+                            modifyInfo.setStrADTitleImgUrl(vo.getImageUrl());
+                            modifyInfo.setaDTitleimageId(vo.getImageId());
+                        }
+                    }
+
+                    List<String> subUrls = new ArrayList<>();
+                    for (ProductImageVo vo : images) {
+                        if ("0".equals(vo.getRepresent())) {
+                            subUrls.add(vo.getImageUrl());
+                        }
+                    }
+
+                    if (subUrls.size() > 0) {
+                        modifyInfo.setStrADDetailImgUrl1(subUrls.get(0));
+                        modifyInfo.setaDDetailimageId1(images.get(1).getImageId());
+                    }
+                    if (subUrls.size() > 1) {
+                        modifyInfo.setStrADDetailImgUrl2(subUrls.get(1));
+                        modifyInfo.setaDDetailimageId2(images.get(2).getImageId());
+                    }
+                    if (subUrls.size() > 2) {
+                        modifyInfo.setStrADDetailImgUrl3(subUrls.get(2));
+                        modifyInfo.setaDDetailimageId3(images.get(3).getImageId());
+                    }
+
+                    // 뷰에 세팅
+                    makeADDetail.modifyData(modifyInfo);
+                    makeADImgRegi.modifyAD(modifyInfo);
+                    return null;
+                },
+                throwable -> {
+                    Log.e("getProductDetail", "데이터 조회 실패", throwable);
+                    return null;
+                }
+        );
+    }
 
 }

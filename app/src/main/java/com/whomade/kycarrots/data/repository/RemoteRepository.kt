@@ -51,11 +51,36 @@ class RemoteRepository(
         return adApi.registerAdvertise(productBody, imageMetasBody, imageParts)
     }
 
+    suspend fun updateAdvertise(
+        product: ProductVo,
+        imageMetas: List<ProductImageVo>,
+        images: List<File>
+    ): Response<ResponseBody> {
+        val gson = Gson()
+
+        val productJson = gson.toJson(product)
+        val imageMetasJson = gson.toJson(imageMetas)
+
+        val productBody = productJson.toRequestBody("application/json; charset=utf-8".toMediaType())
+        val imageMetasBody = imageMetasJson.toRequestBody("application/json; charset=utf-8".toMediaType())
+
+        val imageParts = images.map { file ->
+            val requestFile = file.asRequestBody("image/*".toMediaType())
+            MultipartBody.Part.createFormData("images", file.name, requestFile)
+        }
+
+        return adApi.updateAdvertise(productBody, imageMetasBody, imageParts)
+    }
+
     suspend fun fetchCodeList(groupId: String): Response<List<TxtListDataInfo>> {
         return adApi.getCodeList(groupId)
     }
 
     suspend fun fetchProductDetail(productId: Long): Response<ProductDetailResponse> {
         return adApi.getProductDetail(productId)
+    }
+
+    suspend fun deleteImageById(imageId: String): Response<ResponseBody> {
+        return adApi.deleteImageById(imageId)
     }
 }

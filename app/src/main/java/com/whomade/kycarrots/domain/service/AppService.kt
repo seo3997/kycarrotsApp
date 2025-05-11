@@ -6,6 +6,7 @@ import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
+import okhttp3.ResponseBody
 import java.io.File
 
 class AppService(
@@ -30,6 +31,15 @@ class AppService(
         return response.isSuccessful
     }
 
+    suspend fun updateAdvertise(
+        product: ProductVo,
+        imageMetas: List<ProductImageVo>,
+        images: List<File>
+    ): Boolean {
+        val response = repository.updateAdvertise(product, imageMetas, images)
+        return response.isSuccessful
+    }
+
     // 코드 리스트 조회
     suspend fun getCodeList(groupId: String): List<TxtListDataInfo> {
         val response = repository.fetchCodeList(groupId)
@@ -47,5 +57,9 @@ class AppService(
         } else {
             null
         }
+    }
+
+    suspend fun deleteImageById(imageId: String): retrofit2.Response<ResponseBody> {
+        return repository.deleteImageById(imageId)
     }
 }

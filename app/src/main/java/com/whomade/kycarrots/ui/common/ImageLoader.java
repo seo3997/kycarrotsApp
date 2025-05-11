@@ -1,6 +1,6 @@
 package com.whomade.kycarrots.ui.common;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,25 +9,30 @@ import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.DataSource;
 
 public class ImageLoader {
 
     public static void loadImage(
-            Activity activity,
+            Context context,
             String imageUrl,
             ImageView imageView,
             @Nullable ProgressBar progressBar
     ) {
-        Glide.with(activity)
+        Glide.with(context)
                 .load(imageUrl)
                 .centerCrop()
-                .addListener(new RequestListener<Drawable>() {
+                .listener(new RequestListener<Drawable>() {
                     @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    public boolean onLoadFailed(
+                            @Nullable GlideException e,
+                            Object model,
+                            Target<Drawable> target,
+                            boolean isFirstResource
+                    ) {
                         if (progressBar != null) {
                             progressBar.setVisibility(View.GONE);
                         }
@@ -35,7 +40,13 @@ public class ImageLoader {
                     }
 
                     @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    public boolean onResourceReady(
+                            Drawable resource,
+                            Object model,
+                            Target<Drawable> target,
+                            DataSource dataSource,
+                            boolean isFirstResource
+                    ) {
                         if (progressBar != null) {
                             progressBar.setVisibility(View.GONE);
                         }

@@ -38,10 +38,7 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
     private OnGetInfoData mGetInfoData;
 
-    private String strDlgChildTitle1; //1차 선택 된 text
-    private String strGroupIdx=""; //1차 분류 idx
-
-    private TextView txtCategory1;
+    private TextView categoryMid;
 
     private EditText etADName;
     private EditText etADDetail; //상세설명
@@ -55,6 +52,8 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
     public final static String STR_PUT_AD_CATEGORY = "AD_CATEGORY";
     public final static String STR_PUT_AD_AMOUNT = "AD_AMOUNT";
 
+    String categoryMidCd="";
+    String categoryMidNm="";
 
     // 이벤트 인터페이스를 정의
     public interface OnGetInfoData {
@@ -91,7 +90,7 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
         etADName = (EditText) findViewById(R.id.et_input_ad_name);          //상품명
         etADDetail = (EditText) findViewById(R.id.et_input_ad_detail);      //상세설명
-        txtCategory1 = ((TextView) findViewById(R.id.txt_category1));       //카테고리
+        categoryMid = ((TextView) findViewById(R.id.categoryMid));       //카테고리
         etADAmount = (EditText) findViewById(R.id.et_input_ad_amount);      //상품가격
 
         ((Button) findViewById(R.id.btn_make_ad_detail_next)).setOnClickListener(mNextInfo);
@@ -120,7 +119,7 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             strMsg = getResources().getString(R.string.str_make_ad_name_err);
         } else if (etADDetail.getText().toString().equals("")) {
             strMsg = getResources().getString(R.string.str_make_ad_detail_err);
-        } else if (strGroupIdx.equals("")) {
+        } else if (categoryMidCd.equals("")) {
             strMsg = getResources().getString(R.string.str_make_ad_category_err);
         }
 
@@ -136,9 +135,9 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             ArrayList<String> arrData = new ArrayList<String>(); //카테고리를 제외한 data
             arrData.add(0, etADName.getText().toString());
             arrData.add(1, etADDetail.getText().toString());
-            arrData.add(2, strGroupIdx);
+            arrData.add(2, categoryMidCd);
             arrData.add(3, etADAmount.getText().toString().replaceAll(",", ""));
-            mGetInfoData.onGetInfoData(arrData,strGroupIdx);
+            mGetInfoData.onGetInfoData(arrData,categoryMidCd);
         }
 
     }
@@ -186,9 +185,9 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(arrData1.size()>0) {
-                    strDlgChildTitle1 = arrData1.get(position).getStrMsg();
-                    strGroupIdx = arrData1.get(position).getStrIdx();
-                    txtCategory1.setText(strDlgChildTitle1);
+                    categoryMidNm = arrData1.get(position).getStrMsg();
+                    categoryMidCd = arrData1.get(position).getStrIdx();
+                    categoryMid.setText(categoryMidNm);
                 }
                 mDlg.dismiss();
             }
@@ -204,5 +203,49 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
     public void setCategoryList(List<TxtListDataInfo> codeList) {
         arrData1 = new ArrayList<>(codeList);
+    }
+
+
+
+    public void modifyData(ModifyADInfo data){
+
+        if (data == null) return;
+
+        // 광고명
+        if (etADName != null) {
+            etADName.setText(data.getTitle());
+        }
+
+        // 상세설명
+        if (etADDetail != null) {
+            etADDetail.setText(data.getDescription());
+        }
+
+        // 카테고리
+        if (categoryMid != null) {
+            categoryMid.setText(data.getCategoryMid());
+        }
+        categoryMidCd =data.getCategoryMid();
+
+        if (categoryMid != null && arrData1 != null) {
+            String selectedCategoryMid = data.getCategoryMid();
+            for (TxtListDataInfo item : arrData1) {
+                if (item.getStrIdx().equals(categoryMidCd)) {
+                    categoryMid.setText(item.getStrMsg()); // 이제 오류 없음
+                    break;
+                }
+            }
+        }
+
+        // 광고 금액
+        if (etADAmount != null && data.getPrice() != null) {
+            try {
+                double priceDouble = Double.parseDouble(data.getPrice());
+                long priceLong = (long) priceDouble;
+                etADAmount.setText(String.valueOf(priceLong));
+            } catch (NumberFormatException e) {
+                etADAmount.setText("0"); // 예외 시 기본값
+            }
+        }
     }
 }
