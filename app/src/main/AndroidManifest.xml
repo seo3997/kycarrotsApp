@@ -53,9 +53,10 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.DesignDemo"
         android:usesCleartextTraffic="true"
+        android:extractNativeLibs="true"
         >
 
-        <activity android:name="com.whomade.kycarrots.MainActivity"
+        <activity android:name="com.whomade.kycarrots.IntroActivity"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
@@ -65,6 +66,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name="com.whomade.kycarrots.AdDetailActivity"
@@ -98,6 +103,28 @@
             />
         <activity
             android:name="com.whomade.kycarrots.ui.dialog.DlgBtnActivity"/>
+
+        <activity
+            android:name=".loginout.LoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".dialog.DlgBtnActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Dialog" />
+
+        <activity
+            android:name=".loginout.FindEmailPwdActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".membership.TermsAgreeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".dialog.DlgFirstPhoneNumActivity"
+            android:screenOrientation="portrait" />
+
+
 
     </application>
 

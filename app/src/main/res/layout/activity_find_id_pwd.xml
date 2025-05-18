@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.whomade.kycarrots.MainTitleBar
+        android:id="@+id/main_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.whomade.kycarrots.TitleBar
+        android:id="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/txt_find_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_main_friend_txt"
+                android:gravity="center"
+                android:paddingBottom="@dimen/item_margin_left"
+                android:paddingTop="@dimen/item_margin_left"
+                android:text="@string/str_find_email_title"
+                android:textColor="@color/color_input_point_request"
+                android:textSize="@dimen/tab_title_txt_size"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/ll_find_email_under"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_divider_height"
+                android:layout_alignBottom="@+id/txt_find_email"
+                android:background="@color/color_tab_under_color"
+                android:orientation="horizontal" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/txt_find_pwd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_white"
+                android:gravity="center"
+                android:paddingBottom="@dimen/item_margin_left"
+                android:paddingTop="@dimen/item_margin_left"
+                android:text="@string/str_find_pwd_title"
+                android:textColor="@color/color_input_point_request"
+                android:textSize="@dimen/tab_title_txt_size"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/ll_find_pwd_under"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_divider_height"
+                android:layout_alignBottom="@+id/txt_find_pwd"
+                android:background="@color/color_tab_under_color"
+                android:orientation="horizontal"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_main_friend_txt"
+        android:gravity="center"
+        android:paddingBottom="@dimen/item_margin_left"
+        android:paddingTop="@dimen/item_margin_left"
+        android:textColor="@color/color_my_point"
+        android:textSize="@dimen/authentication_txt_size"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/ll_find_fr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+</LinearLayout>

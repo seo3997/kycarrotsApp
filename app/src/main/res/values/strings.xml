@@ -318,6 +318,7 @@
   <string name="str_setting_app_version">App 버전정보</string>
   <string name="str_phone_number">휴대폰번호</string>
   <string name="str_mobile_en">Mobile</string>
+  <string name="str_setting_logout">Logout</string>
 
   <string name="str_company_introduction_msg">누구나 바로 광고 보고\n적립 받는 캐시쿡!</string>
   <string name="str_company_url">www.cashcuk.com</string>
@@ -884,6 +885,9 @@
   <string name="str_reject_empty">승인거부 사유는\n캐시쿡으로 문의바랍니다.\nTel: 1661-6185</string>
   <string name="str_max_length">100자이내</string>
   <string name="str_kakao_key">af0a4f593cde8b77d95ec2072e6a22db</string>
+  <string name="str_kakao_login">카카오 로그인</string>
+  <string name="str_naver_login">네이버 로그인</string>
+  <string name="str_google_login">구글 로그인</string>
 
 
 </resources>

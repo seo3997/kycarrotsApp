@@ -3,6 +3,9 @@ package com.whomade.kycarrots.data.repository
 import com.google.gson.Gson
 import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.AdResponse
+import com.whomade.kycarrots.data.model.FindEmailResponse
+import com.whomade.kycarrots.data.model.FindPasswordResponse
+import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductVo
@@ -83,4 +86,29 @@ class RemoteRepository(
     suspend fun deleteImageById(imageId: String): Response<ResponseBody> {
         return adApi.deleteImageById(imageId)
     }
+
+    suspend fun login(
+        email: String,
+        password: String,
+        regId: String,
+        appVersion: String
+    ): Response<LoginResponse> {
+        return adApi.login(email, password, regId, appVersion)
+    }
+
+    suspend fun findPassword(
+        phone: String,
+        email: String
+    ): Response<FindPasswordResponse> {
+        return adApi.findPassword(phone, email)
+    }
+
+    suspend fun findEmail(
+        name: String,
+        birth: String,
+        phone: String
+    ): Response<FindEmailResponse> {
+        return adApi.findEmail(name, birth, phone)
+    }
+
 }

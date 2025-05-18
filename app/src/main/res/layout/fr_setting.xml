@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/display_bg"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/agreement_margin">
+
+            <!-- 계정 -->
+            <LinearLayout
+                android:id="@+id/ll_account"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ad_list_item_selector"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/item_margin_left">
+
+                <TextView
+                    android:id="@+id/txt_account"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="9"
+                    android:paddingLeft="@dimen/item_margin_left"
+                    android:textColor="@drawable/txt_setting_selector"
+                    android:textSize="@dimen/input_info_txt_size"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/ib_account"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:paddingRight="@dimen/item_margin_left"
+                    android:src="@drawable/btn_set_next_selector" />
+            </LinearLayout>
+
+            <!-- 일반 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/login_margin_top"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/title" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/item_padding"
+                    android:text="@string/str_setting_normal"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/tab_title_txt_size"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 공지사항 -->
+            <LinearLayout
+                android:id="@+id/ll_notice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:background="@drawable/bg_setting_selector"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/item_margin_left">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="9"
+                    android:paddingLeft="@dimen/item_margin_left"
+                    android:text="@string/str_setting_notice"
+                    android:textColor="@drawable/txt_setting_selector"
+                    android:textSize="@dimen/tab_title_txt_size"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/ib_notice"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:paddingRight="@dimen/item_margin_left"
+                    android:src="@drawable/btn_set_next_selector" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:background="@color/color_point_list_divider"
+                android:visibility="gone" />
+
+            <!-- 알림 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/login_margin_top"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/title" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/item_padding"
+                    android:text="@string/str_setting_alrim"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/tab_title_txt_size"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:background="@drawable/bg1"
+                android:orientation="vertical">
+                <!-- 소리 -->
+                <LinearLayout
+                    android:id="@+id/ll_sound"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/item_margin_left">
+
+                        <TextView
+                            android:id="@+id/txt_sound"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/str_setting_sound"
+                            android:textColor="@drawable/txt_setting_selector"
+                            android:textSize="@dimen/tab_title_txt_size"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/ll_setting_sound"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/item_margin_left"
+                            android:background="@drawable/btn_sound_selector"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:paddingLeft="@dimen/item_padding"
+                            android:paddingRight="@dimen/item_padding">
+
+                            <TextView
+                                android:id="@+id/txt_setting_sound"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="선택 음"
+                                android:textColor="@color/color_white"
+                                android:textSize="@dimen/terms_agree_txt_size" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="@dimen/item_padding"
+                                android:src="@drawable/next2" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <CheckBox
+                            android:id="@+id/chk_sound"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:button="@drawable/chk_set_alrim_selector"
+                            android:clickable="false"
+                            android:focusable="false" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- 진동 -->
+                <LinearLayout
+                    android:id="@+id/ll_vibrate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_vibrate"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <CheckBox
+                        android:id="@+id/chk_vibrate"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:button="@drawable/chk_set_alrim_selector"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:paddingRight="@dimen/item_margin_left" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- 알림팝업 -->
+                <LinearLayout
+                    android:id="@+id/ll_alrim_popup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_alrim_popup"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_alrim_popup"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 기타 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/login_margin_top"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/title" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/item_padding"
+                    android:text="@string/str_setting_etc"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/tab_title_txt_size"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:background="@drawable/bg1"
+                android:orientation="vertical">
+
+                <!-- 튜토리얼 -->
+                <LinearLayout
+                    android:id="@+id/ll_tutorial"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_tutorial"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_tutorial"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- 광고가이드 -->
+                <LinearLayout
+                    android:id="@+id/ll_guide_ad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_guide_ad"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_guide_ad"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- 캐릭터가이드 -->
+                <LinearLayout
+                    android:id="@+id/ll_guide_character"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_cuk_cuk_emotion_guide"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_guide_character"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- 고객센터 -->
+                <LinearLayout
+                    android:id="@+id/ll_customer_service"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_customer_service"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_customer_service"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- FAQ -->
+                <LinearLayout
+                    android:id="@+id/ll_faq"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_faq"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_faq"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- 서비스 이용약관 -->
+                <LinearLayout
+                    android:id="@+id/ll_service_agreement"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_service_agreement"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_service_agreement"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- 개인정보 취급방침-->
+                <LinearLayout
+                    android:id="@+id/ll_privacy_policy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_privacy_policy"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_privacy_policy"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- 캐시쿡(회시소개) -->
+                <LinearLayout
+                    android:id="@+id/ll_company_introduction"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_company_introduction"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_company_introduction"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+                <!-- 캐시쿡(회시소개) -->
+                <LinearLayout
+                    android:id="@+id/ll_logout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_setting_etc_selector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:text="@string/str_setting_logout"
+                        android:textColor="@drawable/txt_setting_selector"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/ib_logout"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:src="@drawable/btn_set_next_selector" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:background="@drawable/bar2" />
+
+                <!-- App 버전정보 -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/agreement_margin"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@string/str_setting_app_version"
+                        android:textColor="@color/color_main_friend_txt"
+                        android:textSize="@dimen/tab_title_txt_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_setting_app_version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="@dimen/agreement_margin"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/terms_agree_txt_size" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/login_margin_top"
+                android:gravity="center"
+                android:text="@string/str_setting_info1"
+                android:textColor="@color/color_setting_info_txt"
+                android:textSize="@dimen/terms_agree_txt_size" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:gravity="center"
+                android:text="@string/str_setting_info2"
+                android:textColor="@color/color_setting_info_txt"
+                android:textSize="@dimen/terms_company_introduction_txt_size" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

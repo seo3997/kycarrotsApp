@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.cashcuk.setting.FrSetting
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -56,6 +57,16 @@ class MainActivity : AppCompatActivity() {
 
         val tabLayout: TabLayout = findViewById(R.id.tabs)
         tabLayout.setupWithViewPager(viewPager)
+
+        viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                if (position == 0) {
+                    floatingActionButton.show()
+                } else {
+                    floatingActionButton.hide()
+                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -111,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = Adapter(supportFragmentManager).apply {
             addFragment(AdListFragment(), "광고 A")
             addFragment(AdListFragment(), "광고 B")
-            addFragment(AdListFragment(), "광고 C")
+            addFragment(FrSetting(), "설정")
         }
     }
 

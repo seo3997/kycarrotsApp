@@ -1,6 +1,7 @@
 package com.whomade.kycarrots.domain.service
 
 import com.whomade.kycarrots.data.model.AdItem
+import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductVo
@@ -62,4 +63,33 @@ class AppService(
     suspend fun deleteImageById(imageId: String): retrofit2.Response<ResponseBody> {
         return repository.deleteImageById(imageId)
     }
+
+    suspend fun login(
+        email: String,
+        password: String,
+        regId: String,
+        appVersion: String
+    ): LoginResponse? {
+        val response = repository.login(email, password, regId, appVersion)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    suspend fun findPassword(phone: String, email: String): String? {
+        val response = repository.findPassword(phone, email)
+        return if (response.isSuccessful) {
+            response.body()?.password
+        } else {
+            null
+        }
+    }
+
+    suspend fun findEmail(name: String, birth: String, phone: String): String? {
+        val response = repository.findEmail(name, birth, phone)
+        return if (response.isSuccessful) response.body()?.email else null
+    }
+
 }

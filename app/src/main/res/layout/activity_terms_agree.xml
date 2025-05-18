@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fl_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.whomade.kycarrots.MainTitleBar
+            android:id="@+id/main_title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.whomade.kycarrots.TitleBar
+            android:id="@+id/title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/ll_all_terms_agree"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/top"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/item_margin_left"
+            android:paddingTop="@dimen/item_margin_left">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_terms_agree_all_info"
+                android:textColor="@color/color_my_point"
+                android:textSize="@dimen/authentication_txt_size"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_margin_left"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_terms_agree_all"
+                    android:textColor="@drawable/txt_terms_agree_all_selector"
+                    android:textSize="@dimen/sub_title_txt_size"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/chk_agree_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/item_margin_left"
+                    android:background="@null"
+                    android:button="@drawable/chk_terms_agree_selector" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shadow" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="@dimen/agreement_margin"
+                    android:layout_marginRight="@dimen/agreement_margin"
+                    android:layout_marginTop="@dimen/item_margin_left"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:background="@drawable/bg1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:paddingRight="@dimen/item_margin_left">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:text="@string/str_agreement"
+                            android:textColor="@color/color_main_friend_txt"
+                            android:textSize="@dimen/login_find_txt_size"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="@dimen/item_padding"
+                            android:gravity="center_vertical"
+                            android:text="@string/str_agreement_age"
+                            android:textColor="@color/color_white"
+                            android:textSize="@dimen/terms_agree_txt_size"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="@dimen/item_padding"
+                        android:layout_weight="6"
+                        android:background="@drawable/bg2_black">
+
+                        <WebView
+                            android:id="@+id/wv_terms_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:background="@drawable/bg3"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/agreement_margin"
+                        android:paddingRight="@dimen/agreement_margin">
+
+                        <TextView
+                            android:id="@+id/txt_agree1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/item_margin_left"
+                            android:text="@string/str_chk_agreement1"
+                            android:textColor="@color/color_my_point"
+                            android:textSize="@dimen/terms_agree_txt_size"
+                            android:textStyle="bold" />
+
+                        <CheckBox
+                            android:id="@+id/chk_agree1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/item_padding"
+                            android:background="@null"
+                            android:button="@drawable/chk_terms_agree_selector" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_margin="@dimen/item_margin_left"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:background="@drawable/bg1"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="@dimen/item_margin_left"
+                        android:paddingRight="@dimen/item_margin_left"
+                        android:text="@string/str_privacy_agree"
+                        android:textColor="@color/color_main_friend_txt"
+                        android:textSize="@dimen/login_find_txt_size"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="@dimen/item_padding"
+                        android:layout_weight="6"
+                        android:background="@drawable/bg2_black">
+
+                        <WebView
+                            android:id="@+id/wv_terms_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:background="@drawable/bg3"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/agreement_margin"
+                        android:paddingRight="@dimen/agreement_margin">
+
+                        <TextView
+                            android:id="@+id/txt_agree2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/item_margin_left"
+                            android:text="@string/str_chk_agreement1"
+                            android:textColor="@color/color_my_point"
+                            android:textSize="@dimen/terms_agree_txt_size"
+                            android:textStyle="bold" />
+
+                        <CheckBox
+                            android:id="@+id/chk_agree2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/item_padding"
+                            android:background="@null"
+                            android:button="@drawable/chk_terms_agree_selector" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_margin_left">
+
+                    <Button
+                        android:id="@+id/btn_agree_cancel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_padding"
+                        android:layout_marginRight="@dimen/item_padding"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_button_selector"
+                        android:paddingBottom="@dimen/item_margin_left"
+                        android:paddingTop="@dimen/item_margin_left"
+                        android:text="@string/str_cancel"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/input_info_txt_size" />
+
+                    <Button
+                        android:id="@+id/btn_agree_ok"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/item_padding"
+                        android:layout_marginRight="@dimen/item_padding"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_membership_selector"
+                        android:paddingBottom="@dimen/item_margin_left"
+                        android:paddingTop="@dimen/item_margin_left"
+                        android:text="@string/str_membership"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/input_info_txt_size" />
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</FrameLayout>
