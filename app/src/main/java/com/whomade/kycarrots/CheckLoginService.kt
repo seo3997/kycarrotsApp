@@ -1,4 +1,4 @@
-package com.whomade
+package com.whomade.kycarrots
 
 import android.app.Activity
 import android.app.Service

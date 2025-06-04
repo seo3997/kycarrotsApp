@@ -13,7 +13,7 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.whomade.CheckLoginService
+import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.R
 
 

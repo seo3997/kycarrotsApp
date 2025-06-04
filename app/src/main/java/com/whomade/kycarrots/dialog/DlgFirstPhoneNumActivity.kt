@@ -9,7 +9,7 @@ import android.view.Gravity
 import android.view.Window
 import android.view.WindowManager
 import android.widget.*
-import com.whomade.CheckLoginService
+import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.R
 
 /**

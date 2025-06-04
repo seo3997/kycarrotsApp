@@ -1,64 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2015 The Android Open Source Project
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
--->
-
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.whomade.kycarrots"
-    >
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
-    <!--<protected-broadcast android:name="android.intent.action.MEDIA_MOUNTED" />-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    package="com.whomade.kycarrots">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" /> <!-- <protected-broadcast android:name="android.intent.action.MEDIA_MOUNTED" /> -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-feature android:name="android.hardware.telephony" android:required="true" />
+
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="true" />
+
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
-    <uses-permission android:name="android.permission.RECEIVE_SMS"  android:required="true"/>
+    <uses-permission
+        android:name="android.permission.RECEIVE_SMS"
+        android:required="true" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" android:required="true"/>
-
-    <!-- GCM 사용을 위해 추가 되는 permission -->
+    <uses-permission
+        android:name="android.permission.PROCESS_OUTGOING_CALLS"
+        android:required="true" /> <!-- GCM 사용을 위해 추가 되는 permission -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/app_icon"
-        android:label="@string/app_name"
-        android:theme="@style/Theme.DesignDemo"
-        android:usesCleartextTraffic="true"
         android:extractNativeLibs="true"
-        >
-
-        <activity android:name="com.whomade.kycarrots.IntroActivity"
-            android:screenOrientation="portrait"
-            android:exported="true">
+        android:icon="@mipmap/android_icon"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="false"
+             />
+        <activity
+            android:name=".IntroActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -66,19 +60,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
-            android:name="com.whomade.kycarrots.AdDetailActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName="com.whomade.kycarrots.MainActivity">
+            android:name=".AdDetailActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.whomade.kycarrots.MainActivity" />
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -88,44 +81,37 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:configChanges="screenSize|smallestScreenSize|orientation"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
         <activity
-            android:name="com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity"
-            android:screenOrientation="portrait"
-            />
+            android:name=".ui.ad.makead.MakeADMainActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.whomade.kycarrots.ui.ad.makead.MakeADPreviewActivity"
-            android:screenOrientation="portrait"
-            />
-        <activity
-            android:name="com.whomade.kycarrots.ui.dialog.DlgBtnActivity"/>
-
+            android:name=".ui.ad.makead.MakeADPreviewActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.dialog.DlgBtnActivity" />
         <activity
             android:name=".loginout.LoginActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".dialog.DlgBtnActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog" />
-
         <activity
             android:name=".loginout.FindEmailPwdActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".membership.TermsAgreeActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".dialog.DlgFirstPhoneNumActivity"
             android:screenOrientation="portrait" />
-
-
-
+        <activity
+            android:name=".setting.SettingActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

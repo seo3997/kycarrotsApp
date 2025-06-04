@@ -11,7 +11,6 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.whomade.CheckLoginService
 import com.whomade.kycarrots.dialog.DlgBtnActivity
 import com.whomade.kycarrots.loginout.LoginActivity
 import com.whomade.kycarrots.loginout.LoginInfo
@@ -121,7 +120,7 @@ class IntroActivity : AppCompatActivity() {
 
     private fun nextPage(isLogin: Boolean) {
         val intent = if (isLogin) {
-            Intent(this, MainActivity::class.java)
+            Intent(this, DashboardActivity::class.java)
         } else {
             Intent(this, LoginActivity::class.java)
         }

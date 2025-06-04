@@ -11,10 +11,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.whomade.CheckLoginService
+import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.MainTitleBar
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.TitleBar
+
 
 class FindEmailPwdActivity : FragmentActivity(), View.OnClickListener {
 

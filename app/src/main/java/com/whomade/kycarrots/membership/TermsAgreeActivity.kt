@@ -4,12 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebView
 import android.widget.*
-import com.whomade.CheckLoginService
+import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.MainTitleBar
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.TitleBar

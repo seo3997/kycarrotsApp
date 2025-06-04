@@ -3,7 +3,7 @@ package com.whomade.kycarrots.loginout
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.whomade.CheckLoginService
+import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.StaticDataInfo
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.domain.service.AppService

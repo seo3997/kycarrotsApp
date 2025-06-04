@@ -440,9 +440,9 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
         options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
         options.setCompressionQuality(90);
         options.setToolbarTitle("이미지 크롭");
-        options.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-        options.setActiveControlsWidgetColor(ContextCompat.getColor(this, R.color.colorAccent));
+        options.setToolbarColor(ContextCompat.getColor(this, R.color.colorRPrimary));
+        options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorRPrimaryDark));
+        options.setActiveControlsWidgetColor(ContextCompat.getColor(this, R.color.colorRAccent));
 
         // UCrop 실행
         UCrop.of(sourceUri, destinationUri)

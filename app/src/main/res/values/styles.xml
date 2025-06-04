@@ -15,14 +15,22 @@
 -->
 
 <resources>
+    <style name="AppTheme" parent="Base.Theme.DesignDemo">
+        <!-- 여기에 필요한 item 추가 -->
+        <!--<item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
+     </style>
 
-    <style name="Theme.DesignDemo" parent="Base.Theme.DesignDemo"></style>
-
-    <style name="Base.Theme.DesignDemo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#673AB7</item>
-        <item name="colorPrimaryVariant">#512DA8</item>
-        <item name="colorSecondary">#FF4081</item>
+     <style name="Base.Theme.DesignDemo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+         <!-- 색상 설정 -->
+         <item name="colorPrimary">#2962FF</item>
+         <item name="colorPrimaryVariant">#0039CB</item>
+         <item name="colorSecondary">#00BFA5</item>
+         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+         <!--<item name="android:windowTranslucentStatus">true</item>-->
+         <item name="android:navigationBarColor">?attr/colorPrimary</item>
     </style>
+
 
     <style name="Widget.CardContent" parent="android:Widget">
         <item name="android:paddingLeft">16dp</item>

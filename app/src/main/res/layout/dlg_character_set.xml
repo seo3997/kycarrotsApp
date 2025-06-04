@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.cashcuk.SoftKeyboardLinear
+    <com.whomade.kycarrots.SoftKeyboardLinear
         android:id="@+id/keyboad_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -145,7 +145,7 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </com.cashcuk.SoftKeyboardLinear>
+    </com.whomade.kycarrots.SoftKeyboardLinear>
 
     <LinearLayout
         android:id="@+id/ll_progress_circle"

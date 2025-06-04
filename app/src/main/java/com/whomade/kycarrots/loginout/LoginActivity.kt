@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.whomade.CheckLoginService
+import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.MainActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.StaticDataInfo

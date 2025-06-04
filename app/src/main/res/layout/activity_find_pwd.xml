@@ -9,12 +9,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.cashcuk.MainTitleBar
+        <com.whomade.kycarrots.MainTitleBar
             android:id="@+id/main_title_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <com.cashcuk.TitleBar
+        <com.whomade.kycarrots.TitleBar
             android:id="@+id/title_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -23,26 +24,23 @@ import com.whomade.kycarrots.ui.ad.AdListFragment
 import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import java.util.ArrayList
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseDrawerActivity() {
 
-    private lateinit var drawerLayout: DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         supportActionBar?.let { ab ->
             ab.setHomeAsUpIndicator(R.drawable.ic_menu)
             ab.setDisplayHomeAsUpEnabled(true)
+            title = "내 등록 매물"
         }
 
-        drawerLayout = findViewById(R.id.drawer_layout)
 
-        val navigationView: NavigationView = findViewById(R.id.nav_view)
-        setupDrawerContent(navigationView)
+
 
         val viewPager: ViewPager = findViewById(R.id.viewpager)
         setupViewPager(viewPager)
@@ -57,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         val tabLayout: TabLayout = findViewById(R.id.tabs)
         tabLayout.setupWithViewPager(viewPager)
-
+        /*
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 if (position == 0) {
@@ -67,6 +65,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+         */
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -92,47 +92,15 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                drawerLayout.openDrawer(GravityCompat.START)
-                return true
-            }
-            R.id.menu_night_mode_system -> {
-                setNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            }
-            R.id.menu_night_mode_day -> {
-                setNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-            R.id.menu_night_mode_night -> {
-                setNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-            R.id.menu_night_mode_auto -> {
-                setNightMode(AppCompatDelegate.MODE_NIGHT_AUTO)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun setNightMode(@NightMode nightMode: Int) {
-        AppCompatDelegate.setDefaultNightMode(nightMode)
-    }
-
     private fun setupViewPager(viewPager: ViewPager) {
         viewPager.adapter = Adapter(supportFragmentManager).apply {
-            addFragment(AdListFragment(), "광고 A")
-            addFragment(AdListFragment(), "광고 B")
-            addFragment(FrSetting(), "설정")
+            addFragment(AdListFragment(), "전체")
+            addFragment(AdListFragment(), "처리중")
+            addFragment(AdListFragment(), "완료")
+            //addFragment(FrSetting(), "완료")
         }
     }
 
-    private fun setupDrawerContent(navigationView: NavigationView) {
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            menuItem.isChecked = true
-            drawerLayout.closeDrawers()
-            true
-        }
-    }
 
     internal class Adapter(
         fragmentManager: FragmentManager
