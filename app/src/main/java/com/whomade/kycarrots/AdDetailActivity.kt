@@ -24,8 +24,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.card.MaterialCardView
 import com.whomade.kycarrots.Cheeses.randomCheeseDrawable
@@ -37,6 +35,15 @@ import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
 import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import kotlinx.coroutines.launch
+import android.graphics.drawable.Drawable
+import android.view.MenuItem
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
+import com.whomade.kycarrots.chatting.ChatActivity
 
 class AdDetailActivity : AppCompatActivity() {
     private lateinit var productIdStr: String
@@ -70,17 +77,25 @@ class AdDetailActivity : AppCompatActivity() {
 
         val fab: View = findViewById(R.id.fab_edit)
         fab.setOnClickListener {
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+        }
+
+        val btn_edit_product: View = findViewById(R.id.btn_edit_product)
+        btn_edit_product.setOnClickListener {
             val intent = Intent(this, MakeADMainActivity::class.java)
             intent.putExtra(MakeADDetail1.STR_PUT_AD_IDX, productIdStr) // 현재 ID 전달
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
         }
+
+
     }
     private fun showProductDetail(detail: ProductDetailResponse) {
         val collapsingToolbar: CollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar)
         collapsingToolbar.title = detail.product.title
 
-        val imageView: ImageView = findViewById(R.id.backdrop)
         val descriptionTextView: TextView = findViewById(R.id.product_description)
         // 설명 텍스트 표시
         descriptionTextView.text = detail.product.description ?: "설명이 없습니다"
@@ -91,6 +106,8 @@ class AdDetailActivity : AppCompatActivity() {
         priceTextView.text = "가격: $formattedPrice"
 
         // 대표 이미지 (represent == 1)
+        /*
+        val imageView: ImageView = findViewById(R.id.backdrop)
         val mainImageUrl = detail.imageMetas.firstOrNull { it.represent == "1" }?.imageUrl
         if (mainImageUrl != null) {
             Glide.with(this)
@@ -98,7 +115,43 @@ class AdDetailActivity : AppCompatActivity() {
                 .apply(RequestOptions.centerCropTransform())
                 .into(imageView)
         }
+         */
 
+        val imageView: ImageView = findViewById(R.id.backdrop)
+        val mainImageUrl = detail.imageMetas.firstOrNull { it.represent == "1" }?.imageUrl
+
+       // 공유 요소 전환을 위해 transition 일시 지연
+        postponeEnterTransition()
+
+        Glide.with(this)
+            .load(mainImageUrl)
+            .apply(
+                RequestOptions.centerCropTransform()
+                    .placeholder(R.color.colorRPrimary)  // 여기
+            )
+            .listener(object : RequestListener<Drawable> {
+                override fun onResourceReady(
+                    resource: Drawable,
+                    model: Any,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+            })
+            .into(imageView)
         // 서브 이미지 (represent == 0)
         val imageCardView = findViewById<MaterialCardView>(R.id.image_card_view)
         val subImages = detail.imageMetas.filter { it.represent == "0" }.take(3)
@@ -169,5 +222,19 @@ class AdDetailActivity : AppCompatActivity() {
         if (productId != null && productId > 0) {
             loadProductDetail(productId)
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                supportFinishAfterTransition()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onBackPressed() {
+        supportFinishAfterTransition()
     }
 }

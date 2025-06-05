@@ -1,6 +1,7 @@
 package com.whomade.kycarrots.ui.ad
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ class AdListFragment : Fragment() {
     private lateinit var adapter: AdAdapter
     private lateinit var appService: AppService
 
+    private var listState: Parcelable? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,7 +52,7 @@ class AdListFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val ads: List<AdItem> = appService.getAdvertiseList(token, adCode = 1, pageNo = 1)
-                adapter = AdAdapter(ads)
+                adapter = AdAdapter(ads,this@AdListFragment)
                 recyclerView.adapter = adapter
             } catch (e: Exception) {
                 Log.e("AdListFragment", "API 호출 실패: ${e.message}")
@@ -60,6 +62,7 @@ class AdListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        fetchAdvertiseList()
+        //fetchAdvertiseList()
     }
+
 }

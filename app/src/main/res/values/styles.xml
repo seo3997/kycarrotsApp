@@ -29,7 +29,9 @@
          <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
          <!--<item name="android:windowTranslucentStatus">true</item>-->
          <item name="android:navigationBarColor">?attr/colorPrimary</item>
-    </style>
+         <item name="android:windowContentTransitions">true</item>
+         <item name="android:windowBackground">@color/color_white</item>
+     </style>
 
 
     <style name="Widget.CardContent" parent="android:Widget">

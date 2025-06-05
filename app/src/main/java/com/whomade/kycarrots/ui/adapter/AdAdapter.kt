@@ -1,11 +1,15 @@
 package com.whomade.kycarrots.ui.adapter
 
+import android.app.Activity
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -13,7 +17,7 @@ import com.whomade.kycarrots.AdDetailActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.model.AdItem
 
-class AdAdapter(private val items: List<AdItem>) :
+class AdAdapter(private val items: List<AdItem>, private val fragment: Fragment,) :
     RecyclerView.Adapter<AdAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -34,13 +38,20 @@ class AdAdapter(private val items: List<AdItem>) :
         holder.title.text = item.title
         holder.brief.text = item.description
 
-        holder.itemView.setOnClickListener { v ->
-            val context = v.context
-            val intent = Intent(context, AdDetailActivity::class.java)
-            intent.putExtra(AdDetailActivity.EXTRA_PRODUCT_ID,item.productId)
-            context.startActivity(intent)
-        }
+        holder.itemView.setOnClickListener {
+            val intent = Intent(fragment.requireContext(), AdDetailActivity::class.java).apply {
+                putExtra("imageUrl", item.imageUrl)
+                putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, item.productId)
+            }
 
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                fragment.requireActivity(),
+                holder.image,
+                "shared_image"
+            )
+
+            fragment.requireActivity().startActivity(intent, options.toBundle())
+        }
 
         Glide.with(holder.image.context)
             .load(item.imageUrl)

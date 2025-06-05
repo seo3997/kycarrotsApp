@@ -10,6 +10,7 @@
         android:layout_height="80dp"
         android:scaleType="centerCrop"
         android:layout_marginEnd="12dp"
+        android:transitionName="shared_image"
         android:contentDescription="@string/ad_image" />
 
     <LinearLayout
