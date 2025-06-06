@@ -42,6 +42,7 @@ class AdAdapter(private val items: List<AdItem>, private val fragment: Fragment,
             val intent = Intent(fragment.requireContext(), AdDetailActivity::class.java).apply {
                 putExtra("imageUrl", item.imageUrl)
                 putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, item.productId)
+                putExtra(AdDetailActivity.EXTRA_USER_ID, item.userId)
             }
 
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(

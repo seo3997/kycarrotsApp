@@ -3,6 +3,8 @@ package com.whomade.kycarrots.data.repository
 import com.google.gson.Gson
 import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.AdResponse
+import com.whomade.kycarrots.data.model.ChatMessageResponse
+import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.FindEmailResponse
 import com.whomade.kycarrots.data.model.FindPasswordResponse
 import com.whomade.kycarrots.data.model.LoginResponse
@@ -110,5 +112,22 @@ class RemoteRepository(
     ): Response<FindEmailResponse> {
         return adApi.findEmail(name, birth, phone)
     }
+    // 채팅방 생성
+    suspend fun createOrGetChatRoom(
+        productId: String,
+        buyerId: String,
+        sellerId: String
+    ): Response<ChatRoomResponse> {
+        return adApi.createOrGetChatRoom(productId, buyerId ,sellerId)
+    }
 
+    // 채팅방 목록 조회
+    suspend fun getUserChatRooms(
+        userId: String
+    ): Response<List<ChatRoomResponse>> {
+        return adApi.getUserChatRooms(userId)
+    }
+    suspend fun getChatMessages(roomId: String): Response<List<ChatMessageResponse>> {
+        return adApi.getChatMessages(roomId)
+    }
 }

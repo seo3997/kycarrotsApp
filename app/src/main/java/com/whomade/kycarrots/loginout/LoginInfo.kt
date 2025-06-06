@@ -15,6 +15,7 @@ class LoginInfo(
     private val email: String,
     private val password: String,
     private val appVersion: String,
+    private val userType: String,
     private val appService: AppService
 ) {
 
@@ -49,6 +50,7 @@ class LoginInfo(
         context.getSharedPreferences("SaveLoginInfo", Context.MODE_PRIVATE).edit().apply {
             putString("LogIn_ID", email)
             putString("LogIn_PWD", password)
+            putString("LogIn_USERTYPE", userType)
             putBoolean("IsLogin", true)
             apply()
         }

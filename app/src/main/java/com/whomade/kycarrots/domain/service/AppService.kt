@@ -1,6 +1,8 @@
 package com.whomade.kycarrots.domain.service
 
 import com.whomade.kycarrots.data.model.AdItem
+import com.whomade.kycarrots.data.model.ChatMessageResponse
+import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
@@ -92,4 +94,34 @@ class AppService(
         return if (response.isSuccessful) response.body()?.email else null
     }
 
+    suspend fun createOrGetChatRoom(
+        productId: String,
+        buyerId: String,
+        sellerId: String
+    ): ChatRoomResponse? {
+        val response = repository.createOrGetChatRoom(productId, buyerId, sellerId)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    suspend fun getUserChatRooms(userId: String): List<ChatRoomResponse> {
+        val response = repository.getUserChatRooms(userId)
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
+    }
+
+    suspend fun getChatMessages(roomId: String): List<ChatMessageResponse> {
+        val response = repository.getChatMessages(roomId)
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
+    }
 }

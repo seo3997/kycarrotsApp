@@ -101,12 +101,13 @@ class IntroActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
         val sUID = prefs.getString("LogIn_ID", "")
         val sPWD = prefs.getString("LogIn_PWD", "")
+        val sUSERTYPE = prefs.getString("LogIn_USERTYPE", "")
 
-        if (!sUID.isNullOrBlank() && !sPWD.isNullOrBlank() && mThisAppVersion.isNotEmpty()) {
+        if (!sUID.isNullOrBlank() && !sPWD.isNullOrBlank()&& !sUSERTYPE.isNullOrBlank() && mThisAppVersion.isNotEmpty()) {
             val appService = AppServiceProvider.getService()
 
             lifecycleScope.launch {
-                val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, mThisAppVersion, appService).login()
+                val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, mThisAppVersion, sUSERTYPE,appService).login()
                 if (resultCode == StaticDataInfo.RESULT_CODE_200) {
                     nextPage(true)
                 } else {

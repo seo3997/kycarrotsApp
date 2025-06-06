@@ -1,6 +1,8 @@
 package com.whomade.kycarrots.data.api
 
 import com.whomade.kycarrots.data.model.AdResponse
+import com.whomade.kycarrots.data.model.ChatMessageResponse
+import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.FindEmailResponse
 import com.whomade.kycarrots.data.model.FindPasswordResponse
 import com.whomade.kycarrots.data.model.LoginResponse
@@ -80,5 +82,18 @@ interface AdApi {
         @Query("hp") phone: String
     ): Response<FindEmailResponse>
 
+    @POST("/api/chat/room")
+    suspend fun createOrGetChatRoom(
+        @Query("productId") productId: String,
+        @Query("buyerId") buyerId: String,
+        @Query("sellerId") sellerId: String
+    ): Response<ChatRoomResponse>
 
+    @GET("/api/chat/rooms/{userId}")
+    suspend fun getUserChatRooms(
+        @Path("userId") userId: String
+    ): Response<List<ChatRoomResponse>>
+
+    @GET("/api/chatmessage/list/{roomId}")
+    suspend fun getChatMessages(@Path("roomId") roomId: String): Response<List<ChatMessageResponse>>
 }

@@ -22,6 +22,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     private lateinit var etEmail: EditText
     private lateinit var etPwd: EditText
     private lateinit var llProgress: LinearLayout
+    private lateinit var spinner: Spinner
+    private var selectedUserType: String = "1" // 기본값: 판매자
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,28 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
 
         etEmail.onFocusChangeListener = this
         etPwd.onFocusChangeListener = this
+
+
+        spinner = findViewById<Spinner>(R.id.spinner_user_type)
+        val userTypeList = listOf("판매자", "구매자", "센터")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, userTypeList)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        // 선택 시 값 얻기 (1,2,3)
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedUserType = when (position) {
+                    0 -> "1" // 판매자
+                    1 -> "2" // 구매자
+                    2 -> "3" // 센터
+                    else -> ""
+                }
+                // TODO: selectedValue 사용
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
     }
 
     override fun onClick(v: View?) {
@@ -82,6 +106,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     private fun chkLoginCondition() {
         val strEmail = etEmail.text.toString()
         val strPwd = etPwd.text.toString()
+        val strUserType = selectedUserType
 
         when {
             strEmail.trim().isEmpty() -> {
@@ -104,7 +129,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
 
                 lifecycleScope.launch {
                     try {
-                        val resultCode = LoginInfo(this@LoginActivity, strEmail, strPwd, appVersion, appService).login()
+                        val resultCode = LoginInfo(this@LoginActivity, strEmail, strPwd, appVersion ,strUserType, appService).login()
                         when (resultCode) {
                             StaticDataInfo.RESULT_CODE_200 -> {
                                 startActivity(Intent(this@LoginActivity, MainActivity::class.java).apply {
