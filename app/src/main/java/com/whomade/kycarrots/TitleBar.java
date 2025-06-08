@@ -16,7 +16,7 @@ import android.widget.TextView;
 public class TitleBar extends LinearLayout {
     private Context mContext;
     private LayoutInflater inflater;
-    private Button btnTopBack;
+    private ImageButton btnTopBack;
     private ImageButton ibMenu;
 
     public TitleBar(Context context, AttributeSet attrs) {
@@ -34,7 +34,7 @@ public class TitleBar extends LinearLayout {
         inflater.inflate(R.layout.title_bar, this, true);
 
         LinearLayout llBack = (LinearLayout) findViewById(R.id.ll_back);
-        btnTopBack = (Button) findViewById(R.id.btn_back);
+        btnTopBack = (ImageButton) findViewById(R.id.btn_back);
         llBack.setOnClickListener(mClick);
         btnTopBack.setOnClickListener(mClick);
         ((TextView) findViewById(R.id.txt_back)).setOnClickListener(mClick);
@@ -45,7 +45,6 @@ public class TitleBar extends LinearLayout {
     public OnClickListener mClick = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            btnTopBack.setBackgroundResource(R.drawable.prev2_press);
             ((Activity) mContext).onBackPressed();
         }
     };

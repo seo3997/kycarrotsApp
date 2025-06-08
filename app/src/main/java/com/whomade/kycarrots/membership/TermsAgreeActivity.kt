@@ -30,7 +30,10 @@ class TermsAgreeActivity : Activity(), View.OnClickListener {
         CheckLoginService.mActivityList.add(this)
 
         val layoutBG = findViewById<FrameLayout>(R.id.fl_bg)
-        layoutBG.background = BitmapDrawable(resources, BitmapFactory.decodeResource(resources, R.drawable.display_bg))
+        layoutBG.background = BitmapDrawable(
+            resources,
+            BitmapFactory.decodeResource(resources, R.drawable.display_bg)
+        )
 
         val mMainTitleBar = findViewById<MainTitleBar>(R.id.main_title_bar)
         mMainTitleBar.findViewById<ImageButton>(R.id.ib_refresh).visibility = View.GONE
@@ -111,24 +114,32 @@ class TermsAgreeActivity : Activity(), View.OnClickListener {
             }
 
             MOBILE_AUTHENTICATION -> {
+                /*
                 i.putExtra("DlgTitle", getString(R.string.str_mobile_authentication_title))
                 i.putExtra("BtnDlgMsg", getString(R.string.str_mobile_authentication_msg))
                 i.putExtra("DlgMode", "Two")
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivityForResult(i, REQUEST_OK)
+                 */
+                val intent = Intent(this, MembershipActivity::class.java)
+                intent.putExtra("ReturnCd", 1)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
             }
         }
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
         /*
-        if (resultCode == RESULT_OK && requestCode == REQUEST_OK) {
-            val intent = Intent(this, MobileAuthenticationWebActivity::class.java)
-            intent.putExtra("ReturnCd", 1)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)
-            finish()
-        }*/
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            super.onActivityResult(requestCode, resultCode, data)
+            if (resultCode == RESULT_OK && requestCode == REQUEST_OK) {
+                val intent = Intent(this, MembershipActivity::class.java)
+                intent.putExtra("ReturnCd", 1)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                finish()
+            }
+        }
+         */
     }
 }
+

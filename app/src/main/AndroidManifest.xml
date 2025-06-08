@@ -115,6 +115,9 @@
         <activity
             android:name=".chatting.ChatActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".membership.MembershipActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

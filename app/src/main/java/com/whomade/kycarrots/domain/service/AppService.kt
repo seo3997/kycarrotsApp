@@ -4,9 +4,11 @@ import com.whomade.kycarrots.data.model.AdItem
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.LoginResponse
+import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductVo
+import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.ResponseBody
@@ -46,6 +48,15 @@ class AppService(
     // 코드 리스트 조회
     suspend fun getCodeList(groupId: String): List<TxtListDataInfo> {
         val response = repository.fetchCodeList(groupId)
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList() // 또는 throw Exception("API Error: ${response.code()}")
+        }
+    }
+    // 코드 리스트 조회
+    suspend fun getSCodeList(groupId: String, mcode:String): List<TxtListDataInfo> {
+        val response = repository.fetchSCodeList(groupId,mcode)
         return if (response.isSuccessful) {
             response.body() ?: emptyList()
         } else {
@@ -122,6 +133,26 @@ class AppService(
             response.body() ?: emptyList()
         } else {
             emptyList()
+        }
+    }
+
+    // 이메일 중복 체크
+    suspend fun checkEmailDuplicate(email: String): SimpleResultResponse {
+        val response = repository.checkEmailDuplicate(email)
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!
+        } else {
+            SimpleResultResponse(result = false, message = "서버 응답 오류")
+        }
+    }
+
+    // 회원가입
+    suspend fun registerUser(user: OpUserVO): SimpleResultResponse {
+        val response = repository.registerUser(user)
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!
+        } else {
+            SimpleResultResponse(result = false, message = "서버 응답 오류")
         }
     }
 }

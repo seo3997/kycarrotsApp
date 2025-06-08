@@ -6,12 +6,15 @@ import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.FindEmailResponse
 import com.whomade.kycarrots.data.model.FindPasswordResponse
 import com.whomade.kycarrots.data.model.LoginResponse
+import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
+import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -27,6 +30,12 @@ interface AdApi {
     @GET("common/codelist")
     suspend fun getCodeList(
         @Query("groupId") groupId: String
+    ): Response<List<TxtListDataInfo>>
+
+    @GET("common/sCodeList")
+    suspend fun getSCodeList(
+        @Query("groupId") groupId: String,
+        @Query("mcode") mcode: String
     ): Response<List<TxtListDataInfo>>
 
     @POST("product")
@@ -96,4 +105,14 @@ interface AdApi {
 
     @GET("/api/chatmessage/list/{roomId}")
     suspend fun getChatMessages(@Path("roomId") roomId: String): Response<List<ChatMessageResponse>>
+
+    @FormUrlEncoded
+    @POST("members/email-check")
+    suspend fun checkEmailDuplicate(
+        @Field("email") email: String
+    ): Response<SimpleResultResponse>
+
+    @POST("members/register")
+    suspend fun registerUser(@Body user: OpUserVO): Response<SimpleResultResponse>
+
 }

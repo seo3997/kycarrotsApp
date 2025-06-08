@@ -8,9 +8,11 @@ import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.FindEmailResponse
 import com.whomade.kycarrots.data.model.FindPasswordResponse
 import com.whomade.kycarrots.data.model.LoginResponse
+import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductVo
+import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -81,6 +83,10 @@ class RemoteRepository(
         return adApi.getCodeList(groupId)
     }
 
+    suspend fun fetchSCodeList(groupId: String, mcode: String): Response<List<TxtListDataInfo>> {
+        return adApi.getSCodeList(groupId,mcode)
+    }
+
     suspend fun fetchProductDetail(productId: Long): Response<ProductDetailResponse> {
         return adApi.getProductDetail(productId)
     }
@@ -129,5 +135,14 @@ class RemoteRepository(
     }
     suspend fun getChatMessages(roomId: String): Response<List<ChatMessageResponse>> {
         return adApi.getChatMessages(roomId)
+    }
+    // 회원가입
+    suspend fun registerUser(user: OpUserVO): Response<SimpleResultResponse> {
+        return adApi.registerUser(user)
+    }
+
+    // 이메일 중복 체크
+    suspend fun checkEmailDuplicate(email: String): Response<SimpleResultResponse> {
+        return adApi.checkEmailDuplicate(email)
     }
 }
