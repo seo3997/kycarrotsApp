@@ -92,12 +92,11 @@
                 android:id="@+id/btn_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/btn_login_selector"
                 android:gravity="center"
                 android:paddingBottom="@dimen/item_margin_left"
                 android:paddingTop="@dimen/item_margin_left"
                 android:text="@string/str_login_en"
-                android:textColor="@drawable/txt_login_selector"
+                android:textColor="@color/color_white"
                 android:textSize="@dimen/input_info_txt_size" />
 
             <Button
@@ -105,7 +104,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/agreement_margin"
-                android:background="@drawable/btn_membership_selector"
                 android:gravity="center"
                 android:paddingBottom="@dimen/item_margin_left"
                 android:paddingTop="@dimen/item_margin_left"
@@ -118,12 +116,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/agreement_margin"
-                android:background="@drawable/btn_find_id_pwd_selector"
                 android:gravity="center"
                 android:paddingBottom="@dimen/item_margin_left"
                 android:paddingTop="@dimen/item_margin_left"
                 android:text="@string/str_find_id_pwd"
-                android:textColor="@drawable/txt_find_id_pwd_selector"
+                android:textColor="@color/color_white"
                 android:textSize="@dimen/input_info_txt_size" />
         </LinearLayout>
     </LinearLayout>

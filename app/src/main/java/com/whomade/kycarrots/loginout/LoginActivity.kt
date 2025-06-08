@@ -9,6 +9,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.whomade.kycarrots.CheckLoginService
+import com.whomade.kycarrots.DashboardActivity
 import com.whomade.kycarrots.MainActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.StaticDataInfo
@@ -132,7 +133,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                         val resultCode = LoginInfo(this@LoginActivity, strEmail, strPwd, appVersion ,strUserType, appService).login()
                         when (resultCode) {
                             StaticDataInfo.RESULT_CODE_200 -> {
-                                startActivity(Intent(this@LoginActivity, MainActivity::class.java).apply {
+                                startActivity(Intent(this@LoginActivity, DashboardActivity::class.java).apply {
                                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                                 })
                                 finish()

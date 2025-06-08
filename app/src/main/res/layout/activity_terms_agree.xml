@@ -101,7 +101,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
                             android:text="@string/str_agreement"
-                            android:textColor="@color/color_main_friend_txt"
+                            android:textColor="@color/color_main_title"
                             android:textSize="@dimen/login_find_txt_size"
                             android:textStyle="bold" />
 
@@ -176,7 +176,7 @@
                         android:paddingLeft="@dimen/item_margin_left"
                         android:paddingRight="@dimen/item_margin_left"
                         android:text="@string/str_privacy_agree"
-                        android:textColor="@color/color_main_friend_txt"
+                        android:textColor="@color/color_main_title"
                         android:textSize="@dimen/login_find_txt_size"
                         android:textStyle="bold" />
 
