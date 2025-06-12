@@ -98,10 +98,11 @@ class RemoteRepository(
     suspend fun login(
         email: String,
         password: String,
+        memberCode: String,
         regId: String,
         appVersion: String
     ): Response<LoginResponse> {
-        return adApi.login(email, password, regId, appVersion)
+        return adApi.login(email, password,memberCode, regId, appVersion)
     }
 
     suspend fun findPassword(
@@ -144,5 +145,9 @@ class RemoteRepository(
     // 이메일 중복 체크
     suspend fun checkEmailDuplicate(email: String): Response<SimpleResultResponse> {
         return adApi.checkEmailDuplicate(email)
+    }
+
+    suspend fun getUserInfoByToken(token: String): Response<OpUserVO> {
+        return adApi.getUserInfoByToken(token)
     }
 }

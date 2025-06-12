@@ -53,9 +53,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 selectedUserType = when (position) {
-                    0 -> "1" // 판매자
-                    1 -> "2" // 구매자
-                    2 -> "3" // 센터
+                    0 -> "ROLE_SELL" // 판매자
+                    1 -> "ROLE_PUB" // 구매자
+                    2 -> "ROLE_PROJ" // 센터
                     else -> ""
                 }
                 // TODO: selectedValue 사용
@@ -68,14 +68,14 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     override fun onClick(v: View?) {
         val intent = when (v?.id) {
             R.id.btn_membership -> {
-                etEmail.setText("")
-                etPwd.setText("")
+                //etEmail.setText("")
+                //etPwd.setText("")
                 Intent(this, TermsAgreeActivity::class.java)
             }
 
             R.id.btn_find_id_pwd -> {
-                etEmail.setText("")
-                etPwd.setText("")
+                //etEmail.setText("")
+                //etPwd.setText("")
                 Intent(this, FindEmailPwdActivity::class.java)
             }
 
@@ -107,7 +107,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     private fun chkLoginCondition() {
         val strEmail = etEmail.text.toString()
         val strPwd = etPwd.text.toString()
-        val strUserType = selectedUserType
+        val strMemberCode = selectedUserType
 
         when {
             strEmail.trim().isEmpty() -> {
@@ -130,7 +130,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
 
                 lifecycleScope.launch {
                     try {
-                        val resultCode = LoginInfo(this@LoginActivity, strEmail, strPwd, appVersion ,strUserType, appService).login()
+                        val resultCode = LoginInfo(this@LoginActivity, strEmail, strPwd, strMemberCode, appVersion , appService).login()
                         when (resultCode) {
                             StaticDataInfo.RESULT_CODE_200 -> {
                                 startActivity(Intent(this@LoginActivity, DashboardActivity::class.java).apply {
@@ -142,6 +142,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                             StaticDataInfo.RESULT_NO_USER,
                             StaticDataInfo.RESULT_NO_DATA -> {
                                 Toast.makeText(this@LoginActivity, getString(R.string.str_find_email_err), Toast.LENGTH_SHORT).show()
+                            }
+
+                            StaticDataInfo.RESULT_MEMBER_CODE_ERR -> {
+                                Toast.makeText(this@LoginActivity, getString(R.string.str_member_code_err), Toast.LENGTH_SHORT).show()
                             }
 
                             StaticDataInfo.RESULT_PWD_ERR -> {

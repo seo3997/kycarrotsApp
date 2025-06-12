@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ChatActivity : AppCompatActivity() {
 
@@ -65,11 +68,11 @@ class ChatActivity : AppCompatActivity() {
 
         val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
         val sUID = prefs.getString("LogIn_ID", "") ?: ""
-        val sUserType = prefs.getString("LogIn_USERTYPE", "") ?: ""
+        val sMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
 
         // 로그인 사용자 ID 기준으로 발신자 판단
         currentUserId = sUID
-        isBuyer = sUserType == "2"
+        isBuyer = sMemberCode == "ROLE_PUB"
         senderId = sUID
 
         // WebSocket 연결
@@ -81,12 +84,14 @@ class ChatActivity : AppCompatActivity() {
         // 메시지 전송 처리
         sendButton.setOnClickListener {
             val text = messageEditText.text.toString().trim()
+            val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
             if (text.isNotEmpty()) {
                 val message = ChatMessage(
                     senderId = senderId,
                     message = text,
                     roomId = roomId,
                     type = "text",
+                    time = currentTime,
                     isMe = true
                 )
                 chatMessages.add(message)
@@ -138,6 +143,7 @@ class ChatActivity : AppCompatActivity() {
                             senderId = it.senderId,
                             message = it.message,
                             type = "text",
+                            time = it.time,
                             isMe = it.senderId == currentUserId
                         )
                     }

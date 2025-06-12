@@ -3,6 +3,7 @@ package com.whomade.kycarrots
 import android.content.Intent
 import android.view.MenuItem
 import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -19,8 +20,21 @@ open class BaseDrawerActivity : AppCompatActivity() {
         layoutInflater.inflate(layoutResID, activityContainer, true)
         super.setContentView(fullView)
 
+
+
+
         drawerLayout = fullView.findViewById(R.id.drawer_layout)
         val navigationView: NavigationView = fullView.findViewById(R.id.nav_view)
+
+        val headerView = navigationView.getHeaderView(0) // 헤더 레이아웃의 첫 번째 뷰
+        val navUserIdTextView = headerView.findViewById<TextView>(R.id.nav_userid)
+
+        val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
+        val userId = prefs.getString("LogIn_ID", "") ?: ""
+        navUserIdTextView.text = userId
+
+
+
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {

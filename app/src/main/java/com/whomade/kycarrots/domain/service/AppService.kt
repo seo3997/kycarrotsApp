@@ -80,10 +80,11 @@ class AppService(
     suspend fun login(
         email: String,
         password: String,
+        memberCode: String,
         regId: String,
         appVersion: String
     ): LoginResponse? {
-        val response = repository.login(email, password, regId, appVersion)
+        val response = repository.login(email, password, memberCode,regId, appVersion)
         return if (response.isSuccessful) {
             response.body()
         } else {
@@ -143,6 +144,15 @@ class AppService(
             response.body()!!
         } else {
             SimpleResultResponse(result = false, message = "서버 응답 오류")
+        }
+    }
+
+    suspend fun getUserInfo(token: String): OpUserVO? {
+        val response = repository.getUserInfoByToken(token)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
         }
     }
 

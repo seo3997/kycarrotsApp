@@ -1,11 +1,13 @@
 package com.whomade.kycarrots.ui.ad
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,7 +49,9 @@ class AdListFragment : Fragment() {
     }
 
     private fun fetchAdvertiseList() {
-        val token = "%2FV%2F26xyieYwgQKUf6wFvdeMy3O%2Fw%2Fc6g0sAskcxhDZq1I3kiw2GIHmlt3Mm5SSL0ymBfgmxLIjjymbiDmbC%2B3JpMkWY9xcCFUXUJj2RWO5XKMqJ5YxuYevAntPPC1hbIRy6tcFp2lVZwIiGu%2Be6hsL6B2yufbYBF5rxE78nRNuB2JGGFm6RPyuhdQGtnaPCWwsmMOYd1q3eG0uXH91j4hHtyU7HiGqVfQ0nGiqRXY3PC50wIRtH5zalLw6Lq4Bqrwlq79dfIhOTkcNP3RCItWyZd5lgqlFPh5Z4q98Rvfw2v6hT4JnlIWEs7fMJ2M0RYaKfvpuxsFsgQPQ1Qvxs22vwY7iypqbii5GAa413Dk0A%3D"
+        //val token = "%2FV%2F26xyieYwgQKUf6wFvdeMy3O%2Fw%2Fc6g0sAskcxhDZq1I3kiw2GIHmlt3Mm5SSL0ymBfgmxLIjjymbiDmbC%2B3JpMkWY9xcCFUXUJj2RWO5XKMqJ5YxuYevAntPPC1hbIRy6tcFp2lVZwIiGu%2Be6hsL6B2yufbYBF5rxE78nRNuB2JGGFm6RPyuhdQGtnaPCWwsmMOYd1q3eG0uXH91j4hHtyU7HiGqVfQ0nGiqRXY3PC50wIRtH5zalLw6Lq4Bqrwlq79dfIhOTkcNP3RCItWyZd5lgqlFPh5Z4q98Rvfw2v6hT4JnlIWEs7fMJ2M0RYaKfvpuxsFsgQPQ1Qvxs22vwY7iypqbii5GAa413Dk0A%3D"
+        val prefs = requireActivity().getSharedPreferences("TokenInfo", Context.MODE_PRIVATE)
+        val token = prefs.getString("token", "") ?: ""
 
         lifecycleScope.launch {
             try {

@@ -43,12 +43,14 @@ class ChatAdapter(private val messages: List<ChatMessage>) :
     class LeftViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(msg: ChatMessage) {
             itemView.findViewById<TextView>(R.id.message_text).text = msg.message
+            itemView.findViewById<TextView>(R.id.message_time).text = msg.time
         }
     }
 
     class RightViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(msg: ChatMessage) {
             itemView.findViewById<TextView>(R.id.message_text).text = msg.message
+            itemView.findViewById<TextView>(R.id.message_time).text = msg.time
         }
     }
 }

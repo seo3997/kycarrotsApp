@@ -5,5 +5,6 @@ data class ChatMessage(
     val message: String = "",
     val roomId: String = "",
     val type: String = "text",
+    val time: String = "",         // 전송 시간 추가
     var isMe: Boolean = false
 )

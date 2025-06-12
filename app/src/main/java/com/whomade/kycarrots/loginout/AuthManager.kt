@@ -11,13 +11,14 @@ object AuthManager {
         context.getSharedPreferences("SaveLoginInfo", Context.MODE_PRIVATE).edit().apply {
             putString("LogIn_ID", "")
             putString("LogIn_PWD", "")
+            putString("LogIn_MEMBERCODE", "")
             putBoolean("IsLogin", false)
             apply()
         }
 
         // 2. 토큰 정보 초기화
         context.getSharedPreferences("TokenInfo", Context.MODE_PRIVATE).edit().apply {
-            putString("token", "")
+            putString("", "")
             apply()
         }
 

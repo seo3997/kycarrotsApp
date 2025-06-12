@@ -85,10 +85,10 @@ class AdDetailActivity : AppCompatActivity() {
         fab.setOnClickListener {
             val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
             val sUID = prefs.getString("LogIn_ID", "") ?: ""
-            val sUserType = prefs.getString("LogIn_USERTYPE", "") ?: ""
+            val sMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
 
             // 구매자이면 true, 아니면 false
-            val isBuyer = sUserType == "2"
+            val isBuyer = sMemberCode == "ROLE_PUB"
 
             val buyerId = if (isBuyer) sUID else ""
             val sellerId  = productUserId

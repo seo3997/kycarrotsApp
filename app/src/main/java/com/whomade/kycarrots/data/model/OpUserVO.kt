@@ -9,7 +9,9 @@ data class OpUserVO(
     var cttpc: String = "",                 // 통신사 정보
     var email: String = "",                 // 이메일
     var areaCode: String = "",              // 지역 코드
+    var areaCodeNm: String = "",              // 지역 코드
     var areaSeCodeS: String = "",           // 1차 지역 코드
+    var areaSeCodeSNm: String = "",           // 1차 지역 코드
     var areaSeCodeD: String = "",           // 2차 지역 코드
     var userSttusCode: String = "",         // 사용자 상태 코드
     var loginDt: String = "",               // 마지막 로그인 일시

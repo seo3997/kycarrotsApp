@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 메인 콘텐츠 -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -38,7 +37,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- 프로필 섹션 -->
+            <!-- 프로필 이미지 -->
             <ImageView
                 android:id="@+id/profile_image"
                 android:layout_width="80dp"
@@ -48,34 +47,47 @@
                 android:background="@drawable/profile_circle_background"
                 android:scaleType="centerCrop" />
 
+            <!-- 주요 사용자 정보 -->
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_user_id"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="농장명: 해피팜"
-                android:textSize="16sp"
-                android:layout_marginTop="12dp" />
+                android:text="아이디: "
+                android:textSize="15sp"
+                android:fontFamily="sans-serif"
+                android:paddingStart="8dp"
+                android:textAlignment="viewStart"
+                />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_user_nm"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="대표자명: 홍길동"
-                android:textSize="14sp" />
+                android:text="이름: "
+                android:textSize="15sp"
+                android:fontFamily="sans-serif"
+                android:paddingStart="8dp"
+                android:textAlignment="viewStart" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_user_telno"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="연락처: 010-1234-5678"
-                android:textSize="14sp" />
+                android:text="연락처: "
+                android:textSize="15sp"
+                android:fontFamily="sans-serif"
+                android:paddingStart="8dp"
+                android:textAlignment="viewStart" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_user_addr"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="주소: 경기도 용인시"
-                android:textSize="14sp" />
+                android:text="주소: "
+                android:textSize="15sp"
+                android:fontFamily="sans-serif"
+                android:paddingStart="8dp"
+                android:textAlignment="viewStart" />
 
             <!-- 재배 품목 태그 -->
             <LinearLayout

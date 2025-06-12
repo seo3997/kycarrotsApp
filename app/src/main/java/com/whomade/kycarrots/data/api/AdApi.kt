@@ -74,6 +74,7 @@ interface AdApi {
     suspend fun login(
         @Field("id") email: String,
         @Field("pass") password: String,
+        @Field("member_code") memberCode: String,
         @Field("reg_id") regId: String,
         @Field("appver") appVersion: String
     ): Response<LoginResponse>
@@ -114,5 +115,11 @@ interface AdApi {
 
     @POST("members/register")
     suspend fun registerUser(@Body user: OpUserVO): Response<SimpleResultResponse>
+
+    @FormUrlEncoded
+    @POST("members/userinfo")
+    suspend fun getUserInfoByToken(
+        @Field("token") token: String
+    ): Response<OpUserVO>
 
 }

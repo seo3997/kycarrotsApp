@@ -6,5 +6,6 @@ data class ChatMessageResponse(
     val senderId: String,
     val message: String,
     val createdAt: String,   // ISO-8601 포맷 또는 서버 날짜 포맷에 맞게
+    val time: String,   // ISO-8601 포맷 또는 서버 날짜 포맷에 맞게
     val isRead: Boolean
 )

@@ -177,8 +177,9 @@ class MembershipActivity : AppCompatActivity() {
             gender = gender.toInt(),
             userAge = "",
             birthDate = birth,
-            areaSeCodeS = selectedCityValue,
-            areaSeCodeD = selectedTownValue,
+            areaCode    =selectedCityValue,
+            areaSeCodeS = selectedTownValue,
+            areaSeCodeD = "",
             referrerId = "",
             userSttusCode = "10",
             memberCode = selectedCode

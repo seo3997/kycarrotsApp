@@ -14,8 +14,8 @@ class LoginInfo(
     private val context: Context,
     private val email: String,
     private val password: String,
+    private val memberCode: String,
     private val appVersion: String,
-    private val userType: String,
     private val appService: AppService
 ) {
 
@@ -31,7 +31,7 @@ class LoginInfo(
             val regId = context.getSharedPreferences("SaveRegId", Context.MODE_PRIVATE)
                 .getString("setRegId", "1") ?: "1"
 
-            val response = appService.login(email, password, regId, appVersion)
+            val response = appService.login(email, password,memberCode, regId, appVersion)
             if (response != null && response.resultCode == StaticDataInfo.RESULT_CODE_200) {
                 saveLoginInfo(response)
                 return@withContext StaticDataInfo.RESULT_CODE_200
@@ -50,7 +50,7 @@ class LoginInfo(
         context.getSharedPreferences("SaveLoginInfo", Context.MODE_PRIVATE).edit().apply {
             putString("LogIn_ID", email)
             putString("LogIn_PWD", password)
-            putString("LogIn_USERTYPE", userType)
+            putString("LogIn_MEMBERCODE", memberCode)
             putBoolean("IsLogin", true)
             apply()
         }
