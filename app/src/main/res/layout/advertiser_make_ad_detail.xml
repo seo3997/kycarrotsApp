@@ -130,11 +130,12 @@
         <!-- 다음 버튼 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_make_ad_detail_next"
-            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="24dp"
+            android:background="@drawable/btn_membership_selector"
             android:text="@string/str_next"
+            app:backgroundTint="@null"
             android:textSize="16sp"/>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
