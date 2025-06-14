@@ -93,7 +93,7 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
-            ab.setTitle("내 등록 매물");
+            ab.setTitle("상품 등록");
         }
 
 
