@@ -498,6 +498,7 @@
     <string name="str_next">다음</string>
     <string name="str_ad_name">상품명</string>
     <string name="str_ad_detail">상세설명</string>
+    <string name="str_pr_detail">긴급사유</string>
     <string name="str_ad_category">카테고리</string>
     <string name="str_ad_add">추가 +</string>
 

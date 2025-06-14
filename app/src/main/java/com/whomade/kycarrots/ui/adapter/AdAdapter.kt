@@ -30,10 +30,6 @@ class AdAdapter(private val fragment: Fragment) :
         items.addAll(newList)
         notifyItemRangeInserted(0, newList.size)
 
-        Log.d("AdAdapter", "업데이트 완료: ${items.size}개 아이템")
-        newList.forEachIndexed { index, item ->
-            Log.d("AdAdapter", "[$index] ID: ${item.productId}, Title: ${item.title}, Desc: ${item.description}")
-        }
         items.clear()
         items.addAll(newList)
         notifyDataSetChanged()
@@ -55,7 +51,7 @@ class AdAdapter(private val fragment: Fragment) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
 
-        Log.d("AdAdapter", "onBindViewHolder 호출: ${items[position].title}")
+        //Log.d("AdAdapter", "onBindViewHolder 호출: ${items[position].title}")
         holder.title.text = item.title
         holder.brief.text = item.description
 

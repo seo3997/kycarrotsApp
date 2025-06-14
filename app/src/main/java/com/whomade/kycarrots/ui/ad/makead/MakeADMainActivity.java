@@ -42,6 +42,7 @@ import com.whomade.kycarrots.data.model.ProductImageVo;
 import com.whomade.kycarrots.data.repository.RemoteRepository;
 import com.whomade.kycarrots.domain.Helper.AppServiceHelper;
 import com.whomade.kycarrots.domain.service.AppService;
+import com.whomade.kycarrots.ui.common.TxtListDataInfo;
 import com.whomade.kycarrots.ui.dialog.DlgSelImg;
 import java.io.File;
 import java.io.IOException;
@@ -112,7 +113,7 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
         // 코드 리스트 먼저 불러오기
         AppServiceHelper.fetchCodeList(
                 appService,
-                "R010600",
+                "R010610",
                 list -> {
                     makeADDetail.setCategoryList(list);
                     // 코드 목록 세팅 후 수정일 경우에만 데이터 로딩
@@ -123,11 +124,57 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
                 throwable -> Toast.makeText(MakeADMainActivity.this, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
         );
 
+        // 코드 리스트 먼저 불러오기
+        AppServiceHelper.fetchCodeList(
+                appService,
+                "R010070",
+                list -> {
+                    makeADDetail.setCityList(list);
+
+                },
+                throwable -> Toast.makeText(MakeADMainActivity.this, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
+        );
+
 
 
         //1. 세부정보 view
         makeADDetail =  (MakeADDetail1) findViewById(R.id.make_ad_detail);
         makeADDetail.getOnInfoData(mNextInfo);
+
+        makeADDetail.setOnCategorySelectedListener(new MakeADDetail1.OnCategorySelectedListener() {
+            @Override
+            public void onCategorySelected(String code) {
+                // 선택된 카테고리 코드로 세부 항목 로딩
+                AppServiceHelper.fetchSCodeList(
+                        appService,
+                        "R010610",
+                        code,
+                        list -> {
+                            makeADDetail.setSubCategoryList(list);
+                        },
+                        throwable -> Toast.makeText(MakeADMainActivity.this, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+
+
+        makeADDetail.setOnCitySelectedListener(new MakeADDetail1.OnCitySelectedListener() {
+            @Override
+            public void onCitySelected(String cityCode) {
+                // 선택된 도시 코드로 동작
+
+                AppServiceHelper.fetchSCodeList(
+                        appService,
+                        "R010070",
+                        cityCode,
+                        list -> {
+                            makeADDetail.setDistrictList(list);
+                        },
+                        throwable -> Toast.makeText(MakeADMainActivity.this, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
+                );
+                //Toast.makeText(MakeADMainActivity.this, "선택된 도시: " + cityCode, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         //2. 이미지 등록 view
         makeADImgRegi =  (MakeADImgRegi2) findViewById(R.id.make_ad_img_regi);

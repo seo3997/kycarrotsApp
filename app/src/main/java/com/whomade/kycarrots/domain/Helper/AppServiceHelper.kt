@@ -30,6 +30,24 @@ object AppServiceHelper {
     }
 
     @JvmStatic
+    fun fetchSCodeList(
+        appService: AppService,
+        groupId: String,
+        mcode:String,
+        onSuccess: OnCodeListSuccess,
+        onError: OnCodeListError
+    ) {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val result = appService.getSCodeList(groupId,mcode)
+                onSuccess.onSuccess(result)
+            } catch (e: Exception) {
+                onError.onError(e)
+            }
+        }
+    }
+
+    @JvmStatic
     fun registerAdvertise(
         appService: AppService,
         product: ProductVo,
