@@ -1,9 +1,11 @@
 package com.whomade.kycarrots
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
@@ -48,9 +50,12 @@ class MainActivity : BaseDrawerActivity() {
         val floatingActionButton: FloatingActionButton = findViewById(R.id.fab)
         floatingActionButton.setOnClickListener { view ->
             //Snackbar.make(view, "광고 데이터를 불러옵니다.", Snackbar.LENGTH_LONG).setAction("닫기", null).show()
+            /*
             val context = view.context
             val intent = Intent(context, MakeADMainActivity::class.java)
             context.startActivity(intent)
+             */
+            registerLauncher.launch(Intent(this, MakeADMainActivity::class.java))
         }
 
         val tabLayout: TabLayout = findViewById(R.id.tabs)
@@ -116,5 +121,17 @@ class MainActivity : BaseDrawerActivity() {
         override fun getItem(position: Int): Fragment = fragments[position]
         override fun getCount(): Int = fragments.size
         override fun getPageTitle(position: Int): CharSequence? = titles[position]
+    }
+
+    val registerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val isSuccess = result.data?.getBooleanExtra("register_result", false) ?: false
+            if (isSuccess) {
+                // FragmentManager를 통해 FragmentResult로 전달
+                supportFragmentManager.setFragmentResult("register_result_key", Bundle().apply {
+                    putBoolean("register_result", true)
+                })
+            }
+        }
     }
 }

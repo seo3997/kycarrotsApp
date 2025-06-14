@@ -164,7 +164,9 @@ public class MakeADPreviewActivity extends FragmentActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                setResult(RESULT_OK);
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("register_result", true); //
+                setResult(RESULT_OK, resultIntent);
                 finish();
             }
         }, 300);

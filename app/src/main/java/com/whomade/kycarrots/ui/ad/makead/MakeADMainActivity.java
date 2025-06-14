@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -21,10 +22,16 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.google.android.material.button.MaterialButton;
 import com.whomade.kycarrots.MainTitleBar;
 import com.whomade.kycarrots.R;
 import com.whomade.kycarrots.TitleBar;
@@ -46,14 +53,12 @@ import com.yalantis.ucrop.UCrop;
  * 광고제작
  * 1. 세부정보, 2. 이미지 등록
  */
-public class MakeADMainActivity extends Activity implements View.OnClickListener, DialogInterface.OnDismissListener{
+public class MakeADMainActivity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnDismissListener{
     private final int MAKE_AD_COMPLETE = 999;
     private LinearLayout llProgress;
 
     private TextView txtDetailInfo;
-    private LinearLayout llDetailInfoUnder;
     private TextView txtRegiImg;
-    private LinearLayout llRegiImgUnder;
 
 
     private MakeADDetail1 makeADDetail;//1. 세부정보 view
@@ -68,28 +73,35 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
     private String strADIdx=""; //광고 idx
     private String strADStatus=""; //광고 상태
     private boolean isModify = false; //수정 모드 여부
+    private LinearLayout llRegiImgUnder;
+    private LinearLayout llDetailInfoUnder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.advertiser_make_ad_main_activity);
 
-        MainTitleBar mainTitleBar = findViewById(R.id.main_title_bar);
-        ImageButton ibRefresh = mainTitleBar.findViewById(R.id.ib_refresh);
-        ImageButton ibHome = mainTitleBar.findViewById(R.id.ib_home);
-        ibRefresh.setVisibility(View.GONE);
-        ibHome.setVisibility(View.GONE);
+        llDetailInfoUnder = (LinearLayout) findViewById(R.id.ll_ad_detail_info_under);
+        llRegiImgUnder = (LinearLayout) findViewById(R.id.ll_regi_img_under);
 
-        TitleBar titleBar = findViewById(R.id.title_bar);
-        titleBar.setTitle(getString(R.string.str_make_ad));
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setTitle("내 등록 매물");
+        }
+
 
         mContext = this;
 
         llProgress = (LinearLayout) findViewById(R.id.ll_progress_circle);
         txtDetailInfo = (TextView) findViewById(R.id.txt_ad_detail_info);
-        llDetailInfoUnder = (LinearLayout) findViewById(R.id.ll_ad_detail_info_under);
         txtRegiImg = (TextView) findViewById(R.id.txt_regi_img);
-        llRegiImgUnder = (LinearLayout) findViewById(R.id.ll_regi_img_under);
 
         Intent intent = getIntent();
         strADIdx = intent.getStringExtra("AD_IDX");
@@ -126,8 +138,8 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
         checkPermissionAndPickImage();
         checkCameraPermission();
 
-        FrameLayout layoutBG = (FrameLayout) findViewById(R.id.fl_bg);
-        layoutBG.setBackgroundDrawable(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.display_bg)));
+        //FrameLayout layoutBG = (FrameLayout) findViewById(R.id.fl_bg);
+        //layoutBG.setBackgroundDrawable(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.display_bg)));
 
     }
 
@@ -142,6 +154,8 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
         if (v.getId() == R.id.btn_make_ad_img_registration_pre) {
             if(!makeADDetail.isShown()) makeADDetail.setVisibility(View.VISIBLE);
             if(makeADImgRegi.isShown()) makeADImgRegi.setVisibility(View.GONE);
+
+            setTabSelected(true); // 상세정보 탭으로
        }
     }
 
@@ -164,21 +178,37 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
         }
     };
 
-    public void nextInfo(){
-        if(llProgress!=null && llProgress.isShown()) llProgress.setVisibility(View.GONE);
+    public void nextInfo() {
+        if (llProgress != null && llProgress.isShown()) {
+            llProgress.setVisibility(View.GONE);
+        }
 
-        if(mModifyInfo!=null) {
+        if (mModifyInfo != null) {
             makeADImgRegi.modifyAD(mModifyInfo);
         }
 
-        if (makeADDetail.isShown()) makeADDetail.setVisibility(View.GONE);
-        if (!makeADImgRegi.isShown()) makeADImgRegi.setVisibility(View.VISIBLE);
+        if (makeADDetail.isShown()) {
+            makeADDetail.setVisibility(View.GONE);
+        }
+        if (!makeADImgRegi.isShown()) {
+            makeADImgRegi.setVisibility(View.VISIBLE);
+        }
 
+        setTabSelected(false);
+
+        /*
+        // 두 번째 탭 선택 (배경 민트, 글자 흰색)
+        txtRegiImg.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRAccent));
+        txtRegiImg.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+
+        // 첫 번째 탭 비선택 (배경 흰색, 글자 검정)
+        txtDetailInfo.setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
+        txtDetailInfo.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+
+        // 하단 선도 전환 (옵션)
         llRegiImgUnder.setVisibility(View.VISIBLE);
         llDetailInfoUnder.setVisibility(View.GONE);
-        txtRegiImg.setBackgroundColor(getResources().getColor(R.color.color_main_friend_txt));
-        txtDetailInfo.setBackgroundColor(getResources().getColor(R.color.color_white));
-
+         */
     }
 
     private MakeADImgRegi2.OnGetData mNextClick = new MakeADImgRegi2.OnGetData() {
@@ -273,6 +303,9 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
             File cropFile = null;
             switch (requestCode) {
                 case MAKE_AD_COMPLETE:
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("register_result", true);
+                    setResult(RESULT_OK, resultIntent);
                     finish();
                     break;
                 case DlgSelImg.PICK_FROM_CAMERA:
@@ -517,5 +550,36 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
                 }
         );
     }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            supportFinishAfterTransition();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    private void setTabSelected(boolean isDetailTab) {
+        if (isDetailTab) {
+            // 상세정보 탭 활성화
+            txtDetailInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRAccent));
+            txtDetailInfo.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+
+            txtRegiImg.setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
+            txtRegiImg.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+
+            llDetailInfoUnder.setVisibility(View.VISIBLE);
+            llRegiImgUnder.setVisibility(View.GONE);
+        } else {
+            // 이미지등록 탭 활성화
+            txtRegiImg.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRAccent));
+            txtRegiImg.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+
+            txtDetailInfo.setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
+            txtDetailInfo.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+
+            llDetailInfoUnder.setVisibility(View.GONE);
+            llRegiImgUnder.setVisibility(View.VISIBLE);
+        }
+    }
 }

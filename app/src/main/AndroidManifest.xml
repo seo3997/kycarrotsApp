@@ -47,6 +47,7 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".DashboardActivity"
+            android:screenOrientation="portrait"
             android:exported="false"
              />
         <activity

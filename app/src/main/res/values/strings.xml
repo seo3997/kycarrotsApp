@@ -642,7 +642,7 @@
 
     <string name="str_no_location">위치를 찾을 수 없습니다.</string>
 
-    <string name="str_make_ad_img_precautions">* 광고는 광고주의 얼굴입니다. 표시 광고법을 준수 해주십시오.\n* 불법적인 이미지/메시지는 승인거부 됩니다.</string>
+    <string name="str_make_ad_img_precautions">불법적인 이미지/메시지는 승인거부 됩니다.</string>
 
     <string name="str_regi_request_success">광고주 신청이 완료되었습니다.\n승인 시 광고주 기능 이용이 가능합니다.</string>
 

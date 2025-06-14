@@ -1,6 +1,5 @@
 package com.whomade.kycarrots.ui.adapter
 
-import android.app.Activity
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -17,8 +15,16 @@ import com.whomade.kycarrots.AdDetailActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.model.AdItem
 
-class AdAdapter(private val items: List<AdItem>, private val fragment: Fragment,) :
+class AdAdapter(private val fragment: Fragment) :
     RecyclerView.Adapter<AdAdapter.ViewHolder>() {
+
+    private val items = mutableListOf<AdItem>()
+
+    fun updateList(newList: List<AdItem>) {
+        items.clear()
+        items.addAll(newList)
+        notifyDataSetChanged()
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.titleText)
@@ -34,7 +40,6 @@ class AdAdapter(private val items: List<AdItem>, private val fragment: Fragment,
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-
         holder.title.text = item.title
         holder.brief.text = item.description
 
@@ -56,8 +61,8 @@ class AdAdapter(private val items: List<AdItem>, private val fragment: Fragment,
 
         Glide.with(holder.image.context)
             .load(item.imageUrl)
-            .placeholder(R.drawable.cheese_1) // 로딩 중
-            .error(R.drawable.cheese_1)       // 실패 시
+            .placeholder(R.drawable.cheese_1)
+            .error(R.drawable.cheese_1)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.image)
     }

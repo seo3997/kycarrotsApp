@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -38,7 +40,7 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
     private OnGetInfoData mGetInfoData;
 
-    private TextView categoryMid;
+    private AutoCompleteTextView categoryMid;
 
     private EditText etADName;
     private EditText etADDetail; //상세설명
@@ -87,16 +89,13 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
     private void Init(){
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.advertiser_make_ad_detail, this, true);
-
         etADName = (EditText) findViewById(R.id.et_input_ad_name);          //상품명
         etADDetail = (EditText) findViewById(R.id.et_input_ad_detail);      //상세설명
-        categoryMid = ((TextView) findViewById(R.id.categoryMid));       //카테고리
+        categoryMid = ((AutoCompleteTextView) findViewById(R.id.dropdown_category));       //카테고리
         etADAmount = (EditText) findViewById(R.id.et_input_ad_amount);      //상품가격
 
         ((Button) findViewById(R.id.btn_make_ad_detail_next)).setOnClickListener(mNextInfo);
 
-        RelativeLayout rlCategory1 = (RelativeLayout) findViewById(R.id.rl_category1);
-        rlCategory1.setOnClickListener(mCategoryClick);
     }
 
     @Override
@@ -136,73 +135,16 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             arrData.add(0, etADName.getText().toString());
             arrData.add(1, etADDetail.getText().toString());
             arrData.add(2, categoryMidCd);
-            arrData.add(3, etADAmount.getText().toString().replaceAll(",", ""));
+            //arrData.add(3, etADAmount.getText().toString().replaceAll(",", ""));
+            arrData.add(3, etADAmount.getText().toString().replaceAll("[,\\\\]", ""));
             mGetInfoData.onGetInfoData(arrData,categoryMidCd);
         }
 
     }
 
-    private Dialog mDlg;
-
-    /**
-     * 1차분류, 2차분류, 3차분류 선택 popup
-     *
-     */
-    public void OpenDlg() {
-
-        mDlg = new Dialog(mContext);
-        mDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mDlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        // Dialog 사이즈 조절 하기
-        WindowManager.LayoutParams params = mDlg.getWindow().getAttributes();
-        params.width = WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = WindowManager.LayoutParams.MATCH_PARENT;
-        params.gravity = Gravity.CENTER;
-        mDlg.getWindow().setAttributes((WindowManager.LayoutParams) params);
-        mDlg.setContentView(R.layout.dlg_txt_list);
-        TextView txtDlgTitle = (TextView) mDlg.findViewById(R.id.txt_dlg_title);
-        ListView lvText = (ListView) mDlg.findViewById(R.id.lv_txt);
-        CommCodeAdapter commAdapter = null;
-
-        //TxtListDataInfo txtListDataInfo = new TxtListDataInfo();
-        //txtListDataInfo.setStrIdx("1");
-        //txtListDataInfo.setStrMsg("aaaa");
-        //arrData1 = new ArrayList<TxtListDataInfo>();
-        //arrData1.add(txtListDataInfo);
-
-        if (arrData1 != null && arrData1.size() > 0) {
-            txtDlgTitle.setText(mContext.getResources().getString(R.string.str_category));
-            commAdapter = new CommCodeAdapter(mContext, R.layout.list_txt_item, arrData1);
-        }
-
-        if (commAdapter != null) {
-            lvText.setAdapter(commAdapter);
-            mDlg.show();
-        }
-
-        lvText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(arrData1.size()>0) {
-                    categoryMidNm = arrData1.get(position).getStrMsg();
-                    categoryMidCd = arrData1.get(position).getStrIdx();
-                    categoryMid.setText(categoryMidNm);
-                }
-                mDlg.dismiss();
-            }
-        });
-    }
-
-    public OnClickListener mCategoryClick = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            OpenDlg();
-        }
-    };
-
     public void setCategoryList(List<TxtListDataInfo> codeList) {
         arrData1 = new ArrayList<>(codeList);
+        bindCategoryDropdown();
     }
 
 
@@ -246,6 +188,30 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             } catch (NumberFormatException e) {
                 etADAmount.setText("0"); // 예외 시 기본값
             }
+        }
+    }
+
+    public void bindCategoryDropdown() {
+        if (arrData1 != null && arrData1.size() > 0) {
+            List<String> categoryNames = new ArrayList<>();
+            for (TxtListDataInfo item : arrData1) {
+                categoryNames.add(item.getStrMsg());
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, R.layout.list_txt_item, categoryNames);
+            categoryMid.setAdapter(adapter);
+
+            categoryMid.setOnClickListener(v -> categoryMid.showDropDown());
+
+            categoryMid.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) categoryMid.showDropDown();
+            });
+
+            categoryMid.setOnItemClickListener((parent, view, position, id) -> {
+                TxtListDataInfo selected = arrData1.get(position);
+                categoryMidNm = selected.getStrMsg();
+                categoryMidCd = selected.getStrIdx();
+            });
         }
     }
 }

@@ -154,6 +154,8 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
         arrIsChangeDetaillmg = getArguments().getBooleanArray(STR_CHANGE_DETAIL_IMG);
         isChangeTitleIlmg = getArguments().getBoolean(STR_CHANGE_TITLE_IMG);
 
+
+
         SetDetailImg();
         return view;
     }
@@ -298,6 +300,7 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
         }
 
         // 4. 서버 등록 요청
+
         AppService appService = AppServiceProvider.INSTANCE.getInstance();
         if (productVo.getProductId() == null || productVo.getProductId().isEmpty()) {
             AppServiceHelper.registerAdvertise(
