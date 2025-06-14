@@ -444,8 +444,8 @@
     <string name="str_charge_request">충전요청</string>
     <string name="str_change_point">포인트전환</string>
     <string name="str_my_ad_list">내 광고 리스트</string>
-    <string name="str_make_ad">광고 제작</string>
-    <string name="str_modify_ad">광고 수정</string>
+    <string name="str_make_ad">상품 등록</string>
+    <string name="str_modify_ad">상품 수정</string>
     <string name="str_rejcet_modify_ad">수정하기</string>
 
     <string name="str_remitter_info">송금자 정보</string>

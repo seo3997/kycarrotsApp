@@ -17,12 +17,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import com.whomade.kycarrots.MainTitleBar;
 import com.whomade.kycarrots.R;
 import com.whomade.kycarrots.TitleBar;
 import com.whomade.kycarrots.common.AppServiceProvider;
@@ -70,7 +73,15 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.advertiser_make_ad_main_activity);
-        ((TitleBar) findViewById(R.id.title_bar)).setTitle(getResources().getString(R.string.str_make_ad));
+
+        MainTitleBar mainTitleBar = findViewById(R.id.main_title_bar);
+        ImageButton ibRefresh = mainTitleBar.findViewById(R.id.ib_refresh);
+        ImageButton ibHome = mainTitleBar.findViewById(R.id.ib_home);
+        ibRefresh.setVisibility(View.GONE);
+        ibHome.setVisibility(View.GONE);
+
+        TitleBar titleBar = findViewById(R.id.title_bar);
+        titleBar.setTitle(getString(R.string.str_make_ad));
 
         mContext = this;
 
@@ -84,7 +95,7 @@ public class MakeADMainActivity extends Activity implements View.OnClickListener
         strADIdx = intent.getStringExtra("AD_IDX");
         strADStatus = intent.getStringExtra("AD_STATUS");
         boolean isModify = strADIdx != null && !strADIdx.isEmpty();
-       AppService appService = AppServiceProvider.INSTANCE.getInstance();
+        AppService appService = AppServiceProvider.INSTANCE.getInstance();
 
         // 코드 리스트 먼저 불러오기
         AppServiceHelper.fetchCodeList(

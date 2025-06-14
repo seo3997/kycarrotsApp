@@ -35,12 +35,12 @@
                     android:id="@+id/txt_ad_detail_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/color_main_friend_txt"
+                    android:background="?attr/colorSecondary"
                     android:gravity="center"
                     android:paddingBottom="@dimen/item_margin_left"
                     android:paddingTop="@dimen/item_margin_left"
                     android:text="@string/str_make_ad_detail"
-                    android:textColor="@color/color_input_point_request"
+                    android:textColor="@color/color_white"
                     android:textSize="@dimen/tab_title_txt_size"
                     android:textStyle="bold" />
 
@@ -49,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/login_divider_height"
                     android:layout_alignBottom="@+id/txt_ad_detail_info"
-                    android:background="@color/color_tab_under_color"
+                    android:background="?attr/colorSecondary"
                     android:orientation="horizontal" />
             </RelativeLayout>
 
