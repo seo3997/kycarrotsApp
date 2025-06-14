@@ -25,6 +25,15 @@ class AdListFragment : Fragment() {
     private lateinit var adapter: AdAdapter
     private lateinit var appService: AppService
 
+    companion object {
+        fun newInstance(tabCd: String): AdListFragment {
+            val fragment = AdListFragment()
+            val args = Bundle()
+            args.putString("TAB_CD", tabCd)
+            fragment.arguments = args
+            return fragment
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -55,7 +64,7 @@ class AdListFragment : Fragment() {
         }
     }
 
-    private fun fetchAdvertiseList() {
+    public fun fetchAdvertiseList() {
         val prefs = requireActivity().getSharedPreferences("TokenInfo", Context.MODE_PRIVATE)
         val token = prefs.getString("token", "") ?: ""
 
@@ -64,6 +73,7 @@ class AdListFragment : Fragment() {
                 val ads: List<AdItem> = appService.getAdvertiseList(token, adCode = 1, pageNo = 1)
                 Log.d("AdListFragment", "updateList 호출됨: ${ads.size}개 아이템")
                 adapter.updateList(ads)
+                recyclerView.scrollToPosition(0)
             } catch (e: Exception) {
                 Log.e("AdListFragment", "API 호출 실패: ${e.message}")
             }

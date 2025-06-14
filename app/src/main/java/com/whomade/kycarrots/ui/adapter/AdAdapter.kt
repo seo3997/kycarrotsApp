@@ -1,6 +1,7 @@
 package com.whomade.kycarrots.ui.adapter
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,9 +19,21 @@ import com.whomade.kycarrots.data.model.AdItem
 class AdAdapter(private val fragment: Fragment) :
     RecyclerView.Adapter<AdAdapter.ViewHolder>() {
 
-    private val items = mutableListOf<AdItem>()
+    private val items: MutableList<AdItem> = mutableListOf()
 
     fun updateList(newList: List<AdItem>) {
+
+        val oldSize = items.size
+        items.clear()
+        notifyItemRangeRemoved(0, oldSize)
+
+        items.addAll(newList)
+        notifyItemRangeInserted(0, newList.size)
+
+        Log.d("AdAdapter", "업데이트 완료: ${items.size}개 아이템")
+        newList.forEachIndexed { index, item ->
+            Log.d("AdAdapter", "[$index] ID: ${item.productId}, Title: ${item.title}, Desc: ${item.description}")
+        }
         items.clear()
         items.addAll(newList)
         notifyDataSetChanged()
@@ -35,11 +48,14 @@ class AdAdapter(private val fragment: Fragment) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_ad, parent, false)
+
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
+
+        Log.d("AdAdapter", "onBindViewHolder 호출: ${items[position].title}")
         holder.title.text = item.title
         holder.brief.text = item.description
 

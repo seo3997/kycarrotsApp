@@ -47,6 +47,15 @@ class MainActivity : BaseDrawerActivity() {
         val viewPager: ViewPager = findViewById(R.id.viewpager)
         setupViewPager(viewPager)
 
+        viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                val fragment = supportFragmentManager.findFragmentByTag("android:switcher:${R.id.viewpager}:$position")
+                if (fragment is AdListFragment) {
+                    fragment.fetchAdvertiseList()
+                }
+            }
+        })
+
         val floatingActionButton: FloatingActionButton = findViewById(R.id.fab)
         floatingActionButton.setOnClickListener { view ->
             //Snackbar.make(view, "광고 데이터를 불러옵니다.", Snackbar.LENGTH_LONG).setAction("닫기", null).show()
@@ -99,12 +108,13 @@ class MainActivity : BaseDrawerActivity() {
 
     private fun setupViewPager(viewPager: ViewPager) {
         viewPager.adapter = Adapter(supportFragmentManager).apply {
-            addFragment(AdListFragment(), "전체")
-            addFragment(AdListFragment(), "처리중")
-            addFragment(AdListFragment(), "완료")
+            addFragment(AdListFragment.newInstance("1"), "전체")
+            addFragment(AdListFragment.newInstance("2"), "처리중")
+            addFragment(AdListFragment.newInstance("3"), "완료")
             //addFragment(FrSetting(), "완료")
         }
     }
+
 
 
     internal class Adapter(
@@ -134,4 +144,6 @@ class MainActivity : BaseDrawerActivity() {
             }
         }
     }
+
+
 }
