@@ -270,11 +270,17 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
         //1. 세부정보
         Intent intent = new Intent(MakeADMainActivity.this, MakeADPreviewActivity.class);
 
-        intent.putExtra(makeADDetail.STR_PUT_AD_IDX, strADIdx); //광고 idx
-        intent.putExtra(makeADDetail.STR_PUT_AD_NAME, arrDetailData.get(0)); //광고명
-        intent.putExtra(makeADDetail.STR_PUT_AD_DETAIL, arrDetailData.get(1)); //상세설명
-        intent.putExtra(makeADDetail.STR_PUT_AD_CATEGORY, strCategory);
-        intent.putExtra(makeADDetail.STR_PUT_AD_AMOUNT, arrDetailData.get(3)); //광고 할 금액
+        intent.putExtra(makeADDetail.STR_PUT_AD_IDX, strADIdx);                                     //광고 idx
+        intent.putExtra(makeADDetail.STR_PUT_AD_NAME, arrDetailData.get(0));                        //광고명
+        intent.putExtra(makeADDetail.STR_PUT_AD_QUANTITY, arrDetailData.get(1));                    //남은수향
+        intent.putExtra(makeADDetail.STR_PUT_AD_UNIT_CODE, arrDetailData.get(2));                   //단위
+        intent.putExtra(makeADDetail.STR_PUT_AD_AMOUNT, arrDetailData.get(3));                      //광고 할 금액
+        intent.putExtra(makeADDetail.STR_PUT_AD_DESIRED_SHIPPING_DATE, arrDetailData.get(4));       //출하일자
+        intent.putExtra(makeADDetail.STR_PUT_AD_DETAIL, arrDetailData.get(5));                      //상세설명
+        intent.putExtra(makeADDetail.STR_PUT_AD_CATEGORY_MID, arrDetailData.get(6));                //카테고리
+        intent.putExtra(makeADDetail.STR_PUT_AD_CATEGORY_SCLS, arrDetailData.get(7));               //세부함목
+        intent.putExtra(makeADDetail.STR_PUT_AD_AREA_MID, arrDetailData.get(8));                    //도시
+        intent.putExtra(makeADDetail.STR_PUT_AD_AREA_SCLS, arrDetailData.get(9));                   //시구
 
         //2. 이미지 등록
         if(!strTitle.equals("")){

@@ -47,38 +47,52 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
     private OnGetInfoData mGetInfoData;
 
-    private AutoCompleteTextView categoryMid;
 
-    private  TextInputEditText etDesiredShippingDate;
+    private EditText etADName;                          //상품명
+    private TextInputEditText et_quantity;              //남은수량
+    private AutoCompleteTextView dropdownUnit;          //단위
+    private EditText etADAmount;                        //상품금액
+    private TextInputEditText etDesiredShippingDate;    //예상출하일자    
+    private EditText etADDetail;                        //상세설명
+    private AutoCompleteTextView categoryMid;           //카테고리
+    private AutoCompleteTextView dropdownSubCategory;   //세부항목 
+    private AutoCompleteTextView dropdownCity;          //도시
+    private AutoCompleteTextView dropdownDistrict;      // 시/구 
 
-    private EditText etADName;
-    private EditText etADDetail; //상세설명
-    private EditText etADAmount; //광고 할 금액
+    Map<String, String> unitMap = new HashMap<>();                                                  //단위
+    private String unitCode = "";
 
-    private ArrayList<TxtListDataInfo> arrData1; //1차 분류 data
-
-    public final static String STR_PUT_AD_IDX = "AD_IDX";
-    public final static String STR_PUT_AD_NAME = "AD_NAME";
-    public final static String STR_PUT_AD_DETAIL = "AD_DETAIL";
-    public final static String STR_PUT_AD_CATEGORY = "AD_CATEGORY";
-    public final static String STR_PUT_AD_AMOUNT = "AD_AMOUNT";
-
+    private ArrayList<TxtListDataInfo> arrData1;                                                    //카테고리
     String categoryMidCd="";
     String categoryMidNm="";
 
-    private AutoCompleteTextView dropdownSubCategory;
-    private ArrayList<TxtListDataInfo> arrSubCategory = new ArrayList<>();
-    private String subCategoryCd = "";
-    private String subCategoryNm = "";
-    Map<String, String> unitMap = new HashMap<>();
+    private ArrayList<TxtListDataInfo> arrSubCategory = new ArrayList<>();                          //세부코드
+    private String categoryScls = "";
+    private String categorySclsNm = "";
 
-    private AutoCompleteTextView dropdownCity;
-    private ArrayList<TxtListDataInfo> arrCityList;
+    private ArrayList<TxtListDataInfo> arrCityList;                                                 //도시
 
-    private AutoCompleteTextView dropdownDistrict; // 시/구 드롭다운
-    private ArrayList<TxtListDataInfo> arrDistrictList  = new ArrayList<>();
-    private String districtCd = "";
-    private String districtNm = "";
+    private String areaMid = "";
+    private String areaMidNm = "";
+
+    private ArrayList<TxtListDataInfo> arrDistrictList  = new ArrayList<>();                        //시도
+    private String areaScls = "";
+    private String areaSclsNm = "";
+
+
+
+    public final static String STR_PUT_AD_IDX = "AD_IDX";
+    public final static String STR_PUT_AD_NAME = "AD_NAME";
+    public final static String STR_PUT_AD_QUANTITY = "AD_QUANTITY";
+    public final static String STR_PUT_AD_UNIT_CODE = "AD_UNIT_CODE";
+    public final static String STR_PUT_AD_AMOUNT = "AD_AMOUNT";
+    public final static String STR_PUT_AD_DESIRED_SHIPPING_DATE = "AD_DESIRED_SHIPPING_DATE";
+    public final static String STR_PUT_AD_DETAIL = "AD_DETAIL";
+    public final static String STR_PUT_AD_CATEGORY_MID = "AD_CATEGORY_MID";
+    public final static String STR_PUT_AD_CATEGORY_SCLS = "AD_CATEGORY_SCLS";
+    public final static String STR_PUT_AD_AREA_MID = "AD_AREA_MID";
+    public final static String STR_PUT_AD_AREA_SCLS = "AD_AREA_SCLS";
+
 
     // 이벤트 인터페이스를 정의
     public interface OnGetInfoData {
@@ -131,18 +145,21 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
     private void Init(){
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.advertiser_make_ad_detail, this, true);
-        etADName = (EditText) findViewById(R.id.et_input_ad_name);          //상품명
-        etADDetail = (EditText) findViewById(R.id.et_input_ad_detail);      //상세설명
-        categoryMid = ((AutoCompleteTextView) findViewById(R.id.dropdown_category));       //카테고리
-        dropdownSubCategory = ((AutoCompleteTextView) findViewById(R.id.dropdown_subcategory));
-        dropdownCity = ((AutoCompleteTextView) findViewById(R.id.dropdown_city));
-        dropdownDistrict = ((AutoCompleteTextView) findViewById(R.id.dropdown_district));
+        etADName = (EditText) findViewById(R.id.et_input_ad_name);                                  //상품명
+        et_quantity= (TextInputEditText) findViewById(R.id.et_quantity);               //남은수량
+        dropdownUnit = (AutoCompleteTextView) findViewById(R.id.dropdown_unit);                     //단위
+        etADAmount = (EditText) findViewById(R.id.et_input_ad_amount);                              //상품가격
+        etDesiredShippingDate = (TextInputEditText) findViewById(R.id.et_desired_shipping_date);    //출하일자
+        etADDetail = (EditText) findViewById(R.id.et_input_ad_detail);                              //상세설명
+        categoryMid = ((AutoCompleteTextView) findViewById(R.id.dropdown_category));                //카테고리
+        dropdownSubCategory = ((AutoCompleteTextView) findViewById(R.id.dropdown_subcategory));     //세부항목
+        dropdownCity = ((AutoCompleteTextView) findViewById(R.id.dropdown_city));                   //도시
+        dropdownDistrict = ((AutoCompleteTextView) findViewById(R.id.dropdown_district));           //시도
 
-        etADAmount = (EditText) findViewById(R.id.et_input_ad_amount);      //상품가격
-        etDesiredShippingDate = (TextInputEditText) findViewById(R.id.et_desired_shipping_date);      //상품가격
-
+        //단위
         unitMap.put("Kg", "1");
         unitMap.put("박스", "2");
+        unitMap.put("기타", "990");
 
         List<String> unitOptions = new ArrayList<>(unitMap.keySet());
 
@@ -152,11 +169,18 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
                 new ArrayList<>(unitMap.keySet())
         );
 
-
-
-        AutoCompleteTextView dropdownUnit = (AutoCompleteTextView) findViewById(R.id.dropdown_unit); // 또는 binding.dropdownUnit
+        // 항목 선택 시 unitCode 설정
+    
         dropdownUnit.setAdapter(adapter);
 
+        dropdownUnit.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedUnit = (String) parent.getItemAtPosition(position);
+            if (unitMap.containsKey(selectedUnit)) {
+                unitCode = unitMap.get(selectedUnit);
+            }
+        });
+
+        //출하일자
         etDesiredShippingDate.setOnClickListener(v -> {
             final Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
@@ -210,18 +234,29 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
     public void SetInfoData() {
         String strMsg="";
         String strInputAmount = etADAmount.getText().toString();
+        String strInputQuantity = et_quantity.getText().toString();
 
         Intent intent = new Intent(mContext, DlgBtnActivity.class);
         if (etADName.getText().toString().equals("")) {
             strMsg = getResources().getString(R.string.str_make_ad_name_err);
+        } else if ( (strInputQuantity.trim().equals("") || strInputQuantity.equals("0"))) {
+            strMsg = getResources().getString(R.string.str_make_ad_quantity_err);
+        } else if (unitCode.equals("")) {
+            strMsg = getResources().getString(R.string.str_make_ad_unit_err);
+        } else if (strInputAmount.trim().equals("") || strInputAmount.equals("0")) {
+            strMsg = String.format(getResources().getString(R.string.str_make_ad_amount_reinput), strInputAmount);
+        } else if (etDesiredShippingDate.getText().toString().equals("")) {
+            strMsg = getResources().getString(R.string.str_make_ad_desired_shipping_date_err);
         } else if (etADDetail.getText().toString().equals("")) {
             strMsg = getResources().getString(R.string.str_make_ad_detail_err);
         } else if (categoryMidCd.equals("")) {
             strMsg = getResources().getString(R.string.str_make_ad_category_err);
-        }
-
-        if (strInputAmount.trim().equals("") || strInputAmount.equals("0")) {
-            strMsg = String.format(getResources().getString(R.string.str_make_ad_amount_reinput), strInputAmount);
+        } else if (categoryScls.equals("")) {
+            strMsg = getResources().getString(R.string.str_make_ad_subcategory_err);
+        } else if (areaMid.equals("")) {
+            strMsg = getResources().getString(R.string.str_make_ad_cityt_err);
+        } else if (areaScls.equals("")) {
+            strMsg = getResources().getString(R.string.str_make_ad_district_err);
         }
 
         if (!strMsg.equals("")) {
@@ -229,12 +264,19 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             mContext.startActivity(intent);
         } else {
-            ArrayList<String> arrData = new ArrayList<String>(); //카테고리를 제외한 data
-            arrData.add(0, etADName.getText().toString());
-            arrData.add(1, etADDetail.getText().toString());
-            arrData.add(2, categoryMidCd);
+            ArrayList<String> arrData = new ArrayList<String>();
+            arrData.add(0, etADName.getText().toString());                                   //상품명
+            arrData.add(1, et_quantity.getText().toString());                                //남은 수량
+            arrData.add(2, unitCode);                                                        //단위
+            arrData.add(3, etADAmount.getText().toString().replaceAll("[,\\\\]", "")); //상품가격
+            arrData.add(4, etDesiredShippingDate.getText().toString());                      //희망출하일
+            arrData.add(5, etADDetail.getText().toString());                                 //긴급사유
+            arrData.add(6, categoryMidCd);                                                   //카테고리
+            arrData.add(7, categoryScls);                                                    //세부항목
             //arrData.add(3, etADAmount.getText().toString().replaceAll(",", ""));
-            arrData.add(3, etADAmount.getText().toString().replaceAll("[,\\\\]", ""));
+            arrData.add(8, areaMid);                                                         //도시
+            arrData.add(9, areaScls);                                                        //시구
+
             mGetInfoData.onGetInfoData(arrData,categoryMidCd);
         }
 
@@ -319,8 +361,9 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
                 arrSubCategory.clear(); // 세부 항목 리스트 초기화
                 dropdownSubCategory.setText(""); // UI에서 선택된 값 초기화
                 dropdownSubCategory.setAdapter(null); // 어댑터 제거 (선택 사항)
-                subCategoryCd = "";
-                subCategoryNm = "";
+
+                categoryScls = "";
+                categorySclsNm = "";
                 // 리스너에 선택된 카테고리 코드 전달
                 if (categorySelectedListener != null) {
                     categorySelectedListener.onCategorySelected(categoryMidCd);
@@ -351,8 +394,8 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
         dropdownSubCategory.setOnItemClickListener((parent, view, position, id) -> {
             TxtListDataInfo selected = arrSubCategory.get(position);
-            subCategoryCd = selected.getStrIdx();
-            subCategoryNm = selected.getStrMsg();
+            categoryScls = selected.getStrIdx();
+            categorySclsNm = selected.getStrMsg();
         });
     }
 
@@ -376,18 +419,19 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
             dropdownCity.setOnItemClickListener((parent, view, position, id) -> {
                 TxtListDataInfo selected = arrCityList.get(position);
-                String cityCode = selected.getStrIdx();
-                String cityName = selected.getStrMsg();
+
+                areaMid = selected.getStrIdx();
+                areaMidNm = selected.getStrMsg();
 
                 // 세부 항목 초기화 (예: arrDistrictList, dropdownDistrict 등)
                 arrDistrictList.clear(); // 구/군 리스트 초기화
                 dropdownDistrict.setText(""); // 선택 항목 초기화
                 dropdownDistrict.setAdapter(null); // 어댑터 제거 (필요 시)
-                districtCd = "";
-                districtNm = "";
+                areaScls = "";
+                areaSclsNm = "";
 
                 if (citySelectedListener != null) {
-                    citySelectedListener.onCitySelected(cityCode);
+                    citySelectedListener.onCitySelected(areaMid);
                 }
 
                 // 필요 시 로그 또는 리스너 호출
@@ -418,8 +462,8 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
         dropdownDistrict.setOnItemClickListener((parent, view, position, id) -> {
             TxtListDataInfo selected = arrDistrictList.get(position);
-            districtCd = selected.getStrIdx();
-            districtNm = selected.getStrMsg();
+            areaScls = selected.getStrIdx();
+            areaSclsNm = selected.getStrMsg();
         });
     }
 

@@ -68,11 +68,18 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
     private LinearLayout llProgress;
     private ProgressBar pbTitleImg;
 
-    private String strADIdx; //광고 idx
-    private String strADName; //광고명
-    private String strADDetail; //상세정보
-    private String strADCategory; //카테고리
-    private String strADAmount; //광고 할 금액
+    private String strADIdx;                            //광고 idx
+    private String strADName;                           //광고명
+    private String strADQuantity;                       //남은수향
+    private String strADUnitCode;                       //단위
+    private String strADAmount;                         //광고 할 금액
+    private String strADDesiredShippingDate;            //출하일자
+    private String strADDetail;                         //상세정보
+    private String strADCategory;                       //카테고리
+    private String strADCategoryScls;                   //세부항목
+    private String strADAreaMid;                        //도시
+    private String strADAreaScls;                       //시구
+
 
     public static final String STR_TITLE_IMG = "TITLE_IMG";
     public static final String STR_TITLE_IMGID = "TITLE_IMGID";
@@ -111,9 +118,15 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
         if (getArguments() != null) {
             strADIdx = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_IDX);
             strADName = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_NAME);
-            strADDetail = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_DETAIL);
-            strADCategory = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_CATEGORY);
+            strADQuantity = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_QUANTITY);
+            strADUnitCode = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_UNIT_CODE);
             strADAmount = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_AMOUNT);
+            strADDesiredShippingDate = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_DESIRED_SHIPPING_DATE);
+            strADDetail = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_DETAIL);
+            strADCategory = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_CATEGORY_MID);
+            strADCategoryScls = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_CATEGORY_SCLS);
+            strADAreaMid = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_AREA_MID);
+            strADAreaScls = (String) getArguments().getString(MakeADDetail1.STR_PUT_AD_AREA_SCLS);
 
             strTitleImgPath = (String) getArguments().getString(STR_TITLE_IMG);
             strTitleImgId = (String) getArguments().getString(STR_TITLE_IMGID);
@@ -230,20 +243,28 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
     public void DataRequest() {
         // 1. 광고 정보 객체 생성
         ProductVo productVo = new ProductVo(
-                strADIdx,               // productId
-                "1",                    // userNo
-                strADName,              // title
-                strADDetail,            // description
-                strADAmount,            // price
-                "R010600",              // categoryGroup
-                strADCategory,          // categoryMid
-                "",                     // categoryScls
-                "1",                    // saleStatus
-                "1",                    // registerNo
-                "",                     // registDt
-                "1",                    // updusrNo
-                ""                      // imageUrl
-                 );
+                strADIdx,              // productId
+                "1",                   // userNo
+                strADName,             // title
+                strADDetail,           // description
+                strADAmount,           // price
+                "R010600",             // categoryGroup
+                strADCategory,         // categoryMid
+                strADCategoryScls,     // categoryScls
+                "1",                   // saleStatus
+                "R010070",             // cityGroup
+                strADAreaMid,          // cityMid
+                strADAreaScls,          // cityScls
+                strADQuantity,         // quantity
+                "R010620",             // unitGroup
+                strADUnitCode,         // unitCode
+                strADDesiredShippingDate, // desiredShippingDate
+                "1",                   // registerNo
+                "",                    // registDt
+                "1",                   // updusrNo
+                "",                    // updtDt
+                ""// imageUrl 생략 가능 (기본값 null)
+        );
 
         // 2. 이미지 파일 리스트 + imageMetaList 생성
         ArrayList<File> detailFiles = new ArrayList<>();

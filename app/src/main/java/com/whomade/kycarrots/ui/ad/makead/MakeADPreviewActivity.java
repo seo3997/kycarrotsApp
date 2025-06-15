@@ -42,12 +42,19 @@ public class MakeADPreviewActivity extends FragmentActivity {
     private ImageView ivPage2;
     private LinearLayout llProgress;
 
-    private String strADIdx; //광고 idx
-    private String strADName; //광고명
-    private String strADDetail; //상세정보
-    private String strADCategory; //카테고리
-    private String strADAmount; //광고 할 금액
-
+    private String strADIdx;                            //광고 idx
+    private String strADName;                           //광고명
+    private String strADQuantity;                       //남은수향
+    private String strADUnitCode;                       //단위
+    private String strADAmount;                         //광고 할 금액
+    private String strADDesiredShippingDate;            //출하일자
+  
+    private String strADDetail;                         //상세정보
+    private String strADCategory;                       //카테고리
+    private String strADCategoryScls;                   //카테고리
+    private String strADAreaMid;                        //도시
+    private String strADAreaScls;                       //시구
+ 
     private boolean[] isChangeDetailImg;
 
     @Override
@@ -62,10 +69,16 @@ public class MakeADPreviewActivity extends FragmentActivity {
         if(intent!=null) {
             strADIdx = intent.getStringExtra(MakeADDetail1.STR_PUT_AD_IDX);//광고 idx
             strADName = intent.getStringExtra(MakeADDetail1.STR_PUT_AD_NAME); //광고명
-            strADDetail = intent.getStringExtra(MakeADDetail1.STR_PUT_AD_DETAIL); //상세설명
-            strADCategory = intent.getStringExtra(MakeADDetail1.STR_PUT_AD_CATEGORY); //카테고리
+            strADQuantity = intent.getStringExtra(MakeADDetail1.STR_PUT_AD_QUANTITY); //수량
+            strADUnitCode= intent.getStringExtra(MakeADDetail1.STR_PUT_AD_UNIT_CODE); //단위
             strADAmount = intent.getStringExtra(MakeADDetail1.STR_PUT_AD_AMOUNT); //광고 할 금액
-
+            strADDesiredShippingDate= intent.getStringExtra(MakeADDetail1.STR_PUT_AD_DESIRED_SHIPPING_DATE); //출하일자
+            strADDetail = intent.getStringExtra(MakeADDetail1.STR_PUT_AD_DETAIL); //상세설명
+            strADCategory = intent.getStringExtra(MakeADDetail1.STR_PUT_AD_CATEGORY_MID); //카테고리
+            strADCategoryScls= intent.getStringExtra(MakeADDetail1.STR_PUT_AD_CATEGORY_SCLS); //세부코드
+            strADAreaMid= intent.getStringExtra(MakeADDetail1.STR_PUT_AD_AREA_MID); //도시
+            strADAreaScls= intent.getStringExtra(MakeADDetail1.STR_PUT_AD_AREA_SCLS); //시구
+                    
             strTitle = (String) intent.getStringExtra("Title_Img");
             strTitleId = (String) intent.getStringExtra("Title_ImgId");
             isChangeTitleImg = (boolean) intent.getBooleanExtra("ChangeTitleImg", false);
@@ -191,9 +204,16 @@ public class MakeADPreviewActivity extends FragmentActivity {
 
                     bundle.putString(MakeADDetail1.STR_PUT_AD_IDX, strADIdx);
                     bundle.putString(MakeADDetail1.STR_PUT_AD_NAME, strADName);
-                    bundle.putString(MakeADDetail1.STR_PUT_AD_DETAIL, strADDetail);
-                    bundle.putString(MakeADDetail1.STR_PUT_AD_CATEGORY, strADCategory);
+                    bundle.putString(MakeADDetail1.STR_PUT_AD_QUANTITY, strADQuantity);
+                    bundle.putString(MakeADDetail1.STR_PUT_AD_UNIT_CODE, strADUnitCode);
                     bundle.putString(MakeADDetail1.STR_PUT_AD_AMOUNT, strADAmount);
+                    bundle.putString(MakeADDetail1.STR_PUT_AD_DESIRED_SHIPPING_DATE, strADDesiredShippingDate);
+                    bundle.putString(MakeADDetail1.STR_PUT_AD_DETAIL, strADDetail);
+                    bundle.putString(MakeADDetail1.STR_PUT_AD_CATEGORY_MID, strADCategory);
+                    bundle.putString(MakeADDetail1.STR_PUT_AD_CATEGORY_SCLS, strADCategoryScls);
+                    bundle.putString(MakeADDetail1.STR_PUT_AD_AREA_MID, strADAreaMid);
+                    bundle.putString(MakeADDetail1.STR_PUT_AD_AREA_SCLS, strADAreaScls);
+
 
                     bundle.putString("TITLE_IMG", strTitle);
                     bundle.putString("TITLE_IMGID", strTitleId);

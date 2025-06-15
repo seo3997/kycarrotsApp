@@ -520,8 +520,14 @@
     <string name="str_ad_registration_request">광고 신청</string>
 
     <string name="str_make_ad_category_err">카테고리를 선택하세요.</string>
-    <string name="str_make_ad_name_err">상품명을 확인해주세요.</string>
-    <string name="str_make_ad_detail_err">상세설명을 확인해주세요.</string>
+    <string name="str_make_ad_subcategory_err">세부항목을 선택하세요.</string>
+    <string name="str_make_ad_name_err">상품명을 입력하세요.</string>
+    <string name="str_make_ad_quantity_err">남은수량을 입력하세요.</string>
+    <string name="str_make_ad_unit_err">단위를 선택하세요.</string>
+    <string name="str_make_ad_cityt_err">도시를 선택하세요.</string>
+    <string name="str_make_ad_district_err">시/구를 선택하세요.</string>
+    <string name="str_make_ad_detail_err">상세설명을 입력하세요.</string>
+    <string name="str_make_ad_desired_shipping_date_err">희망출하일을 입력하세요.</string>
     <string name="str_make_ad_address_err">주소를 확인해주세요.</string>
 
     <string name="str_make_ad_amount_input_err">광고 할 금액은 현재 남은 광고액 보다 작을 수 없습니다.</string>
