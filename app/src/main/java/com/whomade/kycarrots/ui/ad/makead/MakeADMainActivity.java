@@ -124,7 +124,7 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
                 throwable -> Toast.makeText(MakeADMainActivity.this, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
         );
 
-        // 코드 리스트 먼저 불러오기
+        // 코드 리스트 먼저 불러오기 지역
         AppServiceHelper.fetchCodeList(
                 appService,
                 "R010070",
@@ -135,6 +135,16 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
                 throwable -> Toast.makeText(MakeADMainActivity.this, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
         );
 
+        // 코드 리스트 먼저 불러오기 단위
+        AppServiceHelper.fetchCodeList(
+                appService,
+                "R010620",
+                list -> {
+                    makeADDetail.setUnitList(list);
+
+                },
+                throwable -> Toast.makeText(MakeADMainActivity.this, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
+        );
 
 
         //1. 세부정보 view
@@ -560,9 +570,17 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
                     ModifyADInfo modifyInfo = new ModifyADInfo();
                     modifyInfo.setProductId(result.getProduct().getProductId());
                     modifyInfo.setTitle(result.getProduct().getTitle());
-                    modifyInfo.setDescription(result.getProduct().getDescription());
+                    modifyInfo.setQuantity(result.getProduct().getQuantity());
+                    modifyInfo.setUnitCode(result.getProduct().getUnitCode());
                     modifyInfo.setPrice(result.getProduct().getPrice());
+                    modifyInfo.setDesiredShippingDate(result.getProduct().getDesiredShippingDate());
+                    modifyInfo.setDescription(result.getProduct().getDescription());
                     modifyInfo.setCategoryMid(result.getProduct().getCategoryMid());
+                    modifyInfo.setCategoryScls(result.getProduct().getCategoryScls());
+                    modifyInfo.setAreaMid(result.getProduct().getAreaMid());
+                    modifyInfo.setAreaScls(result.getProduct().getAreaScls());
+                    modifyInfo.setSaleStatus(result.getProduct().getSaleStatus());
+
 
                     List<ProductImageVo> images = result.getImageMetas();
                     for (ProductImageVo vo : images) {

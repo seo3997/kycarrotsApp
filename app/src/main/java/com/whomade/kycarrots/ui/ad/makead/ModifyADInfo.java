@@ -16,6 +16,14 @@ public class ModifyADInfo {
     private String registerNo;
     private String updusrNo;
 
+    private String areaGroup;
+    private String areaMid;
+    private String areaScls;
+    private String quantity;
+    private String unitGroup;
+    private String unitCode;
+    private String desiredShippingDate;
+
     private String aDTitleimageId;
     private String strADTitleImgUrl;
     private String strADDetailImgUrl1;
@@ -176,5 +184,61 @@ public class ModifyADInfo {
 
     public void setaDDetailimageId3(String aDDetailimageId3) {
         this.aDDetailimageId3 = aDDetailimageId3;
+    }
+
+    public String getAreaGroup() {
+        return areaGroup;
+    }
+
+    public void setAreaGroup(String areaGroup) {
+        this.areaGroup = areaGroup;
+    }
+
+    public String getAreaMid() {
+        return areaMid;
+    }
+
+    public void setAreaMid(String areaMid) {
+        this.areaMid = areaMid;
+    }
+
+    public String getAreaScls() {
+        return areaScls;
+    }
+
+    public void setAreaScls(String areaScls) {
+        this.areaScls = areaScls;
+    }
+
+    public String getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getUnitGroup() {
+        return unitGroup;
+    }
+
+    public void setUnitGroup(String unitGroup) {
+        this.unitGroup = unitGroup;
+    }
+
+    public String getUnitCode() {
+        return unitCode;
+    }
+
+    public void setUnitCode(String unitCode) {
+        this.unitCode = unitCode;
+    }
+
+    public String getDesiredShippingDate() {
+        return desiredShippingDate;
+    }
+
+    public void setDesiredShippingDate(String desiredShippingDate) {
+        this.desiredShippingDate = desiredShippingDate;
     }
 }

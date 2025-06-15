@@ -59,8 +59,9 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
     private AutoCompleteTextView dropdownCity;          //도시
     private AutoCompleteTextView dropdownDistrict;      // 시/구 
 
-    Map<String, String> unitMap = new HashMap<>();                                                  //단위
+    private List<TxtListDataInfo> arrUnitList;                                   //단위
     private String unitCode = "";
+    private String unitCodeNm = "";
 
     private ArrayList<TxtListDataInfo> arrData1;                                                    //카테고리
     String categoryMidCd="";
@@ -155,30 +156,6 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
         dropdownSubCategory = ((AutoCompleteTextView) findViewById(R.id.dropdown_subcategory));     //세부항목
         dropdownCity = ((AutoCompleteTextView) findViewById(R.id.dropdown_city));                   //도시
         dropdownDistrict = ((AutoCompleteTextView) findViewById(R.id.dropdown_district));           //시도
-
-        //단위
-        unitMap.put("Kg", "1");
-        unitMap.put("박스", "2");
-        unitMap.put("기타", "990");
-
-        List<String> unitOptions = new ArrayList<>(unitMap.keySet());
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                getContext(),
-                R.layout.item_dropdown_unit, // 커스텀 레이아웃 사용
-                new ArrayList<>(unitMap.keySet())
-        );
-
-        // 항목 선택 시 unitCode 설정
-    
-        dropdownUnit.setAdapter(adapter);
-
-        dropdownUnit.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedUnit = (String) parent.getItemAtPosition(position);
-            if (unitMap.containsKey(selectedUnit)) {
-                unitCode = unitMap.get(selectedUnit);
-            }
-        });
 
         //출하일자
         etDesiredShippingDate.setOnClickListener(v -> {
@@ -302,28 +279,22 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             etADName.setText(data.getTitle());
         }
 
-        // 상세설명
-        if (etADDetail != null) {
-            etADDetail.setText(data.getDescription());
-        }
+        //남은수향
+        et_quantity.setText(data.getQuantity());
 
-        // 카테고리
-        if (categoryMid != null) {
-            categoryMid.setText(data.getCategoryMid());
-        }
-        categoryMidCd =data.getCategoryMid();
-
-        if (categoryMid != null && arrData1 != null) {
-            String selectedCategoryMid = data.getCategoryMid();
-            for (TxtListDataInfo item : arrData1) {
-                if (item.getStrIdx().equals(categoryMidCd)) {
-                    categoryMid.setText(item.getStrMsg()); // 이제 오류 없음
+        //단위
+        unitCode = data.getUnitCode();
+        if (dropdownUnit != null && arrUnitList != null) {
+            String selectedUnitCode = data.getUnitCode();
+            for (TxtListDataInfo item : arrUnitList) {
+                if (item.getStrIdx().equals(selectedUnitCode)) {
+                    dropdownUnit.setText(item.getStrMsg(), false); // 단위명 표시
                     break;
                 }
             }
         }
 
-        // 광고 금액
+        // 상품 가격
         if (etADAmount != null && data.getPrice() != null) {
             try {
                 double priceDouble = Double.parseDouble(data.getPrice());
@@ -333,6 +304,51 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
                 etADAmount.setText("0"); // 예외 시 기본값
             }
         }
+
+        // 출하일자
+        etDesiredShippingDate.setText(data.getDesiredShippingDate());
+
+        // 상세설명
+        if (etADDetail != null) {
+            etADDetail.setText(data.getDescription());
+        }
+
+        // 카테고리
+        categoryMidCd = data.getCategoryMid();
+        categoryScls = data.getCategoryScls();
+
+        if (categorySelectedListener != null) {
+            categorySelectedListener.onCategorySelected(categoryMidCd);
+        }
+        if (categoryMid != null && arrData1 != null) {
+            for (TxtListDataInfo item : arrData1) {
+                if (item.getStrIdx().equals(categoryMidCd)) {
+                    categoryMid.setText(item.getStrMsg(), false); // 이제 오류 없음
+                    categoryMidNm = item.getStrMsg();
+                    break;
+                }
+            }
+        }
+
+
+        // 도시
+        areaMid = data.getAreaMid();
+        areaScls = data.getAreaScls();
+        if (citySelectedListener != null) {
+            citySelectedListener.onCitySelected(areaMid);
+        }
+        if (dropdownCity != null && arrCityList != null) {
+            for (TxtListDataInfo item : arrCityList) {
+                if (item.getStrIdx().equals(areaMid)) {
+                    dropdownCity.setText(item.getStrMsg(), false); // 이제 오류 없음
+                    areaMidNm = item.getStrMsg();
+                    break;
+                }
+            }
+        }
+
+
+
     }
 
     public void bindCategoryDropdown() {
@@ -369,6 +385,7 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
                     categorySelectedListener.onCategorySelected(categoryMidCd);
                 }
             });
+
         }
     }
 
@@ -397,6 +414,18 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             categoryScls = selected.getStrIdx();
             categorySclsNm = selected.getStrMsg();
         });
+
+        if (!categoryScls.isEmpty()) {
+            if (dropdownSubCategory != null && arrSubCategory != null) {
+                for (TxtListDataInfo item : arrSubCategory) {
+                    if (item.getStrIdx().equals(categoryScls)) {
+                        dropdownSubCategory.setText(item.getStrMsg(), false); // 드롭다운 항목 셋팅
+                        categorySclsNm = item.getStrMsg();
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private void bindCityDropdown() {
@@ -465,6 +494,49 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             areaScls = selected.getStrIdx();
             areaSclsNm = selected.getStrMsg();
         });
+
+        if(!areaScls.isEmpty()) {
+            if (dropdownDistrict != null && arrDistrictList != null) {
+                for (TxtListDataInfo item : arrDistrictList) {
+                    if (item.getStrIdx().equals(areaScls)) {
+                        dropdownDistrict.setText(item.getStrMsg(), false); // 드롭다운 항목 셋팅
+                        areaSclsNm = item.getStrMsg();
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 
+    public void setUnitList(List<TxtListDataInfo> codeList) {
+        arrUnitList = new ArrayList<>(codeList);
+        bindUnitDropdown();
+    }
+
+    private void bindUnitDropdown() {
+        dropdownUnit = findViewById(R.id.dropdown_unit);
+
+        if (arrUnitList == null || arrUnitList.isEmpty()) return;
+
+        List<String> unitNames = new ArrayList<>();
+        for (TxtListDataInfo item : arrUnitList) {
+            unitNames.add(item.getStrMsg());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, R.layout.list_txt_item, unitNames);
+        dropdownUnit.setAdapter(adapter);
+
+        dropdownUnit.setOnClickListener(v -> dropdownUnit.showDropDown());
+
+        dropdownUnit.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) dropdownUnit.showDropDown();
+        });
+
+        dropdownUnit.setOnItemClickListener((parent, view, position, id) -> {
+            TxtListDataInfo selected = arrUnitList.get(position);
+            unitCode = selected.getStrIdx();
+            unitCodeNm = selected.getStrMsg(); // 선택한 단위 이름이 필요하면
+        });
+    }
 }
