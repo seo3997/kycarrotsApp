@@ -1,16 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-  >
+    android:layout_height="match_parent">
 
+    <!-- 1. AppBar + Collapsing Image -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/detail_backdrop_height"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
@@ -18,24 +19,27 @@
             android:layout_height="match_parent"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
             <ImageView
                 android:id="@+id/backdrop"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
                 android:transitionName="shared_image"
-                app:layout_collapseMode="parallax" />
+                app:layout_collapseMode="parallax"/>
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"/>
+
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- 2. Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -45,127 +49,207 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="24dp"
-            android:paddingBottom="24dp">
+            android:padding="16dp"
+            android:divider="@color/divider"
+            android:showDividers="middle"
+            android:dividerPadding="16dp">
+
+            <!-- 상품명 -->
+            <TextView
+                android:id="@+id/product_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="상품 상세"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:paddingBottom="8dp"/>
+
+            <!-- 상품 상세 설명 카ード뷰 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp">
+
+                <TextView
+                    android:id="@+id/product_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="상세 설명"
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textColor="@android:color/black" />
+            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/card_margin">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/divider"
+                app:cardBackgroundColor="@android:color/white">
 
                 <LinearLayout
-                    style="@style/Widget.CardContent"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <TextView
+                    <!-- 가격 + 희망 출하일 (한 줄) -->
+                    <!-- 가격 & 희망 출하일 (세로) -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="상품상세"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                        android:orientation="vertical"
+                        android:paddingVertical="8dp">
 
+                        <!-- 1행: 가격 -->
+                        <TextView
+                            android:id="@+id/product_price"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="₩"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorPrimary"/>
+
+                        <!-- 2행: 희망 출하일 (오른쪽 정렬) -->
+                        <TextView
+                            android:id="@+id/product_shipping_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="희망출하일:"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/black"
+                            android:paddingTop="4dp"/>
+                    </LinearLayout>
+
+                    <!-- 수량 + 단위 (한 줄) -->
                     <TextView
-                        android:id="@+id/product_description"
+                        android:id="@+id/product_quantity_unit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/product_price"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="16sp"
+                        android:text="수량:"
+                        android:textSize="14sp"
                         android:textColor="@android:color/black"
-                        android:layout_marginTop="8dp" />
+                        android:paddingBottom="8dp"/>
+
+                    <!-- 구분선 -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/divider"
+                        android:layout_marginVertical="8dp"/>
+
+                    <!-- 카테고리명 -->
+                    <TextView
+                        android:id="@+id/product_category_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="카테고리: "
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:paddingBottom="4dp"/>
+
+                    <!-- 지역명 -->
+                    <TextView
+                        android:id="@+id/product_region_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="지역: "
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"/>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
+            <!-- image_card_view: 서브 이미지 3개 -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/image_card_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/card_margin"
-                android:layout_marginRight="@dimen/card_margin"
-                android:layout_marginBottom="@dimen/card_margin">
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
-                    style="@style/Widget.CardContent"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="상품 이미지"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                        android:textAppearance="?attr/textAppearanceSubtitle1"
+                        android:paddingBottom="8dp"/>
 
-                    <ImageView
-                        android:id="@+id/image_sub_1"
+                    <!-- 세로로 3개의 이미지 -->
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:scaleType="centerCrop"
-                        android:layout_marginTop="8dp" />
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="8dp"
+                        android:divider="@color/divider"
+                        android:showDividers="middle"
+                        android:dividerPadding="8dp">
 
-                    <ImageView
-                        android:id="@+id/image_sub_2"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:scaleType="centerCrop"
-                        android:layout_marginTop="8dp" />
+                        <ImageView
+                            android:id="@+id/image_sub_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            android:adjustViewBounds="true"/>
 
-                    <ImageView
-                        android:id="@+id/image_sub_3"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:scaleType="centerCrop"
-                        android:layout_marginTop="8dp" />
+                        <ImageView
+                            android:id="@+id/image_sub_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            android:adjustViewBounds="true"
+                            android:layout_marginTop="8dp"/>
+
+                        <ImageView
+                            android:id="@+id/image_sub_3"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            android:adjustViewBounds="true"
+                            android:layout_marginTop="8dp"/>
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/card_margin"
-                android:layout_marginRight="@dimen/card_margin"
-                android:layout_marginBottom="@dimen/card_margin">
-
-                <LinearLayout
-                    style="@style/Widget.CardContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="지도"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cheese_ipsum" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
+            <!-- 수정 버튼 -->
             <Button
                 android:id="@+id/btn_edit_product"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
                 android:text="상품 수정"
+                android:textColor="@android:color/white"
                 android:textSize="16sp"
-                android:backgroundTint="?attr/colorPrimary"
-                android:textColor="@android:color/white" />
+                android:background="?attr/colorSecondary"
+                app:backgroundTint="@null"
+                android:layout_marginBottom="16dp"/>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- 채팅 FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:clickable="true"
-        app:srcCompat="@drawable/ic_discuss" />
+        app:srcCompat="@drawable/ic_discuss"
+        app:backgroundTint="?attr/colorSecondary" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

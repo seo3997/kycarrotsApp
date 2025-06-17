@@ -248,7 +248,7 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
                 strADName,             // title
                 strADDetail,           // description
                 strADAmount,           // price
-                "R010600",             // categoryGroup
+                "R010610",             // categoryGroup
                 strADCategory,         // categoryMid
                 strADCategoryScls,     // categoryScls
                 "1",                   // saleStatus

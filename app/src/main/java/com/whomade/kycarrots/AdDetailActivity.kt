@@ -126,6 +126,23 @@ class AdDetailActivity : AppCompatActivity() {
         val formattedPrice = String.format("%,d원", priceLong)
         priceTextView.text = "가격: $formattedPrice"
 
+
+        val shippingDateTextView: TextView = findViewById(R.id.product_shipping_date)
+        shippingDateTextView.text = "희망출하일: ${detail.product.desiredShippingDate}"
+
+        val quantityTextView: TextView = findViewById(R.id.product_quantity_unit)
+
+        val rawQty = detail.product.quantity.toLongOrNull() ?: 0L
+        val formattedQty = String.format("%,d", rawQty)
+        quantityTextView.text = "수량: ${formattedQty} ${detail.product.unitCodeNm}"
+
+        val categoryTextView: TextView = findViewById(R.id.product_category_name)
+        categoryTextView.text = "카테고리: ${detail.product.categoryMidNm} > ${detail.product.categorySclsNm}"
+
+        val regionTextView: TextView = findViewById(R.id.product_region_name)
+        regionTextView.text = "지역: ${detail.product.areaMidNm}  ${detail.product.areaSclsNm}"
+
+
         // 대표 이미지 (represent == 1)
         /*
         val imageView: ImageView = findViewById(R.id.backdrop)
