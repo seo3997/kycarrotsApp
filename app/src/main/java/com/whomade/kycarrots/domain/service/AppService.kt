@@ -165,4 +165,23 @@ class AppService(
             SimpleResultResponse(result = false, message = "서버 응답 오류")
         }
     }
+
+    suspend fun getProductDashboard(token: String): Map<String, Int> {
+        val response = repository.fetchProductDashboard(token)
+        return if (response.isSuccessful) {
+            response.body() ?: emptyMap()
+        } else {
+            emptyMap()
+        }
+    }
+
+    suspend fun getRecentProducts(token: String): List<ProductVo> {
+        val response = repository.fetchRecentProducts(token)
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
+    }
+
 }

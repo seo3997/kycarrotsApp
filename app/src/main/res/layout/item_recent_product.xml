@@ -29,6 +29,7 @@
                 android:src="@drawable/baseline_check_24" />
 
             <TextView
+                android:id="@+id/tv_quantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="배추 500kg"
@@ -38,6 +39,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tv_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="용인시 처인구 / 6월 5일"
@@ -46,6 +48,7 @@
             android:layout_marginTop="4dp" />
 
         <Button
+            android:id="@+id/btn_process"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="처리중"

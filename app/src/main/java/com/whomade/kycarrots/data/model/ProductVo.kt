@@ -27,5 +27,7 @@ data class ProductVo @JvmOverloads constructor(
     val categorySclsNm: String = "",
     val areaMidNm: String = "",
     val areaSclsNm: String = "",
-    val unitCodeNm: String = ""
+    val unitCodeNm: String = "",
+    val saleStatusNm: String = "",
+    val userId: String = ""
 )

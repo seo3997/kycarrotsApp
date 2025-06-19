@@ -150,4 +150,12 @@ class RemoteRepository(
     suspend fun getUserInfoByToken(token: String): Response<OpUserVO> {
         return adApi.getUserInfoByToken(token)
     }
+
+    suspend fun fetchProductDashboard(token: String): Response<Map<String, Int>> {
+        return adApi.getProductDashboard(token)
+    }
+
+    suspend fun fetchRecentProducts(token: String): Response<List<ProductVo>> {
+        return adApi.getRecentProducts(token)
+    }
 }

@@ -8,6 +8,7 @@ import com.whomade.kycarrots.data.model.FindPasswordResponse
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
+import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MultipartBody
@@ -122,4 +123,13 @@ interface AdApi {
         @Field("token") token: String
     ): Response<OpUserVO>
 
+    @GET("product/dashboard")
+    suspend fun getProductDashboard(
+        @Query("token") token: String
+    ): Response<Map<String, Int>>
+
+    @GET("product/recent")
+    suspend fun getRecentProducts(
+        @Query("token") token: String
+    ): Response<List<ProductVo>>
 }
