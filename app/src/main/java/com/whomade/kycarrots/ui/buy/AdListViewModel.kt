@@ -9,24 +9,25 @@ import com.whomade.kycarrots.domain.service.AppServiceProvider
 import kotlinx.coroutines.launch
 
 class AdListViewModel(
-    private val appService: AppService, // 싱글톤 주입
+    private val appService: AppService,
     private val initialToken: String
 ) : ViewModel() {
+
+    private val _items = MutableLiveData<List<AdItem>>(emptyList())
+    val items: LiveData<List<AdItem>> = _items
+
+    private val _priceRange = MutableLiveData(Pair(0f, 9990000f))
+    val priceRange: LiveData<Pair<Float, Float>> = _priceRange
+    val isProgressLoading = MutableLiveData(false)
+
+    private var currentPage = 1
     internal var isLoading = false
         private set
     internal var endReached = false
         private set
 
-    private val _items = MutableLiveData<List<AdItem>>(emptyList())
-    val items: LiveData<List<AdItem>> = _items
-    private val _priceRange = MutableLiveData(Pair(0f, 9990000f))
-    val priceRange: LiveData<Pair<Float, Float>> = _priceRange
-    val isProgressLoading = MutableLiveData(false)
-
-    // **새로 추가**: 현재 페이지와 로딩 상태
-    private var currentPage = 1
-
-    // 추가: 필터 상태를 저장
+    // 필터 상태
+    private var adCode: Int = 1
     private var categoryGroup: String? = null
     private var categoryMid:   String? = null
     private var categoryScls:  String? = null
@@ -34,20 +35,29 @@ class AdListViewModel(
     private var areaMid:       String? = null
     private var areaScls:      String? = null
 
-    /**
-     * 광고 목록을 불러올 때마다 필터를 함께 넘깁니다.
-     *
-     * @param adCode 광고 코드 (e.g. 품목)
-     * @param pageNo 페이지 번호
-     * @param categoryGroup 대분류 코드 or "ALL" or null
-     * @param categoryMid   중분류 코드 or "ALL" or null
-     * @param categoryScls  소분류 코드 or "ALL" or null
-     * @param areaGroup     도시 대분류 코드 or "ALL" or null
-     * @param areaMid       시/구 코드 or "ALL" or null
-     * @param areaScls      동/읍/면 코드 or "ALL" or null
-     */
+    /** 필터, 가격 등 모든 조건을 ViewModel에 저장하고, pageNo 만 전달 */
+    private fun getQueryParam(pageNo: Int): QueryParam {
+        val (minF, maxF) = priceRange.value ?: Pair(0f, 0f)
+        val minPrice = if (minF > 0f) minF.toInt() else null
+        val maxPrice = if (maxF > 0f) maxF.toInt() else null
+        return QueryParam(
+            token = initialToken,
+            adCode = adCode,
+            pageNo = pageNo,
+            categoryGroup = categoryGroup,
+            categoryMid = categoryMid,
+            categoryScls = categoryScls,
+            areaGroup = areaGroup,
+            areaMid = areaMid,
+            areaScls = areaScls,
+            minPrice = minPrice,
+            maxPrice = maxPrice
+        )
+    }
+
+    // 1. 전체 새로고침(조회)
     fun loadItems(
-        adCode: Int   = 1,
+        adCode: Int   = this.adCode,
         pageNo: Int   = 1,
         categoryGroup: String? = this.categoryGroup,
         categoryMid:   String? = this.categoryMid,
@@ -56,56 +66,85 @@ class AdListViewModel(
         areaMid:       String? = this.areaMid,
         areaScls:      String? = this.areaScls
     ) {
-        isProgressLoading.value = true
-        viewModelScope.launch {
-            // priceRange LiveData 에서 값을 꺼내 Int? 으로 변환
-            val (minF, maxF) = priceRange.value ?: Pair(0f, 0f)
-            val minPrice = if (minF <= 0f) null else minF.toInt()
-            val maxPrice = if (maxF <= 0f) null else maxF.toInt()
+        this.adCode = adCode
+        this.categoryGroup = categoryGroup
+        this.categoryMid = categoryMid
+        this.categoryScls = categoryScls
+        this.areaGroup = areaGroup
+        this.areaMid = areaMid
+        this.areaScls = areaScls
+        this.currentPage = pageNo
+        endReached = false
 
-            val list = appService.getAdvertiseList(
-                token          = initialToken,
-                adCode         = adCode,
-                pageNo         = pageNo,
-                categoryGroup  = categoryGroup,
-                categoryMid    = categoryMid,
-                categoryScls   = categoryScls,
-                areaGroup      = areaGroup,
-                areaMid        = areaMid,
-                areaScls       = areaScls,
-                minPrice       = minPrice,
-                maxPrice       = maxPrice
-            )
-            _items.value = list
-            isProgressLoading.value = false
+        isProgressLoading.value = true
+        isLoading = true
+
+        viewModelScope.launch {
+            try {
+                val param = getQueryParam(pageNo)
+                val list = appService.getAdvertiseList(
+                    param.token, param.adCode, param.pageNo,
+                    param.categoryGroup, param.categoryMid, param.categoryScls,
+                    param.areaGroup, param.areaMid, param.areaScls,
+                    param.minPrice, param.maxPrice
+                )
+                _items.value = list
+                endReached = list.isEmpty()
+            } catch (e: Exception) {
+                // 에러 처리
+                endReached = true
+            } finally {
+                isProgressLoading.value = false
+                isLoading = false
+            }
         }
     }
 
-    /** 가격 범위 변경 */
+    // 2. 다음 페이지 로딩(필터는 그대로, pageNo만 +1)
+    fun loadNextPage() {
+        if (isProgressLoading.value == true || isLoading || endReached) return
+        isProgressLoading.value = true
+        isLoading = true
+
+        val nextPage = currentPage + 1
+
+        viewModelScope.launch {
+            try {
+                val param = getQueryParam(nextPage)
+                val newItems = appService.getAdvertiseList(
+                    param.token, param.adCode, param.pageNo,
+                    param.categoryGroup, param.categoryMid, param.categoryScls,
+                    param.areaGroup, param.areaMid, param.areaScls,
+                    param.minPrice, param.maxPrice
+                )
+                if (newItems.isEmpty()) {
+                    endReached = true
+                } else {
+                    val updated = _items.value.orEmpty() + newItems
+                    _items.value = updated
+                    currentPage = nextPage
+                }
+            } catch (e: Exception) {
+                // 에러 핸들링
+            } finally {
+                isLoading = false
+                isProgressLoading.value = false
+            }
+        }
+    }
+
     fun setPriceRange(min: Float, max: Float) {
         _priceRange.value = Pair(min, max)
     }
-
-    /** 카테고리 필터 세팅 */
     fun setCategoryFilter(group: String?, mid: String?, scls: String?) {
         this.categoryGroup = group
         this.categoryMid   = mid
         this.categoryScls  = scls
     }
-
-    /** 지역 필터 세팅 */
     fun setAreaFilter(group: String?, mid: String?, scls: String?) {
         this.areaGroup = group
         this.areaMid   = mid
         this.areaScls  = scls
-    }
-
-    /** 화면 재진입 등으로 새로고침할 때 호출 */
-    fun resetAndLoad(adCode: Int = 1) {
-        currentPage = 1
-        endReached = false
-        _items.value = emptyList()
-        loadNextPage(adCode)
     }
 
     fun resetPaging() {
@@ -114,36 +153,26 @@ class AdListViewModel(
         _items.value = emptyList()
     }
 
-    fun loadNextPage(adCode: Int = 1) {
-        if (isProgressLoading.value == true) return
-        isProgressLoading.value = true
-        if (isLoading || endReached) {
-            Log.d("Paging", "스킵: isLoading=$isLoading, endReached=$endReached")
-            return
-        }
-        isLoading = true
-
-        viewModelScope.launch {
-            try {
-                val newItems = appService.getAdvertiseList(initialToken,
-                    adCode,
-                    currentPage
-                )
-                if (newItems.isEmpty()) {
-                    endReached = true
-                    Log.d("Paging", "endReached true")
-                } else {
-                    val updated = _items.value.orEmpty() + newItems
-                    _items.value = updated
-                    currentPage++
-                }
-            } catch (e: Exception) {
-                Log.e("Paging", "로딩 에러", e)
-                // 에러 핸들링
-            } finally {
-                isLoading = false
-                isProgressLoading.value = false
-            }
-        }
+    fun resetAndLoad(adCode: Int = 1) {
+        currentPage = 1
+        endReached = false
+        this.adCode = adCode
+        _items.value = emptyList()
+        loadItems(adCode, 1)
     }
+
+    // QueryParam 데이터 클래스 정의
+    data class QueryParam(
+        val token: String,
+        val adCode: Int,
+        val pageNo: Int,
+        val categoryGroup: String?,
+        val categoryMid: String?,
+        val categoryScls: String?,
+        val areaGroup: String?,
+        val areaMid: String?,
+        val areaScls: String?,
+        val minPrice: Int?,
+        val maxPrice: Int?
+    )
 }

@@ -121,7 +121,7 @@ class ItemSelectionActivity : AppCompatActivity() {
                 // 맨 끝 아이템 보일 때, 로딩 중 아니고 아직 끝에 도달하지 않았다면
                 if (last == total - 1 && !viewModel.isLoading && !viewModel.endReached) {
                     llProgress.visibility = View.VISIBLE
-                    viewModel.loadNextPage(currentAdCode)
+                    viewModel.loadNextPage()
                 }
             }
         })
@@ -380,6 +380,6 @@ class ItemSelectionActivity : AppCompatActivity() {
     // 조회하기 버튼 클릭 시: 페이징도 리셋
     private fun onInquiryClicked() {
         viewModel.resetPaging()
-        viewModel.loadNextPage(currentAdCode)
+        viewModel.loadNextPage()
     }
 }
