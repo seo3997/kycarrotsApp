@@ -28,9 +28,22 @@ class RemoteRepository(
     suspend fun fetchAdvertiseList(
         token: String,
         adCode: Int,
-        pageNo: Int
+        pageNo: Int,
+        categoryGroup: String?  = null,
+        categoryMid: String?    = null,
+        categoryScls: String?   = null,
+        areaGroup: String?      = null,
+        areaMid: String?        = null,
+        areaScls: String?       = null,
+        minPrice: Int?          = null,
+        maxPrice: Int?          = null
     ): Response<AdResponse> {
-        return adApi.getAdItems(token, adCode, pageNo)
+        return adApi.getAdItems(
+            token, adCode, pageNo,
+            categoryGroup, categoryMid, categoryScls,
+            areaGroup, areaMid, areaScls,
+            minPrice, maxPrice
+        )
     }
 
     // 광고 등록

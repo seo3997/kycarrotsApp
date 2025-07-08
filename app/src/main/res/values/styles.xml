@@ -54,6 +54,16 @@
         <item name="android:paddingBottom">24dp</item>
         <item name="android:orientation">vertical</item>
     </style>
+    <!-- res/values/styles.xml -->
+    <!-- ExposedDropdownMenu 용 커스텀 Dense 스타일 -->
+    <style name="Widget.MyDenseDropdown" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- 레이블이 접혔을 때 위쪽 여백을 완전히 없앰 -->
+        <item name="boxCollapsedPaddingTop">0dp</item>
+        <!-- 높이 강제 최소값 해제 -->
+        <item name="android:minHeight">0dp</item>
+        <!-- 테두리 굵기 -->
+        <item name="boxStrokeWidth">1dp</item>
+    </style>
 
 
 </resources>

@@ -16,6 +16,7 @@ import com.whomade.kycarrots.loginout.LoginActivity
 import com.whomade.kycarrots.loginout.LoginInfo
 import com.whomade.kycarrots.network.NetworkCheck
 import com.whomade.kycarrots.domain.service.AppServiceProvider
+import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
 import kotlinx.coroutines.launch
 
 class IntroActivity : AppCompatActivity() {
@@ -99,29 +100,34 @@ class IntroActivity : AppCompatActivity() {
         mHandler.removeCallbacks(mRunnable ?: return)
 
         val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
-        val sUID = prefs.getString("LogIn_ID", "")
-        val sPWD = prefs.getString("LogIn_PWD", "")
-        val sUSERTYPE = prefs.getString("LogIn_USERTYPE", "")
+        val sUID       = prefs.getString("LogIn_ID",    "").orEmpty()
+        val sPWD       = prefs.getString("LogIn_PWD",   "").orEmpty()
+        val sUSERTYPE  = prefs.getString("LogIn_USERTYPE", "").orEmpty()
 
-        if (!sUID.isNullOrBlank() && !sPWD.isNullOrBlank()&& !sUSERTYPE.isNullOrBlank() && mThisAppVersion.isNotEmpty()) {
+        if (sUID.isNotBlank() && sPWD.isNotBlank() && sUSERTYPE.isNotBlank() && mThisAppVersion.isNotEmpty()) {
             val appService = AppServiceProvider.getService()
 
             lifecycleScope.launch {
-                val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, mThisAppVersion, sUSERTYPE,appService).login()
+                val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, mThisAppVersion, sUSERTYPE, appService).login()
                 if (resultCode == StaticDataInfo.RESULT_CODE_200) {
-                    nextPage(true)
+                    nextPage(true, sUSERTYPE)
                 } else {
-                    nextPage(false)
+                    nextPage(false, sUSERTYPE)
                 }
             }
         } else {
-            nextPage(false)
+            // sUSERTYPE 이 비어 있을 수 있지만, nextPage 에 빈 문자열이라도 넘겨서 NPE 방지
+            nextPage(false, sUSERTYPE)
         }
     }
 
-    private fun nextPage(isLogin: Boolean) {
+    private fun nextPage(isLogin: Boolean, userType: String) {
         val intent = if (isLogin) {
-            Intent(this, DashboardActivity::class.java)
+            if (userType == "ROLE_SELL") {
+                Intent(this, DashboardActivity::class.java)
+            } else {
+                Intent(this, ItemSelectionActivity::class.java)
+            }
         } else {
             Intent(this, LoginActivity::class.java)
         }

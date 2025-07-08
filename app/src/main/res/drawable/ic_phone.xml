@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 투명 배경 -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,0h24v24H0z"/>
+
+    <!-- 전화기 아이콘 -->
+    <path
+        android:fillColor="?attr/colorOnPrimary"
+        android:pathData="M6.62,10.79
+            C8.06,13.62 10.38,15.94 13.21,17.38
+            L15.41,15.18
+            C15.6,15 15.85,14.94 16.09,15.02
+            C17.27,15.48 18.51,15.73 19.79,15.73
+            C20.33,15.73 20.75,16.15 20.75,16.69
+            V20.75
+            C20.75,21.29 20.33,21.71 19.79,21.71
+            C10.73,21.71 3.29,14.27 3.29,5.21
+            C3.29,4.67 3.71,4.25 4.25,4.25
+            H8.31
+            C8.85,4.25 9.27,4.67 9.27,5.21
+            C9.27,6.49 9.52,7.73 9.98,8.91
+            C10.06,9.15 10,9.4 9.82,9.59
+            L7.62,11.79
+            Z"/>
+</vector>

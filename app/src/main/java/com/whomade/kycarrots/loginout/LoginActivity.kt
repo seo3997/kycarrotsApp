@@ -15,6 +15,7 @@ import com.whomade.kycarrots.R
 import com.whomade.kycarrots.StaticDataInfo
 import com.whomade.kycarrots.membership.TermsAgreeActivity
 import com.whomade.kycarrots.domain.service.AppServiceProvider
+import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
@@ -133,9 +134,24 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                         val resultCode = LoginInfo(this@LoginActivity, strEmail, strPwd, strMemberCode, appVersion , appService).login()
                         when (resultCode) {
                             StaticDataInfo.RESULT_CODE_200 -> {
-                                startActivity(Intent(this@LoginActivity, DashboardActivity::class.java).apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                                })
+                                if (strMemberCode == "ROLE_SELL") {
+                                    startActivity(
+                                        Intent(
+                                            this@LoginActivity,
+                                            DashboardActivity::class.java
+                                        ).apply {
+                                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                        })
+                                } else {
+                                    startActivity(
+                                        Intent(
+                                            this@LoginActivity,
+                                            ItemSelectionActivity::class.java
+                                        ).apply {
+                                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                        })
+                                }
+
                                 finish()
                             }
 

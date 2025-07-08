@@ -43,7 +43,15 @@ interface AdApi {
     suspend fun getAdItems(
         @Query("token") token: String,
         @Query("ad_code") adCode: Int,
-        @Query("pageno") pageNo: Int
+        @Query("pageno") pageNo: Int,
+        @Query("categoryGroup")   categoryGroup: String? = "R010610",
+        @Query("categoryMid")     categoryMid:   String? = null,
+        @Query("categoryScls")    categoryScls:  String? = null,
+        @Query("areaGroup")       areaGroup:     String? = "R010070",
+        @Query("areaMid")         areaMid:       String? = null,
+        @Query("areaScls")        areaScls:      String? = null,
+        @Query("minPrice")        minPrice:      Int?    = null,
+        @Query("maxPrice")        maxPrice:      Int?    = null
     ): Response<AdResponse>
 
     @Multipart

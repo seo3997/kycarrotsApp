@@ -17,8 +17,24 @@ import java.io.File
 class AppService(
     private val repository: RemoteRepository
 ) {
-    suspend fun getAdvertiseList(token: String, adCode: Int, pageNo: Int): List<AdItem> {
-        val response = repository.fetchAdvertiseList(token, adCode, pageNo)
+    suspend fun getAdvertiseList(token: String,
+                                 adCode: Int,
+                                 pageNo: Int,
+                                 categoryGroup: String?  = "R010610",
+                                 categoryMid: String?    = null,
+                                 categoryScls: String?   = null,
+                                 areaGroup: String?      = "R010070",
+                                 areaMid: String?        = null,
+                                 areaScls: String?       = null,
+                                 minPrice: Int?          = null,
+                                 maxPrice: Int?          = null
+    ): List<AdItem> {
+        val response = repository.fetchAdvertiseList(
+            token, adCode, pageNo,
+            categoryGroup, categoryMid, categoryScls,
+            areaGroup, areaMid, areaScls,
+            minPrice, maxPrice
+        )
         return if (response.isSuccessful) {
             response.body()?.items ?: emptyList()
         } else {

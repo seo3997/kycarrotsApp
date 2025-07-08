@@ -13,4 +13,9 @@
         <item>018</item>
         <item>019</item>
     </string-array>
+
+    <array name="initial_price_range">
+        <item>0</item>
+        <item>9990000</item>
+    </array>
 </resources>
