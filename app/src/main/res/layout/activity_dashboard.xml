@@ -154,5 +154,20 @@
         android:src="@drawable/ic_add"
         android:visibility="gone"
         app:tint="@android:color/white" />
+    <!-- 👇👇 여기에 ProgressBar Overlay 추가 (가장 마지막 자식!) -->
+    <LinearLayout
+        android:id="@+id/ll_progress_circle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="#99FFFFFF"
+        android:visibility="gone">
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/loading_intro_animation"/>
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

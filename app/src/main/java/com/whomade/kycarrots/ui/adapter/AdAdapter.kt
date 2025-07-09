@@ -21,17 +21,23 @@ class AdAdapter(private val fragment: Fragment) :
 
     private val items: MutableList<AdItem> = mutableListOf()
 
+    // 새로고침 또는 첫 로딩 시 사용
     fun updateList(newList: List<AdItem>) {
-
-        val oldSize = items.size
-        items.clear()
-        notifyItemRangeRemoved(0, oldSize)
-
-        items.addAll(newList)
-        notifyItemRangeInserted(0, newList.size)
-
         items.clear()
         items.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+    // 무한스크롤 추가 로딩 시 사용
+    fun addList(moreItems: List<AdItem>) {
+        val start = items.size
+        items.addAll(moreItems)
+        notifyItemRangeInserted(start, moreItems.size)
+    }
+
+    // 리스트 전체 비움 (필요할 때)
+    fun clearList() {
+        items.clear()
         notifyDataSetChanged()
     }
 
@@ -44,14 +50,11 @@ class AdAdapter(private val fragment: Fragment) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_ad, parent, false)
-
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-
-        //Log.d("AdAdapter", "onBindViewHolder 호출: ${items[position].title}")
         holder.title.text = item.title
         holder.brief.text = item.description
 
@@ -61,13 +64,11 @@ class AdAdapter(private val fragment: Fragment) :
                 putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, item.productId)
                 putExtra(AdDetailActivity.EXTRA_USER_ID, item.userId)
             }
-
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                 fragment.requireActivity(),
                 holder.image,
                 "shared_image"
             )
-
             fragment.requireActivity().startActivity(intent, options.toBundle())
         }
 

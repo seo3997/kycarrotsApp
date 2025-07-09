@@ -24,6 +24,11 @@ class AdListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: AdAdapter
     private lateinit var appService: AppService
+    private lateinit var progressBarLayout: View
+
+    private var pageNo = 1
+    private var isLoading = false
+    private var isLastPage = false
 
     companion object {
         fun newInstance(tabCd: String): AdListFragment {
@@ -49,34 +54,71 @@ class AdListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = AdAdapter(this)
         recyclerView.adapter = adapter
+        progressBarLayout = view.findViewById(R.id.ll_progress_circle)
 
         val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
         val repository = RemoteRepository(adApi)
         appService = AppService(repository)
 
-        fetchAdvertiseList()
+        fetchAdvertiseList(isRefresh = true)
 
         parentFragmentManager.setFragmentResultListener("register_result_key", viewLifecycleOwner) { _, bundle ->
             val isSuccess = bundle.getBoolean("register_result", false)
             if (isSuccess) {
-                fetchAdvertiseList()
+                fetchAdvertiseList(isRefresh = true)
             }
         }
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(rv, dx, dy)
+                val layoutManager = rv.layoutManager as LinearLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+                if (!isLoading && !isLastPage && lastVisibleItem >= totalItemCount - 5) {
+                    fetchAdvertiseList()
+                }
+            }
+        })
     }
 
-    public fun fetchAdvertiseList() {
+    fun fetchAdvertiseList(isRefresh: Boolean = false) {
+        if (isLoading || isLastPage) return
+        isLoading = true
+        showProgressBar()
+
         val prefs = requireActivity().getSharedPreferences("TokenInfo", Context.MODE_PRIVATE)
         val token = prefs.getString("token", "") ?: ""
 
+        if (isRefresh) {
+            pageNo = 1
+            isLastPage = false
+            adapter.clearList()
+        }
+
         lifecycleScope.launch {
             try {
-                val ads: List<AdItem> = appService.getAdvertiseList(token, adCode = 1, pageNo = 1)
-                Log.d("AdListFragment", "updateList 호출됨: ${ads.size}개 아이템")
-                adapter.updateList(ads)
-                recyclerView.scrollToPosition(0)
+                val ads: List<AdItem> = appService.getAdvertiseList(token, adCode = 1, pageNo = pageNo)
+                if (ads.isEmpty()) {
+                    isLastPage = true
+                } else {
+                    if (pageNo == 1) adapter.updateList(ads)
+                    else adapter.addList(ads)
+                    pageNo++
+                }
             } catch (e: Exception) {
                 Log.e("AdListFragment", "API 호출 실패: ${e.message}")
+            } finally {
+                isLoading = false
+                hideProgressBar()
             }
         }
+    }
+    fun showProgressBar() {
+        progressBarLayout.visibility = View.VISIBLE
+    }
+
+    fun hideProgressBar() {
+        progressBarLayout.visibility = View.GONE
     }
 }

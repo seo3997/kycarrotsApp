@@ -207,6 +207,13 @@ class ItemSelectionActivity : AppCompatActivity() {
         // 최초 데이터 로드 (1페이지만)
         viewModel.resetAndLoad(currentAdCode)
 
+        val checkBox = findViewById<CheckBox>(R.id.checkbox_price)
+        val priceLayout = findViewById<View>(R.id.layout_price_range)
+
+        checkBox.setOnCheckedChangeListener { _, isChecked ->
+            priceLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
+
     }
 
     /** AppServiceProvider 로부터 AppService 를 얻어 대분류 리스트를 suspend 호출 */

@@ -1,4 +1,25 @@
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recyclerView"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- 로딩 ProgressBar (처음엔 GONE) -->
+    <LinearLayout
+        android:id="@+id/ll_progress_circle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="#99FFFFFF"
+        android:visibility="gone">
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/loading_intro_animation"/>
+    </LinearLayout>
+</FrameLayout>

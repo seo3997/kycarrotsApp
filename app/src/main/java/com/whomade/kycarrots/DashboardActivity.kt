@@ -56,6 +56,7 @@ class DashboardActivity : BaseDrawerActivity() {
     }
 
     private fun loadDashboardStats(token: String) {
+        showProgressBar()
         lifecycleScope.launch {
             try {
                 val stats = appService.getProductDashboard(token)
@@ -72,6 +73,7 @@ class DashboardActivity : BaseDrawerActivity() {
     }
 
     private fun loadRecentProducts(token: String) {
+        showProgressBar()
         val rv: RecyclerView = findViewById(R.id.rv_recent_products)
         val cardNoData: View = findViewById(R.id.card_no_data)
 
@@ -92,6 +94,8 @@ class DashboardActivity : BaseDrawerActivity() {
                 e.printStackTrace()
                 rv.visibility = View.GONE
                 cardNoData.visibility = View.VISIBLE
+            } finally {
+                hideProgressBar()
             }
         }
     }
@@ -130,5 +134,11 @@ class DashboardActivity : BaseDrawerActivity() {
                 context.startActivity(intent)
             }
         }
+    }
+    private fun showProgressBar() {
+        findViewById<View>(R.id.ll_progress_circle)?.visibility = View.VISIBLE
+    }
+    private fun hideProgressBar() {
+        findViewById<View>(R.id.ll_progress_circle)?.visibility = View.GONE
     }
 }

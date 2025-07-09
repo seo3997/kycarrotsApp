@@ -160,64 +160,76 @@
                             android:inputType="none"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
-
-                <!-- 희망 단가 RangeSlider -->
-                <TextView
+                <CheckBox
+                    android:id="@+id/checkbox_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="희망 단가"/>
-                <com.google.android.material.slider.RangeSlider
-                    android:id="@+id/slider_price"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:valueFrom="0"
-                    android:valueTo="9990000"
-                    app:values="@array/initial_price_range"
-                    android:stepSize="5000"
-                    android:paddingVertical="8dp"/>
-                <!-- 최소/최대 라벨 -->
+                    android:text="희망 단가로 조회"
+                    android:layout_marginBottom="8dp"/>
                 <LinearLayout
+                    android:id="@+id/layout_price_range"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:visibility="gone">
+                    <!-- 희망 단가 RangeSlider -->
                     <TextView
-                        android:id="@+id/label_min"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="최소"/>
-                    <TextView
-                        android:id="@+id/label_max"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="최대"/>
-                </LinearLayout>
-
-                <!-- 선택된 범위 & 문의하기 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="8dp">
-                    <TextView
-                        android:id="@+id/selected_range"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:padding="12dp"
-                        android:background="@drawable/bg_outline"
-                        android:text="1,200~1,500원"/>
-                    <Button
-                        android:id="@+id/btn_inquiry"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_phone"
-                        android:drawablePadding="4dp"
-                        android:layout_marginStart="8dp"
-                        android:text="조회하기"/>
+                        android:text="희망 단가"/>
+                    <com.google.android.material.slider.RangeSlider
+                        android:id="@+id/slider_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:valueFrom="0"
+                        android:valueTo="9990000"
+                        app:values="@array/initial_price_range"
+                        android:stepSize="5000"
+                        android:paddingVertical="8dp"/>
+                    <!-- 최소/최대 라벨 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/label_min"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="최소"/>
+                        <TextView
+                            android:id="@+id/label_max"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="최대"/>
+                    </LinearLayout>
+
+                    <!-- 선택된 범위 & 문의하기 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+                        <TextView
+                            android:id="@+id/selected_range"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:padding="12dp"
+                            android:background="@drawable/bg_outline"
+                            android:text="1,200~1,500원"/>
+                        <Button
+                            android:id="@+id/btn_inquiry"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/ic_phone"
+                            android:drawablePadding="4dp"
+                            android:layout_marginStart="8dp"
+                            android:text="조회하기"/>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
