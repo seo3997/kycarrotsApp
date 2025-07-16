@@ -5,12 +5,14 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.AnimationDrawable
 import android.net.Uri
 import android.os.*
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.whomade.kycarrots.dialog.DlgBtnActivity
 import com.whomade.kycarrots.loginout.LoginActivity
 import com.whomade.kycarrots.loginout.LoginInfo
@@ -75,16 +77,13 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun checkMarketVersion() {
-        Thread {
-            checkRegId()
-            // val storeVersion = MarketVersionChecker.getMarketVersion(packageName)
-            // if ((storeVersion != null) && (storeVersion > mThisAppVersion)) showUpdateAlert() else checkRegId()
-        }.start()
+        checkRegId()
     }
 
     private fun checkRegId() {
         val prefs = getSharedPreferences("SaveRegId", MODE_PRIVATE)
-        val regId = prefs.getString("setRegId", "1")
+        val regId = prefs.getString("setRegId", "")
+        Log.d("FCM", "r**************egId: $regId")  // <- 로그로 출력!
 
         if (regId.isNullOrEmpty() || !isVersionMatch) {
             registerToken()
@@ -176,8 +175,24 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun registerToken() {
-        // FirebaseMessaging.getInstance().token.addOnCompleteListener { ... }
-        // FCM 토큰 등록 구현 필요 시 여기에 작성
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                Log.d("FCM", "토큰: $token")  // <- 로그로 출력!
+                // 1. 토큰을 서버로 전송 (원한다면)
+                // 2. 로컬에 저장
+                val prefs = getSharedPreferences("SaveRegId", MODE_PRIVATE)
+                prefs.edit().putString("setRegId", token).apply()
+                // 3. 자동 로그인 체크
+                mRunnable = Runnable {
+                    autoLoginCheck()
+                }
+                mHandler.postDelayed(mRunnable!!, 1000)
+            } else {
+                // 토큰 발급 실패 시 재시도 또는 에러 처리
+                // 예: 다시 registerToken() 호출 (주의: 무한루프 주의)
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
