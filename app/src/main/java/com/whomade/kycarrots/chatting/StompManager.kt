@@ -8,16 +8,17 @@ import io.reactivex.schedulers.Schedulers
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient
 import ua.naiksoftware.stomp.dto.LifecycleEvent
+import ua.naiksoftware.stomp.dto.StompHeader
 
 object StompManager {
 
-    private val stompClient: StompClient = Stomp.over(
-        Stomp.ConnectionProvider.OKHTTP,
-        Constants.BASE_CHAT_URL
-    )
+    private var stompClient: StompClient? = null
 
-    fun connect() {
-        stompClient.lifecycle().subscribe { event ->
+    fun connect(userId: String) {
+        val urlWithUserId = "${Constants.BASE_CHAT_URL}$userId"
+        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, urlWithUserId)
+
+        stompClient?.lifecycle()?.subscribe { event ->
             when (event.type) {
                 LifecycleEvent.Type.OPENED -> Log.d("STOMP", "연결됨")
                 LifecycleEvent.Type.ERROR -> Log.e("STOMP", "연결 오류", event.exception)
@@ -25,15 +26,16 @@ object StompManager {
                 else -> {}
             }
         }
-        stompClient.connect()
+
+        stompClient?.connect()
     }
 
     fun sendMessage(message: ChatMessage) {
         val json = Gson().toJson(message)
-        stompClient.send("/app/chat.send", json)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
+        stompClient?.send("/app/chat.send", json)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe({
                 Log.d("STOMP", "메시지 전송 성공")
             }, { error ->
                 Log.e("STOMP", "전송 실패", error)
@@ -44,10 +46,10 @@ object StompManager {
         val json = Gson().toJson(message)
         val destination = "/app/chat.send.${message.roomId}"
 
-        stompClient.send(destination, json)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
+        stompClient?.send(destination, json)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe({
                 Log.d("STOMP", "메시지 전송 성공 to $destination")
             }, { error ->
                 Log.e("STOMP", "전송 실패", error)
@@ -55,10 +57,10 @@ object StompManager {
     }
 
     fun subscribe(topicPath: String, onMessageReceived: (ChatMessage) -> Unit) {
-        stompClient.topic(topicPath)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ topicMessage ->
+        stompClient?.topic(topicPath)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe({ topicMessage ->
                 val received = Gson().fromJson(topicMessage.payload, ChatMessage::class.java)
                 onMessageReceived(received)
             }, { error ->

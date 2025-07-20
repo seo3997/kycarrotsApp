@@ -11,6 +11,8 @@ import android.view.Window
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import android.Manifest
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.whomade.kycarrots.dialog.DlgBtnActivity
@@ -20,8 +22,20 @@ import com.whomade.kycarrots.network.NetworkCheck
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
 import kotlinx.coroutines.launch
+import android.os.Build
+import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 
 class IntroActivity : AppCompatActivity() {
+    // (1) Activity의 멤버 변수(필드)로 선언!
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                Log.d("알림", "알림 권한 허용됨")
+            } else {
+                Log.d("알림", "알림 권한 거부됨")
+            }
+        }
 
     companion object {
         const val ACTION_GCM_REGISTRATION = "com.cashcuk.intent.GCM_REGISTRATION"
@@ -74,6 +88,8 @@ class IntroActivity : AppCompatActivity() {
 
             checkMarketVersion()
         }
+
+        checkAndRequestNotificationPermission()
     }
 
     private fun checkMarketVersion() {
@@ -101,28 +117,28 @@ class IntroActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
         val sUID       = prefs.getString("LogIn_ID",    "").orEmpty()
         val sPWD       = prefs.getString("LogIn_PWD",   "").orEmpty()
-        val sUSERTYPE  = prefs.getString("LogIn_USERTYPE", "").orEmpty()
+        val sMEMBERCODE= prefs.getString("LogIn_MEMBERCODE", "").orEmpty()
 
-        if (sUID.isNotBlank() && sPWD.isNotBlank() && sUSERTYPE.isNotBlank() && mThisAppVersion.isNotEmpty()) {
+        if (sUID.isNotBlank() && sPWD.isNotBlank() && sMEMBERCODE.isNotBlank() && mThisAppVersion.isNotEmpty()) {
             val appService = AppServiceProvider.getService()
 
             lifecycleScope.launch {
-                val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, mThisAppVersion, sUSERTYPE, appService).login()
+                val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, sMEMBERCODE, mThisAppVersion, appService).login()
                 if (resultCode == StaticDataInfo.RESULT_CODE_200) {
-                    nextPage(true, sUSERTYPE)
+                    nextPage(true, sMEMBERCODE)
                 } else {
-                    nextPage(false, sUSERTYPE)
+                    nextPage(false, sMEMBERCODE)
                 }
             }
         } else {
             // sUSERTYPE 이 비어 있을 수 있지만, nextPage 에 빈 문자열이라도 넘겨서 NPE 방지
-            nextPage(false, sUSERTYPE)
+            nextPage(false, sMEMBERCODE)
         }
     }
 
-    private fun nextPage(isLogin: Boolean, userType: String) {
+    private fun nextPage(isLogin: Boolean, memberCode: String) {
         val intent = if (isLogin) {
-            if (userType == "ROLE_SELL") {
+            if (memberCode == "ROLE_SELL") {
                 Intent(this, DashboardActivity::class.java)
             } else {
                 Intent(this, ItemSelectionActivity::class.java)
@@ -207,5 +223,25 @@ class IntroActivity : AppCompatActivity() {
         mRegHandler?.removeCallbacks(mRegRunnable ?: return)
         mHandler.removeCallbacks(mRunnable ?: return)
         mLoadingAnimation.stop()
+    }
+
+    private fun checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                        == PackageManager.PERMISSION_GRANTED -> {
+                    // 이미 권한 허용됨
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    // 사용자가 이전에 권한을 거부한 경우 설명 필요
+                    // Dialog 등으로 설명 후 다시 요청 가능
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                else -> {
+                    // 권한 요청
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        }
     }
 }

@@ -1,3 +1,5 @@
+// ChatActivity.kt
+
 package com.whomade.kycarrots.chatting
 
 import android.os.Bundle
@@ -15,8 +17,7 @@ import com.whomade.kycarrots.R
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 class ChatActivity : AppCompatActivity() {
 
@@ -33,14 +34,20 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var productId: String
     private lateinit var currentUserId: String
     private lateinit var senderId: String
-
     private var isBuyer: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        // 툴바 설정
+        setupToolbar()
+        bindViews()
+        initializeChat()
+        setupSendButton()
+        subscribeToMessages()
+    }
+
+    private fun setupToolbar() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
@@ -48,19 +55,21 @@ class ChatActivity : AppCompatActivity() {
             setHomeAsUpIndicator(R.drawable.ic_arrow_back)
             title = "채팅"
         }
+    }
 
-        // View 바인딩
+    private fun bindViews() {
         chatRecyclerView = findViewById(R.id.chatRecyclerView)
         messageEditText = findViewById(R.id.messageEditText)
         sendButton = findViewById(R.id.sendButton)
 
-        // RecyclerView 초기화
         chatAdapter = ChatAdapter(chatMessages)
         chatRecyclerView.layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
         }
         chatRecyclerView.adapter = chatAdapter
-        // 인텐트로 받은 데이터
+    }
+
+    private fun initializeChat() {
         roomId = intent.getStringExtra("roomId") ?: return finishWithError("roomId 누락")
         buyerId = intent.getStringExtra("buyerId") ?: return finishWithError("buyerId 누락")
         sellerId = intent.getStringExtra("sellerId") ?: return finishWithError("sellerId 누락")
@@ -70,39 +79,40 @@ class ChatActivity : AppCompatActivity() {
         val sUID = prefs.getString("LogIn_ID", "") ?: ""
         val sMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
 
-        // 로그인 사용자 ID 기준으로 발신자 판단
         currentUserId = sUID
         isBuyer = sMemberCode == "ROLE_PUB"
         senderId = sUID
 
-        // WebSocket 연결
-        StompManager.connect()
+        StompManager.connect(sUID)
 
-        // 채팅 메시지 초기 로딩
         loadChatMessages(roomId)
+    }
 
-        // 메시지 전송 처리
+    private fun setupSendButton() {
         sendButton.setOnClickListener {
             val text = messageEditText.text.toString().trim()
-            val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
-            if (text.isNotEmpty()) {
-                val message = ChatMessage(
-                    senderId = senderId,
-                    message = text,
-                    roomId = roomId,
-                    type = "text",
-                    time = currentTime,
-                    isMe = true
-                )
-                chatMessages.add(message)
-                chatAdapter.notifyItemInserted(chatMessages.size - 1)
-                chatRecyclerView.scrollToPosition(chatMessages.size - 1)
-                messageEditText.text.clear()
-                StompManager.sendMessageRoomId(message)
-            }
-        }
+            if (text.isEmpty()) return@setOnClickListener
 
-        // 메시지 수신 구독
+            val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
+            val message = ChatMessage(
+                senderId = senderId,
+                message = text,
+                roomId = roomId,
+                type = "text",
+                time = currentTime,
+                isMe = true
+            )
+
+            chatMessages.add(message)
+            chatAdapter.notifyItemInserted(chatMessages.size - 1)
+            chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+            messageEditText.text.clear()
+
+            StompManager.sendMessageRoomId(message)
+        }
+    }
+
+    private fun subscribeToMessages() {
         StompManager.subscribe("/topic/$roomId") { received ->
             runOnUiThread {
                 if (received.senderId != currentUserId) {
@@ -112,22 +122,6 @@ class ChatActivity : AppCompatActivity() {
                     chatRecyclerView.scrollToPosition(chatMessages.size - 1)
                 }
             }
-        }
-    }
-
-    private fun finishWithError(message: String): Nothing {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        finish()
-        throw IllegalArgumentException(message)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -156,5 +150,18 @@ class ChatActivity : AppCompatActivity() {
                 Log.e("ChatActivity", "채팅 내역 로드 오류", e)
             }
         }
+    }
+
+    private fun finishWithError(message: String): Nothing {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        finish()
+        throw IllegalArgumentException(message)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == android.R.id.home) {
+            finish()
+            true
+        } else super.onOptionsItemSelected(item)
     }
 }
