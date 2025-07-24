@@ -2,7 +2,9 @@ package com.whomade.kycarrots.message
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
@@ -10,11 +12,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.whomade.kycarrots.IntroActivity
 import com.whomade.kycarrots.R
+
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // 로그 출력 (기존 코드)
         Log.d("FCM", "From: ${remoteMessage.from}")
 
         val title = remoteMessage.notification?.title ?: "새 알림"
@@ -23,32 +26,32 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         Log.d("FCM", "title: ${title}")
         Log.d("body", "title: ${body}")
 
-        // 알림 직접 띄우기
-        showNotification(title, body)
+        // 데이터 payload
+        val data = remoteMessage.data
+        val roomId = data["roomId"]
+        val buyerId = data["buyerId"]
+        val sellerId = data["sellerId"]
+        val productId = data["productId"]
+        val type = data["type"]
+        val msg = data["msg"]
 
-        if (remoteMessage.data.isNotEmpty()) {
-            Log.d("FCM", "데이터 메시지: ${remoteMessage.data}")
+        Log.d("FCM", "roomId: $roomId, buyerId: $buyerId, sellerId: $sellerId, productId: $productId, type: $type, msg: $msg")
 
-            // 예시: roomId, type, msg 추출
-            val roomId = remoteMessage.data["roomId"]
-            val type = remoteMessage.data["type"]
-            val msg = remoteMessage.data["msg"]
-
-            Log.d("FCM", "roomId: $roomId, type: $type, msg: $msg")
-
-            // 필요하다면 데이터 활용 (예: 채팅방 바로 이동 등)
-            // if (type == "chat") { ... }
-        }
-
-        // 커스텀 데이터 로그 (필요 시)
-        if (remoteMessage.data.isNotEmpty()) {
-            Log.d("FCM", "데이터 메시지: ${remoteMessage.data}")
-        }
+        // 알림에 intent 포함
+        showNotification(title, body, roomId, buyerId, sellerId, productId, type, msg)
     }
 
-    private fun showNotification(title: String, body: String) {
+    private fun showNotification(
+        title: String,
+        body: String,
+        roomId: String?,
+        buyerId: String?,
+        sellerId: String?,
+        productId: String?,
+        type: String?,
+        msg: String?
+    ) {
         val channelId = "chat_channel"
-        // 알림 채널 생성 (Android 8.0 이상)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "채팅 알림"
             val descriptionText = "채팅 관련 알림입니다."
@@ -61,26 +64,40 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // 알림 빌드
+        // Intent 준비 (IntroActivity → ChatActivity로 분기)
+        val intent = Intent(this, IntroActivity::class.java).apply {
+            putExtra("roomId", roomId)
+            putExtra("buyerId", buyerId)
+            putExtra("sellerId", sellerId)
+            putExtra("productId", productId)
+            putExtra("type", type)
+            putExtra("msg", msg)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.android_icon) // mipmap 아이콘 사용!
+            .setSmallIcon(R.mipmap.android_icon)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true) // 클릭 시 알림 제거
 
-        // Android 13 이상은 권한 체크 필요!
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Service에서는 checkSelfPermission 사용
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                 NotificationManagerCompat.from(this).notify(System.currentTimeMillis().toInt(), builder.build())
             } else {
-                // 권한 없으면 알림 띄우지 않고 로그만 출력
                 Log.d("FCM", "알림 권한이 없습니다. 알림을 띄우지 않습니다.")
             }
         } else {
-            // Android 12 이하: 바로 알림 띄우기
             NotificationManagerCompat.from(this).notify(System.currentTimeMillis().toInt(), builder.build())
         }
     }
-
 }

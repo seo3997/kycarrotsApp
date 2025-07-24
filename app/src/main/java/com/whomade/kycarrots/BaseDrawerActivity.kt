@@ -10,6 +10,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.whomade.kycarrots.setting.SettingActivity
+import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
 
 open class BaseDrawerActivity : AppCompatActivity() {
     protected lateinit var drawerLayout: DrawerLayout
@@ -45,10 +46,21 @@ open class BaseDrawerActivity : AppCompatActivity() {
                 }
                 R.id.nav_messages -> {
                     // 다른 화면 연결 시 여기에 작성
-                    val intent = Intent(this, MainActivity::class.java).apply {
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
+                    val sMEMBERCODE= prefs.getString("LogIn_MEMBERCODE", "").orEmpty()
+
+                    if (sMEMBERCODE == "ROLE_SELL") {
+                        var intent = Intent(this, MainActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        }
+                        startActivity(intent)
+                    } else {
+                        var intent = Intent(this, ItemSelectionActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        }
+                        startActivity(intent)
                     }
-                    startActivity(intent)
+
                 }
                 R.id.nav_setting -> {
                     // 설정 화면 연결 시 여기에 작성

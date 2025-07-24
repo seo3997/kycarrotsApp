@@ -6,17 +6,19 @@ import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.slider.RangeSlider
+import com.whomade.kycarrots.BaseDrawerActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import kotlinx.coroutines.launch
 
-class ItemSelectionActivity : AppCompatActivity() {
+class ItemSelectionActivity : BaseDrawerActivity() {
 
     // ViewModel 은 목록만 담당, 카테고리/세부항목은 Activity 에서 직접 AppService 호출
     private val viewModel: AdListViewModel by viewModels {
@@ -76,6 +78,7 @@ class ItemSelectionActivity : AppCompatActivity() {
 
         llProgress.visibility = View.GONE
 
+        initToolbar()
         val layoutManager = LinearLayoutManager(this)
         adapter = AdActivityAdapter(this)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -214,6 +217,16 @@ class ItemSelectionActivity : AppCompatActivity() {
             priceLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
         }
 
+    }
+
+    private fun initToolbar() {
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_menu)
+            title = "상품리스트"
+        }
     }
 
     /** AppServiceProvider 로부터 AppService 를 얻어 대분류 리스트를 suspend 호출 */

@@ -25,8 +25,29 @@ import kotlinx.coroutines.launch
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
+import com.whomade.kycarrots.chatting.ChatActivity
 
 class IntroActivity : AppCompatActivity() {
+    private var pushRoomId: String? = null
+    private var pushBuyerId: String? = null
+    private var pushSellerId: String? = null
+    private var pushProductId: String? = null
+    private var pushType: String? = null
+    private var pushMsg: String? = null
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        savePushIntentData(intent)
+    }
+    private fun savePushIntentData(intent: Intent?) {
+        pushRoomId = intent?.getStringExtra("roomId")
+        pushBuyerId = intent?.getStringExtra("buyerId")
+        pushSellerId = intent?.getStringExtra("sellerId")
+        pushProductId = intent?.getStringExtra("productId")
+        pushType = intent?.getStringExtra("type")
+        pushMsg = intent?.getStringExtra("msg")
+    }
+
     // (1) Activity의 멤버 변수(필드)로 선언!
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -59,6 +80,9 @@ class IntroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_intro)
+
+        // 1. 인텐트에서 푸시 데이터 추출 (항상 먼저 호출)
+        savePushIntentData(intent)
 
         CheckLoginService.mActivityList.add(this)
 
@@ -137,14 +161,38 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun nextPage(isLogin: Boolean, memberCode: String) {
-        val intent = if (isLogin) {
-            if (memberCode == "ROLE_SELL") {
-                Intent(this, DashboardActivity::class.java)
-            } else {
-                Intent(this, ItemSelectionActivity::class.java)
+        // 푸시에서 roomId 등 채팅 관련 데이터가 있으면 ChatActivity로 분기
+        val isPushChat = !pushRoomId.isNullOrBlank() && !pushBuyerId.isNullOrBlank()
+                && !pushSellerId.isNullOrBlank() && !pushProductId.isNullOrBlank()
+        val intent = when {
+            isLogin && isPushChat -> {
+                Intent(this, ChatActivity::class.java).apply {
+                    putExtra("roomId", pushRoomId)
+                    putExtra("buyerId", pushBuyerId)
+                    putExtra("sellerId", pushSellerId)
+                    putExtra("productId", pushProductId)
+                    //putExtra("type", pushType)
+                    //putExtra("msg", pushMsg)
+                }
             }
-        } else {
-            Intent(this, LoginActivity::class.java)
+            isLogin -> {
+                if (memberCode == "ROLE_SELL") {
+                    Intent(this, DashboardActivity::class.java)
+                } else {
+                    Intent(this, ItemSelectionActivity::class.java)
+                }
+            }
+            else -> {
+                Intent(this, LoginActivity::class.java).apply {
+                    // 로그인 성공 시 채팅 바로 이동을 위해 push 데이터 전달
+                    putExtra("roomId", pushRoomId)
+                    putExtra("buyerId", pushBuyerId)
+                    putExtra("sellerId", pushSellerId)
+                    putExtra("productId", pushProductId)
+                    //putExtra("type", pushType)
+                    //putExtra("msg", pushMsg)
+                }
+            }
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
