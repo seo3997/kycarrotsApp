@@ -12,6 +12,7 @@ import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductVo
+import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MediaType.Companion.toMediaType
@@ -170,5 +171,9 @@ class RemoteRepository(
 
     suspend fun fetchRecentProducts(token: String): Response<List<ProductVo>> {
         return adApi.getRecentProducts(token)
+    }
+
+    suspend fun registerPushToken(pushTokenVo: PushTokenVo): Response<Void> {
+        return adApi.registerPushToken(pushTokenVo)
     }
 }

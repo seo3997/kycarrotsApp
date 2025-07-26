@@ -8,6 +8,7 @@ import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductVo
+import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
@@ -200,4 +201,8 @@ class AppService(
         }
     }
 
+    suspend fun registerPushToken(pushTokenVo: PushTokenVo): Boolean {
+        val response = repository.registerPushToken(pushTokenVo)
+        return response.isSuccessful
+    }
 }

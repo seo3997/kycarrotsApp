@@ -14,9 +14,24 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.whomade.kycarrots.IntroActivity
 import com.whomade.kycarrots.R
+import com.whomade.kycarrots.data.model.PushTokenVo
+import com.whomade.kycarrots.domain.service.AppServiceProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
+
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        Log.d("FCM", "New token: $token")
+
+        // 서버에 토큰 전송
+        PushTokenUtil.sendTokenToServer(applicationContext, token)
+    }
+
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d("FCM", "From: ${remoteMessage.from}")
 

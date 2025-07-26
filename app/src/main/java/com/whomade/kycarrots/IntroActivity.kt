@@ -26,6 +26,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import com.whomade.kycarrots.chatting.ChatActivity
+import com.whomade.kycarrots.message.PushTokenUtil
 
 class IntroActivity : AppCompatActivity() {
     private var pushRoomId: String? = null
@@ -149,6 +150,11 @@ class IntroActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, sMEMBERCODE, mThisAppVersion, appService).login()
                 if (resultCode == StaticDataInfo.RESULT_CODE_200) {
+                    val regPrefs = getSharedPreferences("SaveRegId", MODE_PRIVATE)
+                    val token = regPrefs.getString("setRegId", "") ?: ""
+                    if (token.isNotBlank()) {
+                        PushTokenUtil.sendTokenToServer(this@IntroActivity, token)
+                    }
                     nextPage(true, sMEMBERCODE)
                 } else {
                     nextPage(false, sMEMBERCODE)
@@ -245,6 +251,7 @@ class IntroActivity : AppCompatActivity() {
                 Log.d("FCM", "토큰: $token")  // <- 로그로 출력!
                 // 1. 토큰을 서버로 전송 (원한다면)
                 // 2. 로컬에 저장
+                //PushTokenUtil.sendTokenToServer(this, token)
                 val prefs = getSharedPreferences("SaveRegId", MODE_PRIVATE)
                 prefs.edit().putString("setRegId", token).apply()
                 // 3. 자동 로그인 체크

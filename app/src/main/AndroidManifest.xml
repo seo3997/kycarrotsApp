@@ -40,12 +40,15 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        tools:replace="android:allowBackup"
         android:extractNativeLibs="true"
         android:icon="@mipmap/android_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        xmlns:tools="http://schemas.android.com/tools">
         <activity
             android:name=".ui.buy.ItemSelectionActivity"
             android:exported="false"

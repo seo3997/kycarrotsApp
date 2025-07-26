@@ -9,6 +9,7 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductVo
+import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MultipartBody
@@ -140,4 +141,10 @@ interface AdApi {
     suspend fun getRecentProducts(
         @Query("token") token: String
     ): Response<List<ProductVo>>
+
+    @POST("/members/push/savetoken")
+    suspend fun registerPushToken(
+        @Body request: PushTokenVo
+    ): Response<Void>
+
 }
