@@ -54,6 +54,7 @@ import com.whomade.kycarrots.domain.service.AppServiceProvider
 class AdDetailActivity : AppCompatActivity() {
     private lateinit var productIdStr: String
     private lateinit var productUserId: String
+    private lateinit var wholesalerId  : String
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +87,11 @@ class AdDetailActivity : AppCompatActivity() {
 
         val fab: View = findViewById(R.id.fab_send)
         fab.setOnClickListener {
-            handleFabClickForSystemType1()
+            when (Constants.SYSTEM_TYPE) {
+                1 -> handleFabClickForSystemType1()
+                2 -> handleFabClickForSystemType2()
+                else -> showToast("지원하지 않는 시스템 유형입니다.")
+            }
 
         }
 
@@ -101,40 +106,12 @@ class AdDetailActivity : AppCompatActivity() {
 
     }
 
-    private fun handleFabClickForSystemType1() {
-        val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
-        val sUID = prefs.getString("LogIn_ID", "") ?: ""
-        val sMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
-        val isBuyer = sMemberCode == "ROLE_PUB"
-        val systemType = Constants.SYSTEM_TYPE
-
-        // SYSTEM_TYPE 체크
-        if (systemType != 1) {
-            showToast("SYSTEM_TYPE 1 전용 로직입니다.")
-            return
-        }
-
-        // 값 설정
-        val buyerId = if (isBuyer) sUID else ""     //구매자
-        val sellerId = productUserId                 //판매자
-        val productId = productIdStr                  //상품ID
-
-        if (isBuyer) {
-            // 구매자 → 채팅방 생성 요청
-            createOrGetRoomFromServer(productId, buyerId, sellerId)
-        } else {
-            // 판매자 → 채팅방 목록 확인
-            fetchRoomListForSeller(productId, sellerId)
-        }
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this@AdDetailActivity, message, Toast.LENGTH_SHORT).show()
-    }
 
     private fun showProductDetail(detail: ProductDetailResponse) {
         val collapsingToolbar: CollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar)
         collapsingToolbar.title = detail.product.title
+
+        wholesalerId = detail.product.wholesalerId                                                  //도매상ID
 
         val descriptionTextView: TextView = findViewById(R.id.product_description)
         // 설명 텍스트 표시
@@ -298,6 +275,89 @@ class AdDetailActivity : AppCompatActivity() {
         supportFinishAfterTransition()
     }
 
+    private fun handleFabClickForSystemType1() {
+        val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
+        val sUID = prefs.getString("LogIn_ID", "") ?: ""
+        val sMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
+        val isBuyer = sMemberCode == "ROLE_PUB"
+        val systemType = Constants.SYSTEM_TYPE
+
+        // SYSTEM_TYPE 체크
+        if (systemType != 1) {
+            showToast("SYSTEM_TYPE 1 전용 로직입니다.")
+            return
+        }
+
+        // 값 설정
+        val buyerId = if (isBuyer) sUID else ""     //구매자
+        val sellerId = productUserId                 //판매자
+        val productId = productIdStr                  //상품ID
+
+        if (isBuyer) {
+            // 구매자 → 채팅방 생성 요청
+            createOrGetRoomFromServer(productId, buyerId, sellerId)
+        } else {
+            // 판매자 → 채팅방 목록 확인
+            fetchRoomListForSeller(productId, sellerId)
+        }
+    }
+
+
+    private fun handleFabClickForSystemType2() {
+        val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
+        val myId = prefs.getString("LogIn_ID", "") ?: ""
+        val myRole = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
+        val productId = productIdStr
+
+        when (myRole) {
+            "ROLE_PUB" -> {
+                // 구매자 → 도매상과 채팅 생성
+                val buyerId = myId
+                val sellerId = wholesalerId
+                createOrGetRoomFromServer(productId, buyerId, sellerId)
+            }
+
+            "ROLE_SELL" -> {
+                // 판매자 → 도매상과 채팅방 입장 (생성 불가)
+                val sellerId = myId
+                fetchRoomListForSeller(productId, sellerId)
+            }
+
+            "ROLE_PROJ" -> {
+                // 도매상 → 구매자 or 판매자 판별
+                val options = arrayOf("판매자에게 채팅", "구매자에게 채팅")
+                AlertDialog.Builder(this)
+                    .setTitle("채팅 대상 선택")
+                    .setItems(options) { _, which ->
+                        when (which) {
+                            0 -> {
+                                // 도매상 → 판매자: 채팅방 생성 가능
+                                val targetBuyerId = myId
+                                val targetSellerId = productUserId
+                                createOrGetRoomFromServer(productId, targetBuyerId, targetSellerId)
+                            }
+                            1 -> {
+                                // 도매상 본인이 sellerId인 채팅 목록 조회
+                                fetchRoomListForSeller(productId, myId)
+                            }
+                        }
+                    }
+                    .setNegativeButton("취소", null)
+                    .show()
+            }
+
+            else -> {
+                Toast.makeText(this, "알 수 없는 사용자 역할입니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    private fun showToast(message: String) {
+        Toast.makeText(this@AdDetailActivity, message, Toast.LENGTH_SHORT).show()
+    }
+
+
     private fun createOrGetRoomFromServer(productId: String, buyerId: String, sellerId: String) {
         val appService = AppServiceProvider.getService()
 
@@ -321,8 +381,8 @@ class AdDetailActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val allChatRooms = appService.getUserChatRooms(sellerId)
-                val chatRooms = allChatRooms.filter { it.productId == productId }
+                val chatRooms = appService.getUserChatRooms(productId,sellerId)
+                //val chatRooms = allChatRooms.filter { it.productId == productId }
 
                 when {
                     chatRooms.isEmpty() -> {
@@ -390,4 +450,6 @@ class AdDetailActivity : AppCompatActivity() {
         }
         startActivity(intent)
     }
+
+
 }

@@ -109,8 +109,9 @@ interface AdApi {
         @Query("sellerId") sellerId: String
     ): Response<ChatRoomResponse>
 
-    @GET("/api/chat/rooms/{userId}")
+    @GET("/api/chat/rooms/{productId}/{userId}")
     suspend fun getUserChatRooms(
+        @Path("productId") productId: String,
         @Path("userId") userId: String
     ): Response<List<ChatRoomResponse>>
 

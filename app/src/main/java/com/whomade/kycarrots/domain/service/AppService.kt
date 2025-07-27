@@ -136,8 +136,8 @@ class AppService(
         }
     }
 
-    suspend fun getUserChatRooms(userId: String): List<ChatRoomResponse> {
-        val response = repository.getUserChatRooms(userId)
+    suspend fun getUserChatRooms(productId: String,userId: String): List<ChatRoomResponse> {
+        val response = repository.getUserChatRooms(productId,userId)
         return if (response.isSuccessful) {
             response.body() ?: emptyList()
         } else {

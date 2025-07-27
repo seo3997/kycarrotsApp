@@ -144,9 +144,10 @@ class RemoteRepository(
 
     // 채팅방 목록 조회
     suspend fun getUserChatRooms(
+        productId: String,
         userId: String
     ): Response<List<ChatRoomResponse>> {
-        return adApi.getUserChatRooms(userId)
+        return adApi.getUserChatRooms(productId,userId)
     }
     suspend fun getChatMessages(roomId: String): Response<List<ChatMessageResponse>> {
         return adApi.getChatMessages(roomId)

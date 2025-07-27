@@ -73,6 +73,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText
+                enableVibration(true)  //  진동 활성화
+                vibrationPattern = longArrayOf(0, 300, 200, 300) //  진동 패턴 설정 (선택)
             }
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
