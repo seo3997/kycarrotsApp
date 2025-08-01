@@ -38,8 +38,12 @@ import kotlinx.coroutines.launch
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.MenuItem
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatSpinner
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -214,6 +218,23 @@ class AdDetailActivity : AppCompatActivity() {
             }
         }
         // TODO: 나머지 detail.product.description, price 등도 TextView에 연결 가능
+
+        val spinner = findViewById<AppCompatSpinner>(R.id.spinner_product_status)
+
+        val statusList = listOf("승인요청","판매중", "수정요청")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusList)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedStatus = statusList[position]
+                Log.d("ProductDetail", "선택된 상태: $selectedStatus")
+                // 서버에 상태 업데이트 로직 연결 예정
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
     }
 
     private fun loadBackdrop() {

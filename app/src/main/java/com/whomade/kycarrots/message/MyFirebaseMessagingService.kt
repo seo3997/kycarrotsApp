@@ -38,22 +38,36 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val title = remoteMessage.notification?.title ?: "새 알림"
         val body = remoteMessage.notification?.body ?: "알림 내용 없음"
 
-        Log.d("FCM", "title: ${title}")
-        Log.d("body", "title: ${body}")
-
-        // 데이터 payload
         val data = remoteMessage.data
-        val roomId = data["roomId"]
-        val buyerId = data["buyerId"]
-        val sellerId = data["sellerId"]
-        val productId = data["productId"]
-        val type = data["type"]
-        val msg = data["msg"]
+        val type = data["type"] ?: "default"
 
-        Log.d("FCM", "roomId: $roomId, buyerId: $buyerId, sellerId: $sellerId, productId: $productId, type: $type, msg: $msg")
+        Log.d("FCM", "type: $type")
 
-        // 알림에 intent 포함
-        showNotification(title, body, roomId, buyerId, sellerId, productId, type, msg)
+        when (type) {
+            "chat" -> {
+                val roomId = data["roomId"]
+                val buyerId = data["buyerId"]
+                val sellerId = data["sellerId"]
+                val productId = data["productId"]
+                val msg = data["msg"]
+
+                Log.d("FCM", "chat → roomId: $roomId, buyerId: $buyerId, sellerId: $sellerId, productId: $productId, msg: $msg")
+                showNotification(title, body, roomId, buyerId, sellerId, productId, type, msg)
+            }
+
+            "product" -> {
+                val productId = data["productId"]
+                val userId = data["userId"]
+                Log.d("FCM", "product → productId: $productId userId: $userId")
+                showNotification(title, body, null, null, userId, productId, type, null)
+            }
+
+            else -> {
+                // 기타 유형 처리 (optional)
+                Log.w("FCM", "Unknown or missing type")
+                showNotification(title, body, null, null, null, null, type, null)
+            }
+        }
     }
 
     private fun showNotification(
@@ -66,28 +80,39 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         type: String?,
         msg: String?
     ) {
-        val channelId = "chat_channel"
+        // ① 알림 채널 ID 및 정보 분기
+        val channelId = when (type) {
+            "chat" -> "chat_channel"
+            "product" -> "product_channel"
+            else -> "default_channel"
+        }
+
+        val (channelName, channelDescription) = when (type) {
+            "chat" -> "채팅 알림" to "채팅 관련 알림입니다."
+            "product" -> "상품 알림" to "신규 상품 관련 알림입니다."
+            else -> "일반 알림" to "기타 알림입니다."
+        }
+
+        // ② 알림 채널 생성 (O 이상)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "채팅 알림"
-            val descriptionText = "채팅 관련 알림입니다."
             val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(channelId, name, importance).apply {
-                description = descriptionText
-                enableVibration(true)  //  진동 활성화
-                vibrationPattern = longArrayOf(0, 300, 200, 300) //  진동 패턴 설정 (선택)
+            val channel = NotificationChannel(channelId, channelName, importance).apply {
+                description = channelDescription
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 300, 200, 300)
             }
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Intent 준비 (IntroActivity → ChatActivity로 분기)
+        // ③ Intent: 항상 IntroActivity → IntroActivity 내부에서 type으로 분기
         val intent = Intent(this, IntroActivity::class.java).apply {
+            putExtra("type", type)
             putExtra("roomId", roomId)
             putExtra("buyerId", buyerId)
             putExtra("sellerId", sellerId)
             putExtra("productId", productId)
-            putExtra("type", type)
             putExtra("msg", msg)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
@@ -99,13 +124,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // ④ 알림 생성 및 표시
         val builder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.android_icon)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
-            .setAutoCancel(true) // 클릭 시 알림 제거
+            .setAutoCancel(true)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
@@ -117,4 +143,5 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             NotificationManagerCompat.from(this).notify(System.currentTimeMillis().toInt(), builder.build())
         }
     }
+
 }

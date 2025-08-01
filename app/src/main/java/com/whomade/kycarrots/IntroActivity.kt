@@ -167,44 +167,83 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun nextPage(isLogin: Boolean, memberCode: String) {
-        // 푸시에서 roomId 등 채팅 관련 데이터가 있으면 ChatActivity로 분기
-        val isPushChat = !pushRoomId.isNullOrBlank() && !pushBuyerId.isNullOrBlank()
-                && !pushSellerId.isNullOrBlank() && !pushProductId.isNullOrBlank()
+
+        // ROLE_PUB 푸시 토픽 구독
+        if (memberCode == "ROLE_PUB") {
+            FirebaseMessaging.getInstance().subscribeToTopic("ROLE_PUB")
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("FCM", "ROLE_PUB 토픽 구독 성공")
+                    } else {
+                        Log.e("FCM", "ROLE_PUB 토픽 구독 실패", task.exception)
+                    }
+                }
+        }
+
         val intent = when {
-            isLogin && isPushChat -> {
-                Intent(this, ChatActivity::class.java).apply {
-                    putExtra("roomId", pushRoomId)
-                    putExtra("buyerId", pushBuyerId)
-                    putExtra("sellerId", pushSellerId)
-                    putExtra("productId", pushProductId)
-                    //putExtra("type", pushType)
-                    //putExtra("msg", pushMsg)
-                }
-            }
-            isLogin -> {
-                if (memberCode == "ROLE_SELL") {
-                    Intent(this, DashboardActivity::class.java)
-                } else {
-                    Intent(this, ItemSelectionActivity::class.java)
-                }
-            }
-            else -> {
-                Intent(this, LoginActivity::class.java).apply {
-                    // 로그인 성공 시 채팅 바로 이동을 위해 push 데이터 전달
-                    putExtra("roomId", pushRoomId)
-                    putExtra("buyerId", pushBuyerId)
-                    putExtra("sellerId", pushSellerId)
-                    putExtra("productId", pushProductId)
-                    //putExtra("type", pushType)
-                    //putExtra("msg", pushMsg)
-                }
+            isLogin -> createIntentForPushNavigation(memberCode, isLogin)
+            else -> Intent(this, LoginActivity::class.java).apply {
+                // 로그인 후 다시 채팅 or 상품 상세로 이동할 수 있도록 push 데이터 전달
+                putExtra("roomId", pushRoomId)
+                putExtra("buyerId", pushBuyerId)
+                putExtra("sellerId", pushSellerId)
+                putExtra("productId", pushProductId)
+                putExtra("type", pushType)
+                putExtra("msg", pushMsg)
             }
         }
+
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
         finish()
     }
 
+    private fun createIntentForPushNavigation(memberCode: String, isLogin: Boolean): Intent {
+        return when (pushType) {
+            "chat" -> {
+                // 채팅 데이터가 모두 존재해야 채팅으로 이동
+                if (!pushRoomId.isNullOrBlank() && !pushBuyerId.isNullOrBlank()
+                    && !pushSellerId.isNullOrBlank() && !pushProductId.isNullOrBlank()) {
+                    Intent(this, ChatActivity::class.java).apply {
+                        putExtra("roomId", pushRoomId)
+                        putExtra("buyerId", pushBuyerId)
+                        putExtra("sellerId", pushSellerId)
+                        putExtra("productId", pushProductId)
+                        putExtra("type", pushType)
+                        putExtra("msg", pushMsg)
+                    }
+                } else {
+                    defaultIntentForMember(memberCode)
+                }
+            }
+
+            "product" -> {
+                // productId만 있어도 상품 상세로 이동
+                if (!pushProductId.isNullOrBlank()) {
+                    Intent(this, AdDetailActivity::class.java).apply {
+                        putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, pushProductId)
+                        putExtra(AdDetailActivity.EXTRA_USER_ID, pushSellerId)
+                        putExtra("type", pushType)
+                        putExtra("msg", pushMsg)
+                    }
+                } else {
+                    defaultIntentForMember(memberCode)
+                }
+            }
+
+            else -> {
+                defaultIntentForMember(memberCode)
+            }
+        }
+    }
+
+    private fun defaultIntentForMember(memberCode: String): Intent {
+        return if (memberCode == "ROLE_SELL") {
+            Intent(this, DashboardActivity::class.java)
+        } else {
+            Intent(this, ItemSelectionActivity::class.java)
+        }
+    }
     private fun saveAppVersion(appVer: String) {
         val prefs = getSharedPreferences("SaveAppVersion", MODE_PRIVATE)
         prefs.edit().putString("AppVersion", appVer).apply()

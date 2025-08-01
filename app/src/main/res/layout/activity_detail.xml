@@ -54,15 +54,32 @@
             android:showDividers="middle"
             android:dividerPadding="16dp">
 
-            <!-- 상품명 -->
-            <TextView
-                android:id="@+id/product_title"
+            <!-- 상품명 + 상태 Spinner 수평 배치 -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="상품 상세"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:paddingBottom="8dp"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
 
+                <TextView
+                    android:id="@+id/product_title"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="상품 상세"
+                    android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spinner_product_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:spinnerMode="dropdown"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:paddingEnd="32dp"
+                    android:paddingStart="8dp"
+                    android:background="@drawable/spinner_warning_background"/>
+            </LinearLayout>
             <!-- 상품 상세 설명 카ード뷰 -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -225,7 +242,6 @@
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
             <!-- 수정 버튼 -->
             <Button
                 android:id="@+id/btn_edit_product"

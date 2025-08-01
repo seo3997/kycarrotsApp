@@ -1,5 +1,7 @@
 package com.whomade.kycarrots.ui.ad.makead;
 
+import static com.whomade.kycarrots.common.Constants.SYSTEM_TYPE;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -242,6 +244,7 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
 
     public void DataRequest() {
         // 1. 광고 정보 객체 생성
+        String saleStatus = SYSTEM_TYPE == 1 ? "1" : "0"; // 1: 판매중, 0: 승인대기
         ProductVo productVo = new ProductVo(
                 strADIdx,              // productId
                 "1",                   // userNo
@@ -251,7 +254,7 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
                 "R010610",             // categoryGroup
                 strADCategory,         // categoryMid
                 strADCategoryScls,     // categoryScls
-                "1",                   // saleStatus
+                saleStatus,            // saleStatus
                 "R010070",             // cityGroup
                 strADAreaMid,          // cityMid
                 strADAreaScls,          // cityScls
