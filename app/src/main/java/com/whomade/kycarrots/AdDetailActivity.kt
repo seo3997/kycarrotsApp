@@ -16,49 +16,56 @@
 package com.whomade.kycarrots
 
 import android.content.Intent
-import android.os.Bundle
-import android.view.Menu
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.lifecycleScope
-import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.card.MaterialCardView
-import com.whomade.kycarrots.Cheeses.randomCheeseDrawable
-import com.whomade.kycarrots.common.RetrofitProvider
-import com.whomade.kycarrots.data.api.AdApi
-import com.whomade.kycarrots.data.model.ProductDetailResponse
-import com.whomade.kycarrots.data.repository.RemoteRepository
-import com.whomade.kycarrots.domain.service.AppService
-import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
-import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
-import kotlinx.coroutines.launch
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Spinner
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.card.MaterialCardView
+import com.whomade.kycarrots.Cheeses.randomCheeseDrawable
 import com.whomade.kycarrots.chatting.ChatActivity
+import com.whomade.kycarrots.common.AppServiceProvider.instance
 import com.whomade.kycarrots.common.Constants
+import com.whomade.kycarrots.common.RetrofitProvider
+import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.ChatRoomResponse
+import com.whomade.kycarrots.data.model.ProductDetailResponse
+import com.whomade.kycarrots.data.repository.RemoteRepository
+import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.domain.service.AppServiceProvider
+import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
+import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.TxtListDataInfo
+import kotlinx.coroutines.launch
 
 class AdDetailActivity : AppCompatActivity() {
     private lateinit var productIdStr: String
     private lateinit var productUserId: String
     private lateinit var wholesalerId  : String
+    private lateinit var spinner: AppCompatSpinner
+    private var currentStatus: String? = null
+    private lateinit var filteredList: List<TxtListDataInfo>  // ← 전역 선언 필요
+    private lateinit var statusTextView: TextView // ← 추가
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -218,9 +225,8 @@ class AdDetailActivity : AppCompatActivity() {
             }
         }
         // TODO: 나머지 detail.product.description, price 등도 TextView에 연결 가능
-
+        /*
         val spinner = findViewById<AppCompatSpinner>(R.id.spinner_product_status)
-
         val statusList = listOf("승인요청","판매중", "수정요청")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusList)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -235,8 +241,173 @@ class AdDetailActivity : AppCompatActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+         */
+        currentStatus = detail.product.saleStatus
+        loadProductStatusOptions( Constants.SYSTEM_TYPE, currentStatus)
+
     }
 
+    private fun loadProductStatusOptions(systemType: Int, currentStatus: String?) {
+        spinner = findViewById(R.id.spinner_product_status)
+        statusTextView = findViewById(R.id.text_product_status)
+
+        val memberCode = LoginInfoUtil.getMemberCode(this)
+
+        val isReadonly =
+            (memberCode == "ROLE_PUB") || // 구매자
+                    (systemType == 2 && memberCode == "ROLE_SELL" && currentStatus != "98") // 도매상 시스템의 판매자이고 반려상태가 아님
+
+        if (isReadonly) {
+            // 상태만 보여주기
+            spinner.visibility = View.GONE
+            statusTextView.visibility = View.VISIBLE
+
+            lifecycleScope.launch {
+                try {
+                    val apiList = instance.getCodeList("R010630")
+                    val label = apiList.find { it.strIdx == currentStatus }?.strMsg ?: "알 수 없음"
+                    statusTextView.text = "현재 상태: $label"
+                } catch (e: Exception) {
+                    statusTextView.text = "현재 상태: 알 수 없음"
+                }
+            }
+            return
+        }
+
+        // 이 아래는 Spinner 표시 및 상태 변경 가능한 경우
+        spinner.visibility = View.VISIBLE
+        statusTextView.visibility = View.GONE
+
+        lifecycleScope.launch {
+            try {
+                val apiList = instance.getCodeList("R010630")
+
+                filteredList = apiList.filter {
+                    when {
+                        systemType == 1 && memberCode == "ROLE_SELL" ->
+                            it.strIdx in listOf("1", "10", "99") || it.strIdx == currentStatus
+                        systemType == 2 && memberCode == "ROLE_PROJ" ->
+                            it.strIdx in listOf("0", "1", "10", "98", "99") || it.strIdx == currentStatus
+                        systemType == 2 && memberCode == "ROLE_SELL" ->
+                            // 반려 상태인 경우 승인요청만 허용
+                            it.strIdx in listOf("0", "98", "1", "10", "99")
+                        else -> false
+                    }
+                }.distinctBy { it.strIdx }
+
+                val names = filteredList.map { it.strMsg }
+
+                val adapter = ArrayAdapter(
+                    this@AdDetailActivity,
+                    android.R.layout.simple_spinner_item,
+                    names
+                )
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                spinner.adapter = adapter
+
+                currentStatus?.let {
+                    val index = filteredList.indexOfFirst { code -> code.strIdx == it }
+                    if (index != -1) spinner.setSelection(index)
+                }
+
+                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    var initialized = false
+                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                        if (!initialized) {
+                            initialized = true
+                            return
+                        }
+                        val selectedLabel = names[position]
+                        val selectedCode = filteredList[position].strIdx
+
+                        if (selectedCode == currentStatus) return
+                        handleStatusChange(selectedLabel, selectedCode)
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {}
+                }
+
+            } catch (e: Exception) {
+                Toast.makeText(this@AdDetailActivity, "상품 상태 로드 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun handleStatusChange(label: String, code: String) {
+        val memberCode = LoginInfoUtil.getMemberCode(this)
+        val systemType  = Constants.SYSTEM_TYPE
+        val canChange = when {
+            systemType == 1 && memberCode == "ROLE_SELL" -> code in listOf("1", "10", "99")
+            systemType == 2 && memberCode == "ROLE_PROJ" -> code in listOf("1", "10", "98", "99") // 예: 승인요청, 반려
+            systemType == 2 && memberCode == "ROLE_SELL" ->
+                currentStatus == "98" && code == "0" // 반려 → 승인요청만 허용
+            else -> false
+        }
+
+        if (!canChange) {
+            Toast.makeText(this, "이 상태에서는 변경할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            restoreSpinnerSelection()
+            return
+        }
+
+        if (currentStatus == "0" && code == "98") {
+            // 승인요청 → 반려
+            showRejectReasonDialog { reason ->
+                showStatusChangeConfirmDialog(label, code, reason)
+            }
+        } else {
+            // 그 외 상태 변경
+            showStatusChangeConfirmDialog(label, code, null)
+        }
+    }
+
+
+    private fun showRejectReasonDialog(onReasonEntered: (String) -> Unit) {
+        val editText = EditText(this).apply {
+            hint = "반려 사유를 입력하세요"
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("반려 사유 입력")
+            .setView(editText)
+            .setPositiveButton("확인") { _, _ ->
+                val reason = editText.text.toString().trim()
+                if (reason.isNotEmpty()) {
+                    onReasonEntered(reason)
+                } else {
+                    Toast.makeText(this, "반려 사유를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun showStatusChangeConfirmDialog(label: String, code: String, rejectReason: String?) {
+        val message = if (rejectReason != null) {
+            "상태를 \"$label\"(으)로 변경하고 아래 사유를 저장하시겠습니까?\n\n사유: $rejectReason"
+        } else {
+            "상태를 \"$label\"(으)로 변경하시겠습니까?"
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("상태 변경 확인")
+            .setMessage(message)
+            .setPositiveButton("확인") { _, _ ->
+                //updateProductStatus(code, rejectReason)
+            }
+            .setNegativeButton("취소") { _, _ ->
+                restoreSpinnerSelection()
+            }
+            .show()
+    }
+    private fun restoreSpinnerSelection() {
+        currentStatus?.let { status ->
+            val index = filteredList.indexOfFirst { it.strIdx == status }
+            if (index != -1) {
+                spinner.setSelection(index)
+            }
+        }
+    }
     private fun loadBackdrop() {
         val imageView: ImageView = findViewById(R.id.backdrop)
         Glide.with(imageView)
