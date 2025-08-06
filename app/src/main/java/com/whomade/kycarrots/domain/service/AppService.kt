@@ -7,6 +7,7 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
+import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
@@ -203,6 +204,11 @@ class AppService(
 
     suspend fun registerPushToken(pushTokenVo: PushTokenVo): Boolean {
         val response = repository.registerPushToken(pushTokenVo)
+        return response.isSuccessful
+    }
+
+    suspend fun updateProductStatus(token: String, product: ProductItem): Boolean {
+        val response = repository.updateProductStatus(token, product)
         return response.isSuccessful
     }
 }

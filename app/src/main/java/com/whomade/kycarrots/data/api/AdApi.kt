@@ -8,6 +8,7 @@ import com.whomade.kycarrots.data.model.FindPasswordResponse
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
+import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
@@ -148,4 +149,9 @@ interface AdApi {
         @Body request: PushTokenVo
     ): Response<Void>
 
+    @POST("product/status/update")
+    suspend fun updateProductStatus(
+        @Query("token") token: String,
+        @Body product: ProductItem
+    ): Response<ResponseBody>
 }

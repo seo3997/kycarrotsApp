@@ -43,18 +43,19 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.card.MaterialCardView
 import com.whomade.kycarrots.Cheeses.randomCheeseDrawable
 import com.whomade.kycarrots.chatting.ChatActivity
-import com.whomade.kycarrots.common.AppServiceProvider.instance
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.common.RetrofitProvider
 import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
+import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
 import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import kotlinx.coroutines.launch
 
@@ -264,7 +265,7 @@ class AdDetailActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    val apiList = instance.getCodeList("R010630")
+                    val apiList = AppServiceProvider.getService().getCodeList("R010630")
                     val label = apiList.find { it.strIdx == currentStatus }?.strMsg ?: "알 수 없음"
                     statusTextView.text = "현재 상태: $label"
                 } catch (e: Exception) {
@@ -280,7 +281,7 @@ class AdDetailActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val apiList = instance.getCodeList("R010630")
+                val apiList = AppServiceProvider.getService().getCodeList("R010630")
 
                 filteredList = apiList.filter {
                     when {
@@ -393,13 +394,43 @@ class AdDetailActivity : AppCompatActivity() {
             .setTitle("상태 변경 확인")
             .setMessage(message)
             .setPositiveButton("확인") { _, _ ->
-                //updateProductStatus(code, rejectReason)
+                updateProductStatus(code, rejectReason)
             }
             .setNegativeButton("취소") { _, _ ->
                 restoreSpinnerSelection()
             }
             .show()
     }
+
+    private fun updateProductStatus(code: String, rejectReason: String?) {
+        val token = TokenUtil.getToken(this)
+        val productId = productIdStr
+
+        lifecycleScope.launch {
+            try {
+
+                val productItem = ProductItem(
+                    productId = productId,
+                    saleStatus = code,
+                    updusrNo = 0,
+                    rejectReason = rejectReason
+                )
+
+                val success = AppServiceProvider.getService().updateProductStatus(token,productItem)
+
+                if (success) {
+                    Toast.makeText(this@AdDetailActivity, "상태가 \"$code\"(으)로 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@AdDetailActivity, "상태 변경 실패", Toast.LENGTH_SHORT).show()
+                    restoreSpinnerSelection()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@AdDetailActivity, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
+                restoreSpinnerSelection()
+            }
+        }
+    }
+
     private fun restoreSpinnerSelection() {
         currentStatus?.let { status ->
             val index = filteredList.indexOfFirst { it.strIdx == status }

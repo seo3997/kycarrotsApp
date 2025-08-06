@@ -11,6 +11,7 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
+import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
@@ -176,5 +177,9 @@ class RemoteRepository(
 
     suspend fun registerPushToken(pushTokenVo: PushTokenVo): Response<Void> {
         return adApi.registerPushToken(pushTokenVo)
+    }
+
+    suspend fun updateProductStatus(token: String, product: ProductItem): Response<ResponseBody> {
+        return adApi.updateProductStatus(token, product)
     }
 }
