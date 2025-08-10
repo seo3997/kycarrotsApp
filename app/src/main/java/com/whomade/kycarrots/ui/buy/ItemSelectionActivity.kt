@@ -1,7 +1,10 @@
 package com.whomade.kycarrots.ui.buy
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
@@ -16,6 +19,7 @@ import com.whomade.kycarrots.R
 import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import com.whomade.kycarrots.domain.service.AppServiceProvider
+import com.whomade.kycarrots.ui.Noti.NotificationListActivity
 import kotlinx.coroutines.launch
 
 class ItemSelectionActivity : BaseDrawerActivity() {
@@ -59,6 +63,7 @@ class ItemSelectionActivity : BaseDrawerActivity() {
     var selectedAreaGroup = "R010070"
     var selectedAreaMid   = "ALL"
     var selectedAreaScls  = "ALL"
+    private var badge: com.google.android.material.badge.BadgeDrawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -402,4 +407,39 @@ class ItemSelectionActivity : BaseDrawerActivity() {
         viewModel.resetPaging()
         viewModel.loadNextPage()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+
+        // Toolbar는 레이아웃의 R.id.toolbar 이어야 함
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+
+        // 배지 부착 + 최초 갱신
+        badge = com.whomade.kycarrots.ui.common.NotificationBadgeHelper.attach(
+            activity = this,
+            menu = menu,
+            toolbar = toolbar,
+            menuItemId = R.id.action_notifications
+        )
+        com.whomade.kycarrots.ui.common.NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
+        return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 화면 복귀 시 배지 재갱신
+        com.whomade.kycarrots.ui.common.NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_notifications -> {
+                startActivity(Intent(this, NotificationListActivity::class.java))
+                true
+            }
+            android.R.id.home -> { onBackPressedDispatcher.onBackPressed(); true }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 }

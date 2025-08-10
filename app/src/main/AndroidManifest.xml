@@ -127,6 +127,10 @@
             android:name=".membership.MembershipActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".ui.Noti.NotificationListActivity"
+            android:screenOrientation="portrait"/>
+
         <service
             android:name=".message.MyFirebaseMessagingService"
             android:exported="false">

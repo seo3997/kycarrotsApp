@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'com.google.gms.google-services'
+    id 'kotlin-kapt'
 }
 android {
     compileSdk = 35
@@ -70,4 +71,10 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:2.2.21"
     implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
     implementation "com.google.firebase:firebase-messaging:24.0.0"
+
+    implementation "androidx.room:room-runtime:2.6.1"
+    kapt "androidx.room:room-compiler:2.6.1"     // Kotlin KAPT 사용 시
+    implementation "androidx.room:room-ktx:2.6.1" // 코루틴 지원
+
+
 }

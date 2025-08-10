@@ -14,58 +14,121 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.whomade.kycarrots.IntroActivity
 import com.whomade.kycarrots.R
-import com.whomade.kycarrots.data.model.PushTokenVo
-import com.whomade.kycarrots.domain.service.AppServiceProvider
+import com.whomade.kycarrots.data.local.NotifType
+import com.whomade.kycarrots.data.local.PushNotificationEntity   // ✅ 추가
+import com.whomade.kycarrots.data.local.PushRepositoryProvider   // ✅ 추가
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d("FCM", "New token: $token")
-
-        // 서버에 토큰 전송
         PushTokenUtil.sendTokenToServer(applicationContext, token)
     }
-
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d("FCM", "From: ${remoteMessage.from}")
 
-        val title = remoteMessage.notification?.title ?: "새 알림"
-        val body = remoteMessage.notification?.body ?: "알림 내용 없음"
+        //val title = remoteMessage.notification?.title ?: "새 알림"
+        //val body  = remoteMessage.notification?.body  ?: "알림 내용 없음"
 
-        val data = remoteMessage.data
-        val type = data["type"] ?: "default"
-
-        Log.d("FCM", "type: $type")
+        val data  = remoteMessage.data
+        val type  = data["type"] ?: "default"
+        val title = data["title"] ?: "새 알림"
+        val body  = data["body"]  ?: "알림 내용 없음"
 
         when (type) {
             "chat" -> {
-                val roomId = data["roomId"]
-                val buyerId = data["buyerId"]
-                val sellerId = data["sellerId"]
+                val roomId    = data["roomId"]
+                val buyerId   = data["buyerId"]
+                val sellerId  = data["sellerId"]
                 val productId = data["productId"]
-                val msg = data["msg"]
+                val msg       = data["msg"]
 
-                Log.d("FCM", "chat → roomId: $roomId, buyerId: $buyerId, sellerId: $sellerId, productId: $productId, msg: $msg")
+                // ✅ 로컬 DB 저장
+                savePushLocally(
+                    type = NotifType.CHAT,
+                    title = title,
+                    body = body,
+                    productId = productId?.toLongOrNull(),
+                    sellerId = sellerId,
+                    roomId = roomId,
+                    deeplink = "app://chat/room/${roomId ?: ""}"
+                )
+
                 showNotification(title, body, roomId, buyerId, sellerId, productId, type, msg)
             }
-
             "product" -> {
                 val productId = data["productId"]
-                val userId = data["userId"]
-                Log.d("FCM", "product → productId: $productId userId: $userId")
+                val userId    = data["userId"]
+
+                // ✅ 로컬 DB 저장
+                savePushLocally(
+                    type = NotifType.PRODUCT_REGISTERED,
+                    title = title,
+                    body = body,
+                    productId = productId?.toLongOrNull(),
+                    sellerId = userId,
+                    roomId = null,
+                    deeplink = "app://product/${productId ?: ""}"
+                )
+
                 showNotification(title, body, null, null, userId, productId, type, null)
             }
-
             else -> {
-                // 기타 유형 처리 (optional)
-                Log.w("FCM", "Unknown or missing type")
+                // 기타 유형
+                savePushLocally(
+                    type = NotifType.SYS,
+                    title = title,
+                    body = body,
+                    productId = null,
+                    sellerId = null,
+                    roomId = null,
+                    deeplink = null
+                )
                 showNotification(title, body, null, null, null, null, type, null)
+            }
+        }
+    }
+
+    // ✅ 푸시 수신 시 로컬(Room) 저장 함수
+    private fun savePushLocally(
+        type: String,
+        title: String,
+        body: String?,
+        productId: Long?,
+        sellerId: String?,
+        roomId: String?,
+        deeplink: String?
+    ) {
+        val prefs  = applicationContext.getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
+        val userId = prefs.getString("LogIn_ID", "") ?: ""
+        if (userId.isEmpty()) {
+            Log.w("FCM", "로컬저장 스킵: 로그인 사용자 없음")
+            return
+        }
+
+        val entity = PushNotificationEntity(
+            userId   = userId,
+            type     = type,
+            title    = title,
+            body     = body,
+            productId= productId,
+            sellerId = sellerId,
+            roomId   = roomId,
+            deeplink = deeplink,
+            isRead   = false
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                PushRepositoryProvider.get(applicationContext).save(entity)
+                Log.d("FCM", "로컬 DB 저장 완료: $type / $title")
+            } catch (e: Exception) {
+                Log.e("FCM", "로컬 DB 저장 실패", e)
             }
         }
     }
@@ -80,7 +143,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         type: String?,
         msg: String?
     ) {
-        // ① 알림 채널 ID 및 정보 분기
         val channelId = when (type) {
             "chat" -> "chat_channel"
             "product" -> "product_channel"
@@ -93,7 +155,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             else -> "일반 알림" to "기타 알림입니다."
         }
 
-        // ② 알림 채널 생성 (O 이상)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(channelId, channelName, importance).apply {
@@ -101,12 +162,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 enableVibration(true)
                 vibrationPattern = longArrayOf(0, 300, 200, 300)
             }
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
 
-        // ③ Intent: 항상 IntroActivity → IntroActivity 내부에서 type으로 분기
         val intent = Intent(this, IntroActivity::class.java).apply {
             putExtra("type", type)
             putExtra("roomId", roomId)
@@ -124,7 +183,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // ④ 알림 생성 및 표시
         val builder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.android_icon)
             .setContentTitle(title)
@@ -137,11 +195,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                 NotificationManagerCompat.from(this).notify(System.currentTimeMillis().toInt(), builder.build())
             } else {
-                Log.d("FCM", "알림 권한이 없습니다. 알림을 띄우지 않습니다.")
+                Log.d("FCM", "알림 권한 없음 → 알림 표시 생략")
             }
         } else {
             NotificationManagerCompat.from(this).notify(System.currentTimeMillis().toInt(), builder.build())
         }
     }
-
 }

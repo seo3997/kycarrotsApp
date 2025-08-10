@@ -27,6 +27,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var chatAdapter: ChatAdapter
 
     private val chatMessages = mutableListOf<ChatMessage>()
+    private var topicPath: String? = null
 
     private lateinit var roomId: String
     private lateinit var buyerId: String
@@ -113,7 +114,8 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun subscribeToMessages() {
-        StompManager.subscribe("/topic/$roomId") { received ->
+        topicPath = "/topic/$roomId"
+        StompManager.subscribe(topicPath!!) { received ->
             runOnUiThread {
                 if (received.senderId != currentUserId) {
                     received.isMe = false
@@ -164,4 +166,12 @@ class ChatActivity : AppCompatActivity() {
             true
         } else super.onOptionsItemSelected(item)
     }
+
+    override fun onStop() {
+        super.onStop()
+        topicPath?.let { StompManager.unsubscribe(it) }
+        StompManager.disconnect() // 방을 나가면 완전 오프라인 처리 원할 때
+    }
+
+
 }

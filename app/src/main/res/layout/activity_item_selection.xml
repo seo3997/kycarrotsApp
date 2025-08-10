@@ -26,6 +26,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="end"
                 android:padding="12dp"
+                android:visibility="gone"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/btn_title_prev_selector"/>
         </androidx.appcompat.widget.Toolbar>

@@ -20,6 +20,12 @@ object LoginInfoUtil {
         }
     }
 
+    /** 저장된 사용자 ID 가져오기 */
+    fun getUserId(context: Context): String {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_ID, "") ?: ""
+    }
+
     fun getMemberCode(context: Context): String {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .getString(KEY_MEMBER_CODE, "") ?: ""

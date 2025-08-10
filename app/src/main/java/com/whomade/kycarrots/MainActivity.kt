@@ -6,33 +6,30 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
-import androidx.core.view.WindowCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
-import com.cashcuk.setting.FrSetting
+import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.whomade.kycarrots.ui.Noti.NotificationListActivity
 import com.whomade.kycarrots.ui.ad.AdListFragment
 import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
+import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
 import java.util.ArrayList
 
 class MainActivity : BaseDrawerActivity() {
-
+    private var badge: BadgeDrawable? = null
+    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        toolbar = findViewById(R.id.toolbar)
+
         setSupportActionBar(toolbar)
 
         supportActionBar?.let { ab ->
@@ -83,6 +80,7 @@ class MainActivity : BaseDrawerActivity() {
 
     }
 
+    /*
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.sample_actions, menu)
         return true
@@ -105,6 +103,39 @@ class MainActivity : BaseDrawerActivity() {
         }
         return true
     }
+     */
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        badge = NotificationBadgeHelper.attach(
+            activity = this,
+            menu = menu,
+            toolbar = toolbar,              // ✅ Toolbar 전달
+            menuItemId = R.id.action_notifications
+        )
+        NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
+        return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 돌아왔을 때 뱃지 다시 갱신
+        NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_notifications -> {
+                startActivity(Intent(this, NotificationListActivity::class.java))
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
 
     private fun setupViewPager(viewPager: ViewPager) {
         viewPager.adapter = Adapter(supportFragmentManager).apply {
@@ -114,8 +145,6 @@ class MainActivity : BaseDrawerActivity() {
             //addFragment(FrSetting(), "완료")
         }
     }
-
-
 
     internal class Adapter(
         fragmentManager: FragmentManager

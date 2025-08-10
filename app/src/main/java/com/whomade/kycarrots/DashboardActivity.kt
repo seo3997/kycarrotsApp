@@ -3,6 +3,8 @@ package com.whomade.kycarrots
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -10,11 +12,14 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.badge.BadgeDrawable
 import com.whomade.kycarrots.common.RetrofitProvider
 import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
+import com.whomade.kycarrots.ui.Noti.NotificationListActivity
+import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
 import com.whomade.kycarrots.ui.common.TokenUtil
 import kotlinx.coroutines.launch
 
@@ -22,6 +27,7 @@ class DashboardActivity : BaseDrawerActivity() {
     private val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
     private val repository = RemoteRepository(adApi)
     private val appService = AppService(repository)
+    private var badge: BadgeDrawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -141,4 +147,35 @@ class DashboardActivity : BaseDrawerActivity() {
     private fun hideProgressBar() {
         findViewById<View>(R.id.ll_progress_circle)?.visibility = View.GONE
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        badge = NotificationBadgeHelper.attach(
+            activity = this,
+            menu = menu,
+            toolbar = toolbar,              // ✅ Toolbar 전달
+            menuItemId = R.id.action_notifications
+        )
+        NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
+        return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 돌아왔을 때 뱃지 다시 갱신
+        NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_notifications -> {
+                startActivity(Intent(this, NotificationListActivity::class.java))
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 }
