@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +21,8 @@ import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
+import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
+import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
 import com.whomade.kycarrots.ui.common.TokenUtil
 import kotlinx.coroutines.launch
@@ -38,6 +42,16 @@ class DashboardActivity : BaseDrawerActivity() {
 
         val token = TokenUtil.getToken(this)
         initDashboard(token)
+
+        val btnAddProduct: View = findViewById(R.id.btn_add_product)
+        btnAddProduct.setOnClickListener {
+            val intent = Intent(this, MakeADMainActivity::class.java)
+            intent.putExtra(MakeADDetail1.STR_PUT_AD_IDX, "")
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+        }
+
+
     }
 
     private fun initToolbar() {

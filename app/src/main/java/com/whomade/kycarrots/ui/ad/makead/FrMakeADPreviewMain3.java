@@ -38,6 +38,7 @@ import com.whomade.kycarrots.data.model.ProductVo;
 import com.whomade.kycarrots.domain.Helper.AppServiceHelper;
 import com.whomade.kycarrots.domain.service.AppService;
 import com.whomade.kycarrots.ui.common.ImageLoader;
+import com.whomade.kycarrots.ui.common.LoginInfoUtil;
 import com.whomade.kycarrots.ui.dialog.DlgBtnActivity;
 
 
@@ -244,10 +245,12 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
 
     public void DataRequest() {
         // 1. 광고 정보 객체 생성
+        var userNo = LoginInfoUtil.INSTANCE.getUserNo(mActivity);
+
         String saleStatus = SYSTEM_TYPE == 1 ? "1" : "0"; // 1: 판매중, 0: 승인대기
         ProductVo productVo = new ProductVo(
                 strADIdx,              // productId
-                "1",                   // userNo
+                userNo,               // userNo
                 strADName,             // title
                 strADDetail,           // description
                 strADAmount,           // price
@@ -262,10 +265,10 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
                 "R010620",             // unitGroup
                 strADUnitCode,         // unitCode
                 strADDesiredShippingDate, // desiredShippingDate
-                "1",                   // registerNo
-                "",                    // registDt
-                "1",                   // updusrNo
-                "",                    // updtDt
+                userNo,                   // registerNo
+                "",                     // registDt
+                userNo,                 // updusrNo
+                "",                     // updtDt
                 ""// imageUrl 생략 가능 (기본값 null)
         );
 
@@ -290,9 +293,9 @@ public class FrMakeADPreviewMain3 extends Fragment implements View.OnClickListen
                         null,      // imageSize
                         null,      // imageText
                         null,      // imageType
-                        "",        // registerNo
+                        userNo,    // registerNo
                         null,      // registDt
-                        "",        // updusrNo
+                        userNo,   // updusrNo
                         null       // updtDt
                 );
                 imageMetaList.add(productImageVo);

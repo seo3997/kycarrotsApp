@@ -32,6 +32,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -58,6 +61,7 @@ import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import kotlinx.coroutines.launch
+import androidx.core.view.WindowInsetsCompat
 
 class AdDetailActivity : AppCompatActivity() {
     private lateinit var productIdStr: String
@@ -114,7 +118,6 @@ class AdDetailActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
         }
-
 
     }
 

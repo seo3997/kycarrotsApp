@@ -1,12 +1,17 @@
 package com.whomade.kycarrots
 
 import android.content.Intent
+import android.os.Bundle
 import android.view.MenuItem
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.whomade.kycarrots.setting.SettingActivity
@@ -22,9 +27,9 @@ open class BaseDrawerActivity : AppCompatActivity() {
         super.setContentView(fullView)
 
 
-
-
         drawerLayout = fullView.findViewById(R.id.drawer_layout)
+
+
         val navigationView: NavigationView = fullView.findViewById(R.id.nav_view)
 
         val headerView = navigationView.getHeaderView(0) // 헤더 레이아웃의 첫 번째 뷰
@@ -73,6 +78,8 @@ open class BaseDrawerActivity : AppCompatActivity() {
             drawerLayout.closeDrawers()
             true
         }
+
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

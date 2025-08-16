@@ -54,10 +54,6 @@
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".DashboardActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".IntroActivity"
             android:exported="true"
             android:screenOrientation="portrait">
@@ -98,6 +94,10 @@
             android:name=".ui.ad.makead.MakeADMainActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".DashboardActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.ad.makead.MakeADPreviewActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.dialog.DlgBtnActivity" />
@@ -129,6 +129,10 @@
 
         <activity
             android:name=".ui.Noti.NotificationListActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".BaseDrawerActivity"
             android:screenOrientation="portrait"/>
 
         <service

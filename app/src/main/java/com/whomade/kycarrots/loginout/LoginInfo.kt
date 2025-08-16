@@ -51,6 +51,7 @@ class LoginInfo(
             putString("LogIn_ID", email)
             putString("LogIn_PWD", password)
             putString("LogIn_MEMBERCODE", memberCode)
+            putString("LogIn_NO", info.login_idx)
             putBoolean("IsLogin", true)
             apply()
         }

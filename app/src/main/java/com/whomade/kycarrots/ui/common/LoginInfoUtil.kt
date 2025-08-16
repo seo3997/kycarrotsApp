@@ -6,12 +6,14 @@ object LoginInfoUtil {
     private const val PREF_NAME = "SaveLoginInfo"
 
     private const val KEY_ID = "LogIn_ID"
+    private const val KEY_NO = "LogIn_NO"
     private const val KEY_PWD = "LogIn_PWD"
     private const val KEY_MEMBER_CODE = "LogIn_MEMBERCODE"
     private const val KEY_IS_LOGIN = "IsLogin"
 
-    fun saveLoginInfo(context: Context, email: String, password: String, memberCode: String) {
+    fun saveLoginInfo(context: Context, email: String, loginNo: String, password: String, memberCode: String) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().apply {
+            putString(KEY_NO, loginNo)
             putString(KEY_ID, email)
             putString(KEY_PWD, password)
             putString(KEY_MEMBER_CODE, memberCode)
@@ -24,6 +26,12 @@ object LoginInfoUtil {
     fun getUserId(context: Context): String {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .getString(KEY_ID, "") ?: ""
+    }
+
+    /** 저장된 사용자 ID 가져오기 */
+    fun getUserNo(context: Context): String {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_NO, "") ?: ""
     }
 
     fun getMemberCode(context: Context): String {

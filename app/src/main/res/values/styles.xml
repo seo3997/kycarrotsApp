@@ -65,5 +65,13 @@
         <item name="boxStrokeWidth">1dp</item>
     </style>
 
+    <style name="ExpandedAppBar" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@android:color/black</item> <!-- 확장 시 검정색 -->
+        <item name="android:textSize">32sp</item> <!-- 확장 시 크게 -->
+        <item name="android:textStyle">bold</item>
+    </style>
 
+    <style name="CollapsedAppBar" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@android:color/white</item> <!-- 접힘 시 흰색 -->
+    </style>
 </resources>
