@@ -124,7 +124,7 @@ class IntroActivity : AppCompatActivity() {
     private fun checkRegId() {
         val prefs = getSharedPreferences("SaveRegId", MODE_PRIVATE)
         val regId = prefs.getString("setRegId", "")
-        Log.d("FCM", "r**************egId: $regId")  // <- 로그로 출력!
+        Log.d("FCM", "checkRegId r**************egId: $regId")  // <- 로그로 출력!
 
         if (regId.isNullOrEmpty() || !isVersionMatch) {
             registerToken()
@@ -143,6 +143,7 @@ class IntroActivity : AppCompatActivity() {
         val sUID       = prefs.getString("LogIn_ID",    "").orEmpty()
         val sPWD       = prefs.getString("LogIn_PWD",   "").orEmpty()
         val sMEMBERCODE= prefs.getString("LogIn_MEMBERCODE", "").orEmpty()
+        Log.d("FCM", "autoLoginCheck: true")
 
         if (sUID.isNotBlank() && sPWD.isNotBlank() && sMEMBERCODE.isNotBlank() && mThisAppVersion.isNotEmpty()) {
             val appService = AppServiceProvider.getService()

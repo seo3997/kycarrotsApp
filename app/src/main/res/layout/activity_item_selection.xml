@@ -6,13 +6,14 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <!-- 툴바 -->
+    <!-- AppBar (툴바) -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -20,6 +21,7 @@
             android:background="?attr/colorPrimary"
             app:title="상품 리스트"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
             <ImageButton
                 android:id="@+id/btn_refresh"
                 android:layout_width="wrap_content"
@@ -31,229 +33,36 @@
                 android:src="@drawable/btn_title_prev_selector"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
-    <FrameLayout
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <!-- 검색/필터 영역 -->
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <LinearLayout
-                android:id="@+id/filterBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
 
-                <!-- 카테고리/세부항목 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="10dp"
-                    android:weightSum="2">
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottom_nav"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-                    <!-- 카테고리 -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MyDenseDropdown"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="8dp"
-                        android:hint="@string/str_category"
-                        app:endIconMode="dropdown_menu"
-                        app:boxBackgroundMode="outline"
-                        app:boxStrokeColor="?attr/colorPrimary">
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_nav"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+        app:elevation="8dp"
+        app:menu="@menu/menu_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <AutoCompleteTextView
-                            android:id="@+id/dropdown_category"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:minHeight="0dp"
-                            android:paddingStart="12dp"
-                            android:paddingTop="4dp"
-                            android:paddingBottom="4dp"
-                            android:textSize="14sp"
-                            android:inputType="none"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <!-- 세부항목 -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MyDenseDropdown"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="40dp"
-                        android:hint="세부 항목"
-                        android:layout_marginLeft="10dp"
-                        app:boxBackgroundMode="outline"
-                        app:boxStrokeColor="?attr/colorPrimary"
-                        app:endIconMode="dropdown_menu">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/dropdown_subcategory"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:minHeight="0dp"
-                            android:paddingStart="12dp"
-                            android:paddingTop="4dp"
-                            android:paddingBottom="4dp"
-                            android:textSize="14sp"
-                            android:inputType="none"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-
-                <!-- 도시/시구 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="10dp"
-                    android:weightSum="2">
-
-                    <!-- 도시 -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MyDenseDropdown"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="8dp"
-                        android:hint="도시 선택"
-                        app:boxBackgroundMode="outline"
-                        app:boxStrokeColor="?attr/colorPrimary"
-                        app:endIconMode="dropdown_menu">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/dropdown_city"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:minHeight="0dp"
-                            android:paddingStart="12dp"
-                            android:paddingTop="4dp"
-                            android:paddingBottom="4dp"
-                            android:textSize="14sp"
-                            android:inputType="none"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <!-- 시/구 -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MyDenseDropdown"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="40dp"
-                        android:layout_marginLeft="10dp"
-                        android:hint="시·구 선택"
-                        app:boxBackgroundMode="outline"
-                        app:boxStrokeColor="?attr/colorPrimary"
-                        app:endIconMode="dropdown_menu">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/dropdown_district"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:minHeight="0dp"
-                            android:paddingStart="12dp"
-                            android:paddingTop="4dp"
-                            android:paddingBottom="4dp"
-                            android:textSize="14sp"
-                            android:inputType="none"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-                <CheckBox
-                    android:id="@+id/checkbox_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="희망 단가로 조회"
-                    android:layout_marginBottom="8dp"/>
-                <LinearLayout
-                    android:id="@+id/layout_price_range"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-                    <!-- 희망 단가 RangeSlider -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="희망 단가"/>
-                    <com.google.android.material.slider.RangeSlider
-                        android:id="@+id/slider_price"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:valueFrom="0"
-                        android:valueTo="9990000"
-                        app:values="@array/initial_price_range"
-                        android:stepSize="5000"
-                        android:paddingVertical="8dp"/>
-                    <!-- 최소/최대 라벨 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:id="@+id/label_min"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="최소"/>
-                        <TextView
-                            android:id="@+id/label_max"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="end"
-                            android:text="최대"/>
-                    </LinearLayout>
-
-                    <!-- 선택된 범위 & 문의하기 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="8dp">
-                        <TextView
-                            android:id="@+id/selected_range"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:padding="12dp"
-                            android:background="@drawable/bg_outline"
-                            android:text="1,200~1,500원"/>
-                        <Button
-                            android:id="@+id/btn_inquiry"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:drawableStart="@drawable/ic_phone"
-                            android:drawablePadding="4dp"
-                            android:layout_marginStart="8dp"
-                            android:text="조회하기"/>
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:overScrollMode="always"/>
-    </LinearLayout>
-    <!-- 로딩 ProgressBar (처음엔 GONE) -->
-    <LinearLayout
-        android:id="@+id/ll_progress_circle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:background="#99FFFFFF"
-        android:visibility="visible">
-        <ProgressBar
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:indeterminate="true"
-            android:indeterminateDrawable="@drawable/loading_intro_animation"/>
-    </LinearLayout>
-</FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

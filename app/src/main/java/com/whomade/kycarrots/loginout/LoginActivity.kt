@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.DashboardActivity
+import com.whomade.kycarrots.IntroActivity
 import com.whomade.kycarrots.MainActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.StaticDataInfo
@@ -134,6 +135,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                         val resultCode = LoginInfo(this@LoginActivity, strEmail, strPwd, strMemberCode, appVersion , appService).login()
                         when (resultCode) {
                             StaticDataInfo.RESULT_CODE_200 -> {
+                                /*
                                 if (strMemberCode == "ROLE_SELL") {
                                     startActivity(
                                         Intent(
@@ -151,6 +153,14 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                                         })
                                 }
+                                */
+                                startActivity(
+                                    Intent(
+                                        this@LoginActivity,
+                                        IntroActivity::class.java
+                                    ).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                    })
 
                                 finish()
                             }

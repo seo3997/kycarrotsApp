@@ -93,6 +93,11 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
     public final static String STR_PUT_AD_CATEGORY_SCLS = "AD_CATEGORY_SCLS";
     public final static String STR_PUT_AD_AREA_MID = "AD_AREA_MID";
     public final static String STR_PUT_AD_AREA_SCLS = "AD_AREA_SCLS";
+    public final static String STR_PUT_AD_UNIT_CODEMM = "AD_UNIT_CODENM";
+    public final static String STR_PUT_AD_CATEGORY_MIDNM = "AD_CATEGORY_MIDNM";
+    public final static String STR_PUT_AD_CATEGORY_SCLSNM = "AD_CATEGORY_SCLSNM";
+    public final static String STR_PUT_AD_AREA_MIDNM = "AD_AREA_MIDNM";
+    public final static String STR_PUT_AD_AREA_SCLSNM = "AD_AREA_SCLSNM";
 
 
     // 이벤트 인터페이스를 정의
@@ -254,10 +259,35 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             arrData.add(8, areaMid);                                                         //도시
             arrData.add(9, areaScls);                                                        //시구
 
+            String unitCodeNm      = getNameByCode(arrUnitList,     unitCode);      // 단위명
+            String categoryMidCdNm = getNameByCode(arrData1,        categoryMidCd); // 카테고리 중분류 명
+            String categorySclsNm  = getNameByCode(arrSubCategory,  categoryScls);  // 카테고리 소분류 명
+            String areaMidNm       = getNameByCode(arrCityList,     areaMid);       // 도시 명
+            String areaSclsNm      = getNameByCode(arrDistrictList, areaScls);      // 구/군 명
+
+
+
+            arrData.add(unitCodeNm);        // index 11
+            arrData.add(categoryMidCdNm);   // index 12
+            arrData.add(categorySclsNm);    // index 13
+            arrData.add(areaMidNm);         // index 14
+            arrData.add(areaSclsNm);        // index 15
+
             mGetInfoData.onGetInfoData(arrData,categoryMidCd);
         }
 
     }
+
+    private String getNameByCode(java.util.List<TxtListDataInfo> list, String code) {
+        if (list == null || code == null) return "";
+        for (TxtListDataInfo item : list) {
+            if (code.equals(item.getStrIdx())) {
+                return item.getStrMsg() == null ? "" : item.getStrMsg();
+            }
+        }
+        return "";
+    }
+
 
     public void setCategoryList(List<TxtListDataInfo> codeList) {
         arrData1 = new ArrayList<>(codeList);

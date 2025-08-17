@@ -25,13 +25,12 @@
          <item name="colorPrimary">#2962FF</item>
          <item name="colorPrimaryVariant">#0039CB</item>
          <item name="colorSecondary">#00BFA5</item>
+
+         <!-- 하단바 불투명 고정 (중요) -->
          <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-         <!--<item name="android:windowTranslucentStatus">true</item>-->
+         <item name="android:windowTranslucentNavigation">false</item>
          <item name="android:navigationBarColor">?attr/colorPrimary</item>
-         <item name="android:windowContentTransitions">true</item>
-         <item name="android:windowBackground">@color/color_white</item>
-     </style>
+    </style>
 
     <!-- 커스텀 카드뷰 스타일 -->
     <style name="Widget.MyCardView" parent="Widget.MaterialComponents.CardView">
@@ -74,4 +73,17 @@
     <style name="CollapsedAppBar" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">@android:color/white</item> <!-- 접힘 시 흰색 -->
     </style>
+
+    <style name="AppTheme.UCrop" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorRPrimary</item>
+        <item name="colorPrimaryDark">@color/colorRPrimaryDark</item>
+        <item name="colorAccent">@color/colorRAccent</item>
+
+        <!-- StatusBar 투명 제거 -->
+        <item name="android:statusBarColor">@color/colorRPrimaryDark</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+
 </resources>

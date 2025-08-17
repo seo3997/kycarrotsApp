@@ -6,10 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,8 +14,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,10 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.google.android.material.button.MaterialButton;
-import com.whomade.kycarrots.MainTitleBar;
 import com.whomade.kycarrots.R;
-import com.whomade.kycarrots.TitleBar;
 import com.whomade.kycarrots.common.AppServiceProvider;
 import com.whomade.kycarrots.common.RetrofitProvider;
 import com.whomade.kycarrots.data.api.AdApi;
@@ -42,13 +34,14 @@ import com.whomade.kycarrots.data.model.ProductImageVo;
 import com.whomade.kycarrots.data.repository.RemoteRepository;
 import com.whomade.kycarrots.domain.Helper.AppServiceHelper;
 import com.whomade.kycarrots.domain.service.AppService;
-import com.whomade.kycarrots.ui.common.TxtListDataInfo;
 import com.whomade.kycarrots.ui.dialog.DlgSelImg;
+import com.yalantis.ucrop.UCrop;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import com.yalantis.ucrop.UCrop;
+
 
 /**
  * 광고제작
@@ -291,6 +284,11 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
         intent.putExtra(makeADDetail.STR_PUT_AD_CATEGORY_SCLS, arrDetailData.get(7));               //세부함목
         intent.putExtra(makeADDetail.STR_PUT_AD_AREA_MID, arrDetailData.get(8));                    //도시
         intent.putExtra(makeADDetail.STR_PUT_AD_AREA_SCLS, arrDetailData.get(9));                   //시구
+        intent.putExtra(makeADDetail.STR_PUT_AD_UNIT_CODEMM, arrDetailData.get(10));                //카테고리
+        intent.putExtra(makeADDetail.STR_PUT_AD_CATEGORY_MIDNM, arrDetailData.get(11));                //카테고리
+        intent.putExtra(makeADDetail.STR_PUT_AD_CATEGORY_SCLSNM, arrDetailData.get(12));               //세부함목
+        intent.putExtra(makeADDetail.STR_PUT_AD_AREA_MIDNM, arrDetailData.get(13));                    //도시
+        intent.putExtra(makeADDetail.STR_PUT_AD_AREA_SCLSNM, arrDetailData.get(14));                   //시구
 
         //2. 이미지 등록
         if(!strTitle.equals("")){
@@ -308,6 +306,7 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, MAKE_AD_COMPLETE);
     }
+
 
     private String strImgKind; // title img OR detail img
     private MakeADImgRegi2.onDetailItemClick mDetailClick = new MakeADImgRegi2.onDetailItemClick() {
@@ -459,7 +458,7 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
                         makeADImgRegi.setImg(croppedImageUri, strImgKind); // 수정된 코드
                     }
                     break;
-                case  UCrop.RESULT_ERROR:
+                case UCrop.RESULT_ERROR:
                     Throwable cropError = UCrop.getError(data);
                     if (cropError != null) {
                         cropError.printStackTrace();
@@ -547,15 +546,16 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
         options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
         options.setCompressionQuality(90);
         options.setToolbarTitle("이미지 크롭");
-        options.setToolbarColor(ContextCompat.getColor(this, R.color.colorRPrimary));
-        options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorRPrimaryDark));
-        options.setActiveControlsWidgetColor(ContextCompat.getColor(this, R.color.colorRAccent));
+        //options.setToolbarColor(ContextCompat.getColor(this, R.color.colorRPrimary));
+        //options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorRPrimaryDark));
+        //options.setActiveControlsWidgetColor(ContextCompat.getColor(this, R.color.colorRAccent));
 
         // UCrop 실행
         UCrop.of(sourceUri, destinationUri)
                 .withAspectRatio(1, 1) // 원하는 비율 설정 (1:1)
                 .withOptions(options) // 옵션 적용
                 .start(this);
+
     }
 
     private void loadModifyData(String productId) {
