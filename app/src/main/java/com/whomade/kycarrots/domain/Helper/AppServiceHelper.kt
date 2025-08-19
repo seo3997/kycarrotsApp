@@ -96,12 +96,13 @@ object AppServiceHelper {
     fun getProductDetailAsync(
         appService: AppService,
         productId: Long,
+        userNo: Long,
         onSuccess: (ProductDetailResponse) -> Unit,
         onError: (Throwable) -> Unit
     ) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val result = appService.getProductDetail(productId)
+                val result = appService.getProductDetail(productId,userNo)
                 if (result != null) {
                     onSuccess(result)
                 } else {

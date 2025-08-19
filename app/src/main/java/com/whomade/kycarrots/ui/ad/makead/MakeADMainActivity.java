@@ -34,6 +34,7 @@ import com.whomade.kycarrots.data.model.ProductImageVo;
 import com.whomade.kycarrots.data.repository.RemoteRepository;
 import com.whomade.kycarrots.domain.Helper.AppServiceHelper;
 import com.whomade.kycarrots.domain.service.AppService;
+import com.whomade.kycarrots.ui.common.LoginInfoUtil;
 import com.whomade.kycarrots.ui.dialog.DlgSelImg;
 import com.yalantis.ucrop.UCrop;
 
@@ -562,10 +563,12 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
         AdApi adApi = RetrofitProvider.INSTANCE.getRetrofit().create(AdApi.class);
         RemoteRepository repository = new RemoteRepository(adApi);
         AppService appService = new AppService(repository);
+        String userNo = LoginInfoUtil.INSTANCE.getUserNo(this);
 
         AppServiceHelper.getProductDetailAsync(
                 appService,
                 Long.parseLong(productId),
+                Long.parseLong(userNo),
                 result -> {
                     ModifyADInfo modifyInfo = new ModifyADInfo();
                     modifyInfo.setProductId(result.getProduct().getProductId());

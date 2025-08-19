@@ -1,8 +1,10 @@
 package com.whomade.kycarrots.domain.service
 
+import com.google.android.gms.common.api.Response
 import com.whomade.kycarrots.data.model.AdItem
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
+import com.whomade.kycarrots.data.model.InterestRequest
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
@@ -82,8 +84,8 @@ class AppService(
         }
     }
 
-    suspend fun getProductDetail(productId: Long): ProductDetailResponse? {
-        val response = repository.fetchProductDetail(productId)
+    suspend fun getProductDetail(productId: Long,UserNo: Long): ProductDetailResponse? {
+        val response = repository.fetchProductDetail(productId,UserNo)
         return if (response.isSuccessful) {
             response.body()
         } else {
@@ -209,6 +211,11 @@ class AppService(
 
     suspend fun updateProductStatus(token: String, product: ProductItem): Boolean {
         val response = repository.updateProductStatus(token, product)
+        return response.isSuccessful
+    }
+
+    suspend fun toggleInterest(req: InterestRequest): Boolean {
+        val response = repository.toggleInterest(req)
         return response.isSuccessful
     }
 }

@@ -7,6 +7,7 @@ import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.FindEmailResponse
 import com.whomade.kycarrots.data.model.FindPasswordResponse
+import com.whomade.kycarrots.data.model.InterestRequest
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
@@ -102,8 +103,8 @@ class RemoteRepository(
         return adApi.getSCodeList(groupId,mcode)
     }
 
-    suspend fun fetchProductDetail(productId: Long): Response<ProductDetailResponse> {
-        return adApi.getProductDetail(productId)
+    suspend fun fetchProductDetail(productId: Long,UserNO: Long): Response<ProductDetailResponse> {
+        return adApi.getProductDetail(productId,UserNO)
     }
 
     suspend fun deleteImageById(imageId: String): Response<ResponseBody> {
@@ -181,5 +182,8 @@ class RemoteRepository(
 
     suspend fun updateProductStatus(token: String, product: ProductItem): Response<ResponseBody> {
         return adApi.updateProductStatus(token, product)
+    }
+    suspend fun toggleInterest(req: InterestRequest): Response<Boolean> {
+        return adApi.toggle(req)
     }
 }

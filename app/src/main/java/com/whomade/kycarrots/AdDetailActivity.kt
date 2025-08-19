@@ -62,6 +62,7 @@ import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import kotlinx.coroutines.launch
 import androidx.core.view.WindowInsetsCompat
+import com.whomade.kycarrots.data.model.InterestRequest
 
 class AdDetailActivity : AppCompatActivity() {
     private lateinit var productIdStr: String
@@ -71,10 +72,16 @@ class AdDetailActivity : AppCompatActivity() {
     private var currentStatus: String? = null
     private lateinit var filteredList: List<TxtListDataInfo>  // ← 전역 선언 필요
     private lateinit var statusTextView: TextView // ← 추가
+    private var memberCode: String? = null   // ← 현재 사용자 권한 저장
+    private var isFav: Boolean = false
+    private lateinit var btnEditProduct: View
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
+        memberCode = LoginInfoUtil.getMemberCode(this)
+        btnEditProduct = findViewById(R.id.btn_edit_product)
+
 
         val intent = intent
         productIdStr = intent.getStringExtra(EXTRA_PRODUCT_ID) ?: "0"
@@ -111,8 +118,9 @@ class AdDetailActivity : AppCompatActivity() {
 
         }
 
-        val btn_edit_product: View = findViewById(R.id.btn_edit_product)
-        btn_edit_product.setOnClickListener {
+        val isSeller = (memberCode == "ROLE_SELL")
+        btnEditProduct.visibility = if (isSeller) View.VISIBLE else View.GONE
+        btnEditProduct.setOnClickListener {
             val intent = Intent(this, MakeADMainActivity::class.java)
             intent.putExtra(MakeADDetail1.STR_PUT_AD_IDX, productIdStr) // 현재 ID 전달
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -127,6 +135,8 @@ class AdDetailActivity : AppCompatActivity() {
         collapsingToolbar.title = detail.product.title
 
         wholesalerId = detail.product.wholesalerId                                                  //도매상ID
+        isFav = detail.product.fav == "1"
+
 
         val descriptionTextView: TextView = findViewById(R.id.product_description)
         // 설명 텍스트 표시
@@ -248,7 +258,7 @@ class AdDetailActivity : AppCompatActivity() {
          */
         currentStatus = detail.product.saleStatus
         loadProductStatusOptions( Constants.SYSTEM_TYPE, currentStatus)
-
+        invalidateOptionsMenu()
     }
 
     private fun loadProductStatusOptions(systemType: Int, currentStatus: String?) {
@@ -451,7 +461,20 @@ class AdDetailActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.sample_actions, menu)
+        //menuInflater.inflate(R.menu.sample_actions, menu)
+        menuInflater.inflate(R.menu.menu_ad_detail, menu)
+        val favItem = menu.findItem(R.id.action_favorite)
+        val isBuyer = (memberCode == "ROLE_PUB")
+
+        // 구매자만 보이도록
+        favItem.isVisible = isBuyer
+
+        // 보일 때만 아이콘 상태 반영
+        if (isBuyer) {
+            favItem.setIcon(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_border)
+            // 필요 시 틴트 강제
+            // favItem.icon?.mutate()?.setTint(ContextCompat.getColor(this, android.R.color.white))
+        }
         return true
     }
 
@@ -464,17 +487,19 @@ class AdDetailActivity : AppCompatActivity() {
         val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
         val repository = RemoteRepository(adApi)
         val appService = AppService(repository)
-
+        val userNo = LoginInfoUtil.getUserNo(this).toLongOrNull()?: return
+        showLoading(true)
         lifecycleScope.launch {
             try {
-                val detail = appService.getProductDetail(productId)
+                val detail = appService.getProductDetail(productId,userNo)
                 if (detail != null) {
                     showProductDetail(detail)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
-        }
+            } finally {
+                showLoading(false)
+            }        }
     }
 
     override fun onResume() {
@@ -492,9 +517,43 @@ class AdDetailActivity : AppCompatActivity() {
                 supportFinishAfterTransition()
                 true
             }
-
+            R.id.action_favorite -> {
+                if (memberCode == "ROLE_PUB") {
+                    toggleFavorite(item)
+                } else {
+                    Toast.makeText(this, "구매자만 찜하기가 가능합니다", Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+    private fun toggleFavorite(menuItem: MenuItem) {
+        val userNo = LoginInfoUtil.getUserNo(this).toLongOrNull()?: return
+        val productId = productIdStr.toLongOrNull() ?: return
+
+        lifecycleScope.launch {
+            showLoading(true)
+            try {
+                val req = InterestRequest(userNo = userNo, productId = productId)
+                val resp = AppServiceProvider.getService().toggleInterest(req)
+
+                if (resp) {
+                    isFav =!isFav
+                    menuItem.setIcon(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_border)
+                    Toast.makeText(
+                        this@AdDetailActivity,
+                        if (isFav) "관심상품에 추가되었습니다" else "관심상품에서 제거되었습니다",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(this@AdDetailActivity, "서버 오류로 실패했습니다", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@AdDetailActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                showLoading(false)
+            }        }
     }
 
     override fun onBackPressed() {
@@ -677,5 +736,9 @@ class AdDetailActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun showLoading(show: Boolean) {
+        findViewById<View>(R.id.ll_progress_circle).visibility =
+            if (show) View.VISIBLE else View.GONE
+    }
 
 }

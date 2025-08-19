@@ -5,6 +5,7 @@ import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.FindEmailResponse
 import com.whomade.kycarrots.data.model.FindPasswordResponse
+import com.whomade.kycarrots.data.model.InterestRequest
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
@@ -73,7 +74,8 @@ interface AdApi {
     ): Response<ResponseBody>
 
     @GET("product/detail/{productId}")
-    suspend fun getProductDetail(@Path("productId") productId: Long): Response<ProductDetailResponse>
+    suspend fun getProductDetail(@Path("productId") productId: Long,
+                                 @Query("userNo") userNo: Long): Response<ProductDetailResponse>
 
     @POST("product/image/delete")
     suspend fun deleteImageById(
@@ -154,4 +156,7 @@ interface AdApi {
         @Query("token") token: String,
         @Body product: ProductItem
     ): Response<ResponseBody>
+
+    @POST("api/interests/toggle")
+    suspend fun toggle(@Body req: InterestRequest): Response<Boolean>
 }
