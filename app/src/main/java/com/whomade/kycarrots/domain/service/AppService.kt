@@ -218,4 +218,17 @@ class AppService(
         val response = repository.toggleInterest(req)
         return response.isSuccessful
     }
+
+    suspend fun getInterestList(
+        token: String,
+        pageNo: Int
+    ): List<AdItem> {
+        val response = repository.fetchInterestList(token, pageNo)
+        return if (response.isSuccessful) {
+            response.body()?.items ?: emptyList()
+        } else {
+            emptyList()
+        }
+    }
+
 }

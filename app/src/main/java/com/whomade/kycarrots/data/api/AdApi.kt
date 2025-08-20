@@ -159,4 +159,10 @@ interface AdApi {
 
     @POST("api/interests/toggle")
     suspend fun toggle(@Body req: InterestRequest): Response<Boolean>
+
+    @GET("product/interests/list")
+    suspend fun getInterestItems(
+        @Query("token") token: String,
+        @Query("pageno") pageNo: Int
+    ): Response<AdResponse>
 }

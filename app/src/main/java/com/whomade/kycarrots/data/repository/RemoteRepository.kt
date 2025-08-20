@@ -186,4 +186,11 @@ class RemoteRepository(
     suspend fun toggleInterest(req: InterestRequest): Response<Boolean> {
         return adApi.toggle(req)
     }
+    suspend fun fetchInterestList(
+        token: String,
+        pageNo: Int
+    ): Response<AdResponse> {
+        return adApi.getInterestItems(token, pageNo)
+    }
+
 }
