@@ -20,18 +20,29 @@ import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.adapter.AdAdapter
 import kotlinx.coroutines.launch
 
-class AdListFragment : Fragment() {
+class AdListFragment : Fragment(), Refreshable {
+
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: AdAdapter
     private lateinit var appService: AppService
-    private lateinit var progressBarLayout: View
+    private var progressBarLayout: View? = null
+    private var pendingRefresh = false  // 뷰가 없을 때 들어온 새로고침 요청을 보관
 
     private var pageNo = 1
     private var isLoading = false
     private var isLastPage = false
 
     private var saleStatus: String = "1"
+
+    override fun refresh() {
+        // 뷰가 있으면 바로 새로고침, 없으면 보류
+        if (view != null) {
+            fetchAdvertiseList(isRefresh = true)
+        } else {
+            pendingRefresh = true
+        }
+    }
 
     // ★ TAB_CD -> saleStatus 매핑: 1->"1", 2->"10", 3->"99"
     private fun mapSaleStatusFromTab(tabCd: String?): String = when (tabCd) {
@@ -77,7 +88,10 @@ class AdListFragment : Fragment() {
         val repository = RemoteRepository(adApi)
         appService = AppService(repository)
 
-        fetchAdvertiseList(isRefresh = true)
+        if (pendingRefresh) {
+            pendingRefresh = false
+            fetchAdvertiseList(isRefresh = true)
+        }
 
         parentFragmentManager.setFragmentResultListener("register_result_key", viewLifecycleOwner) { _, bundle ->
             val isSuccess = bundle.getBoolean("register_result", false)
@@ -98,9 +112,13 @@ class AdListFragment : Fragment() {
             }
         })
     }
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // 뷰 참조 정리
+        progressBarLayout = null
+    }
     fun fetchAdvertiseList(isRefresh: Boolean = false) {
-        if (isLoading || isLastPage) return
+        if (isLoading || (!isRefresh && isLastPage)) return
         isLoading = true
         showProgressBar()
 
@@ -140,10 +158,10 @@ class AdListFragment : Fragment() {
         }
     }
     fun showProgressBar() {
-        progressBarLayout.visibility = View.VISIBLE
+        progressBarLayout?.visibility = View.VISIBLE
     }
 
     fun hideProgressBar() {
-        progressBarLayout.visibility = View.GONE
+        progressBarLayout?.visibility = View.GONE
     }
 }

@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
 import com.whomade.kycarrots.ui.ad.AdListFragment
+import com.whomade.kycarrots.ui.ad.Refreshable
 import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
 import java.util.ArrayList
@@ -24,6 +25,9 @@ import java.util.ArrayList
 class MainActivity : BaseDrawerActivity() {
     private var badge: BadgeDrawable? = null
     private lateinit var toolbar: Toolbar
+
+    private lateinit var viewPager: ViewPager
+    private lateinit var pagerAdapter: Adapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +45,7 @@ class MainActivity : BaseDrawerActivity() {
 
 
 
-        val viewPager: ViewPager = findViewById(R.id.viewpager)
+        viewPager = findViewById(R.id.viewpager)
         setupViewPager(viewPager)
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
@@ -123,6 +127,13 @@ class MainActivity : BaseDrawerActivity() {
         super.onResume()
         // 돌아왔을 때 뱃지 다시 갱신
         NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
+        /*
+        val pos = viewPager.currentItem
+        (pagerAdapter.getFragment(pos) as? Refreshable)?.refresh()
+         */
+        for (i in 0 until pagerAdapter.count) {
+            (pagerAdapter.getFragment(i) as? Refreshable)?.refresh()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -138,15 +149,15 @@ class MainActivity : BaseDrawerActivity() {
 
 
     private fun setupViewPager(viewPager: ViewPager) {
-        val adapter = Adapter(supportFragmentManager).apply {
-            addFragment(AdListFragment.newInstance("1"), "전체")
-            addFragment(AdListFragment.newInstance("2"), "처리중")
-            addFragment(AdListFragment.newInstance("3"), "완료")
+        pagerAdapter  = Adapter(supportFragmentManager).apply {
+            addFragment(AdListFragment.newInstance("1"), "판매중")
+            addFragment(AdListFragment.newInstance("2"), "예약중")
+            addFragment(AdListFragment.newInstance("3"), "판매완료")
         }
-        viewPager.adapter = adapter
+        viewPager.adapter = pagerAdapter
 
         // ✅ 모든 프래그먼트를 미리 생성해서 onViewCreated/fetchAdvertiseList가 즉시 실행되도록
-        viewPager.offscreenPageLimit = adapter.count
+        viewPager.offscreenPageLimit = pagerAdapter.count
     }
 
     internal class Adapter(
@@ -159,7 +170,7 @@ class MainActivity : BaseDrawerActivity() {
             fragments.add(fragment)
             titles.add(title)
         }
-
+        fun getFragment(position: Int): Fragment = fragments[position]
         override fun getItem(position: Int): Fragment = fragments[position]
         override fun getCount(): Int = fragments.size
         override fun getPageTitle(position: Int): CharSequence? = titles[position]

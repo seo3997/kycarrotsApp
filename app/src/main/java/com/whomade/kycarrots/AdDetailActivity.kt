@@ -418,7 +418,7 @@ class AdDetailActivity : AppCompatActivity() {
     private fun updateProductStatus(code: String, rejectReason: String?) {
         val token = TokenUtil.getToken(this)
         val productId = productIdStr
-
+        showLoading(true)
         lifecycleScope.launch {
             try {
 
@@ -440,6 +440,8 @@ class AdDetailActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Toast.makeText(this@AdDetailActivity, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
                 restoreSpinnerSelection()
+            } finally {
+                showLoading(false)
             }
         }
     }
