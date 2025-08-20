@@ -2,6 +2,7 @@ package com.whomade.kycarrots.data.repository
 
 import com.google.gson.Gson
 import com.whomade.kycarrots.data.api.AdApi
+import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.data.model.AdResponse
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
@@ -28,25 +29,8 @@ import java.io.File
 class RemoteRepository(
     private val adApi: AdApi
 ) {
-    suspend fun fetchAdvertiseList(
-        token: String,
-        adCode: Int,
-        pageNo: Int,
-        categoryGroup: String?  = null,
-        categoryMid: String?    = null,
-        categoryScls: String?   = null,
-        areaGroup: String?      = null,
-        areaMid: String?        = null,
-        areaScls: String?       = null,
-        minPrice: Int?          = null,
-        maxPrice: Int?          = null
-    ): Response<AdResponse> {
-        return adApi.getAdItems(
-            token, adCode, pageNo,
-            categoryGroup, categoryMid, categoryScls,
-            areaGroup, areaMid, areaScls,
-            minPrice, maxPrice
-        )
+    suspend fun fetchAdvertiseList(req: AdListRequest): Response<AdResponse> {
+        return adApi.getAdItems(req)
     }
 
     // 광고 등록

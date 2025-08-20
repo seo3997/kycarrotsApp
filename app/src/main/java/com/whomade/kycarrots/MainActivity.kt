@@ -138,12 +138,15 @@ class MainActivity : BaseDrawerActivity() {
 
 
     private fun setupViewPager(viewPager: ViewPager) {
-        viewPager.adapter = Adapter(supportFragmentManager).apply {
+        val adapter = Adapter(supportFragmentManager).apply {
             addFragment(AdListFragment.newInstance("1"), "전체")
             addFragment(AdListFragment.newInstance("2"), "처리중")
             addFragment(AdListFragment.newInstance("3"), "완료")
-            //addFragment(FrSetting(), "완료")
         }
+        viewPager.adapter = adapter
+
+        // ✅ 모든 프래그먼트를 미리 생성해서 onViewCreated/fetchAdvertiseList가 즉시 실행되도록
+        viewPager.offscreenPageLimit = adapter.count
     }
 
     internal class Adapter(

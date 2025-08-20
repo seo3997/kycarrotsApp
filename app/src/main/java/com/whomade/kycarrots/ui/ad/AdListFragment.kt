@@ -14,6 +14,7 @@ import com.whomade.kycarrots.R
 import com.whomade.kycarrots.common.RetrofitProvider
 import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.AdItem
+import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.adapter.AdAdapter
@@ -30,6 +31,16 @@ class AdListFragment : Fragment() {
     private var isLoading = false
     private var isLastPage = false
 
+    private var saleStatus: String = "1"
+
+    // ★ TAB_CD -> saleStatus 매핑: 1->"1", 2->"10", 3->"99"
+    private fun mapSaleStatusFromTab(tabCd: String?): String = when (tabCd) {
+        "1" -> "1"
+        "2" -> "10"
+        "3" -> "99"
+        else -> "1"
+    }
+
     companion object {
         fun newInstance(tabCd: String): AdListFragment {
             val fragment = AdListFragment()
@@ -39,6 +50,12 @@ class AdListFragment : Fragment() {
             return fragment
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        saleStatus = mapSaleStatusFromTab(arguments?.getString("TAB_CD"))
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -98,7 +115,15 @@ class AdListFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                val ads: List<AdItem> = appService.getAdvertiseList(token, adCode = 1, pageNo = pageNo)
+
+                val req = AdListRequest(
+                    token = token,
+                    adCode = 1,
+                    pageno = pageNo,
+                    saleStatus = saleStatus
+                )
+                val ads: List<AdItem> = appService.getAdvertiseList(req)
+
                 if (ads.isEmpty()) {
                     isLastPage = true
                 } else {

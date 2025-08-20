@@ -1,5 +1,6 @@
 package com.whomade.kycarrots.data.api
 
+import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.data.model.AdResponse
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
@@ -44,17 +45,7 @@ interface AdApi {
 
     @POST("product")
     suspend fun getAdItems(
-        @Query("token") token: String,
-        @Query("ad_code") adCode: Int,
-        @Query("pageno") pageNo: Int,
-        @Query("categoryGroup")   categoryGroup: String? = "R010610",
-        @Query("categoryMid")     categoryMid:   String? = null,
-        @Query("categoryScls")    categoryScls:  String? = null,
-        @Query("areaGroup")       areaGroup:     String? = "R010070",
-        @Query("areaMid")         areaMid:       String? = null,
-        @Query("areaScls")        areaScls:      String? = null,
-        @Query("minPrice")        minPrice:      Int?    = null,
-        @Query("maxPrice")        maxPrice:      Int?    = null
+        @Body req: AdListRequest
     ): Response<AdResponse>
 
     @Multipart

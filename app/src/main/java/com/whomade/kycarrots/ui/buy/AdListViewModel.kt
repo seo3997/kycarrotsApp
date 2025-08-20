@@ -4,6 +4,7 @@ package com.whomade.kycarrots.ui.buy
 import android.util.Log
 import androidx.lifecycle.*
 import com.whomade.kycarrots.data.model.AdItem
+import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import kotlinx.coroutines.launch
@@ -82,12 +83,20 @@ class AdListViewModel(
         viewModelScope.launch {
             try {
                 val param = getQueryParam(pageNo)
-                val list = appService.getAdvertiseList(
-                    param.token, param.adCode, param.pageNo,
-                    param.categoryGroup, param.categoryMid, param.categoryScls,
-                    param.areaGroup, param.areaMid, param.areaScls,
-                    param.minPrice, param.maxPrice
+                val req = AdListRequest(
+                    token        = param.token,
+                    adCode       = param.adCode,
+                    pageno       = param.pageNo,
+                    categoryGroup= param.categoryGroup ?: "R010610",
+                    categoryMid  = param.categoryMid,
+                    categoryScls = param.categoryScls,
+                    areaGroup    = param.areaGroup ?: "R010070",
+                    areaMid      = param.areaMid,
+                    areaScls     = param.areaScls,
+                    minPrice     = param.minPrice,
+                    maxPrice     = param.maxPrice
                 )
+                val list = appService.getAdvertiseList(req)
                 _items.value = list
                 endReached = list.isEmpty()
             } catch (e: Exception) {
@@ -111,12 +120,21 @@ class AdListViewModel(
         viewModelScope.launch {
             try {
                 val param = getQueryParam(nextPage)
-                val newItems = appService.getAdvertiseList(
-                    param.token, param.adCode, param.pageNo,
-                    param.categoryGroup, param.categoryMid, param.categoryScls,
-                    param.areaGroup, param.areaMid, param.areaScls,
-                    param.minPrice, param.maxPrice
+                val req = AdListRequest(
+                    token        = param.token,
+                    adCode       = param.adCode,
+                    pageno       = param.pageNo,
+                    categoryGroup= param.categoryGroup ?: "R010610",
+                    categoryMid  = param.categoryMid,
+                    categoryScls = param.categoryScls,
+                    areaGroup    = param.areaGroup ?: "R010070",
+                    areaMid      = param.areaMid,
+                    areaScls     = param.areaScls,
+                    minPrice     = param.minPrice,
+                    maxPrice     = param.maxPrice
                 )
+
+                val newItems = appService.getAdvertiseList(req)
                 if (newItems.isEmpty()) {
                     endReached = true
                 } else {

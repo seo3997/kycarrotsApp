@@ -2,6 +2,7 @@ package com.whomade.kycarrots.domain.service
 
 import com.google.android.gms.common.api.Response
 import com.whomade.kycarrots.data.model.AdItem
+import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.InterestRequest
@@ -21,29 +22,12 @@ import java.io.File
 class AppService(
     private val repository: RemoteRepository
 ) {
-    suspend fun getAdvertiseList(token: String,
-                                 adCode: Int,
-                                 pageNo: Int,
-                                 categoryGroup: String?  = "R010610",
-                                 categoryMid: String?    = null,
-                                 categoryScls: String?   = null,
-                                 areaGroup: String?      = "R010070",
-                                 areaMid: String?        = null,
-                                 areaScls: String?       = null,
-                                 minPrice: Int?          = null,
-                                 maxPrice: Int?          = null
-    ): List<AdItem> {
-        val response = repository.fetchAdvertiseList(
-            token, adCode, pageNo,
-            categoryGroup, categoryMid, categoryScls,
-            areaGroup, areaMid, areaScls,
-            minPrice, maxPrice
-        )
+
+    suspend fun getAdvertiseList(req: AdListRequest): List<AdItem> {
+        val response = repository.fetchAdvertiseList(req)
         return if (response.isSuccessful) {
             response.body()?.items ?: emptyList()
-        } else {
-            emptyList() // 혹은 throw Exception("API Error: ${response.code()}")
-        }
+        } else emptyList()
     }
 
     // 광고 등록
