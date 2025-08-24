@@ -6,7 +6,15 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
+    <TextView
+        android:id="@+id/tv_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="데이타가 없습니다."
+        android:textSize="16sp"
+        android:textColor="@android:color/darker_gray"
+        android:visibility="gone"/>
     <!-- 로딩 ProgressBar (처음엔 GONE) -->
     <LinearLayout
         android:id="@+id/ll_progress_circle"

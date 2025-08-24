@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/ordersFragment"
-        android:name="com.whomade.kycarrots.ui.ad.AdListFragment"
+        android:name="com.whomade.kycarrots.ui.ad.PurchaseListFragment"
         android:label="구매내역"
         tools:layout="@layout/fragment_ad_list">
     </fragment>

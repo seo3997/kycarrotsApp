@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.data.model.AdResponse
+import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.FindEmailResponse
@@ -15,7 +16,9 @@ import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
+import com.whomade.kycarrots.data.model.PurchaseHistoryRequest
 import com.whomade.kycarrots.data.model.PushTokenVo
+import com.whomade.kycarrots.data.model.SimpleResult
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MediaType.Companion.toMediaType
@@ -177,4 +180,20 @@ class RemoteRepository(
         return adApi.getInterestItems(token, pageNo)
     }
 
+    suspend fun fetchPurchaseList(
+        token: String,
+        pageNo: Int
+    ): Response<AdResponse> {
+        return adApi.getPurchaseItems(token, pageNo)
+    }
+
+    suspend fun fetchChatBuyers(
+        productId: Long,
+        sellerId: String
+    ): Response<List<ChatBuyerDto>> {
+        return adApi.getChatBuyers(productId, sellerId)
+    }
+    suspend fun createPurchase(
+        body: PurchaseHistoryRequest
+    ): Response<SimpleResult> = adApi.createPurchase(body)
 }

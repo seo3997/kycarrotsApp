@@ -35,17 +35,18 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var productId: String
     private lateinit var currentUserId: String
     private lateinit var senderId: String
+    private lateinit var otherId : String
     private var isBuyer: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        setupToolbar()
         bindViews()
         initializeChat()
         setupSendButton()
         subscribeToMessages()
+        setupToolbar()
     }
 
     private fun setupToolbar() {
@@ -54,7 +55,7 @@ class ChatActivity : AppCompatActivity() {
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_arrow_back)
-            title = "채팅"
+            title = "$otherId  님과의 대화"   // ← 여기!
         }
     }
 
@@ -80,6 +81,8 @@ class ChatActivity : AppCompatActivity() {
         val sUID = prefs.getString("LogIn_ID", "") ?: ""
         val sMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
 
+        otherId = resolveOtherId(sUID, buyerId, sellerId)
+
         currentUserId = sUID
         isBuyer = sMemberCode == "ROLE_PUB"
         senderId = sUID
@@ -87,6 +90,15 @@ class ChatActivity : AppCompatActivity() {
         StompManager.connect(sUID)
 
         loadChatMessages(roomId)
+    }
+
+    private fun resolveOtherId(myId: String, buyerId: String, sellerId: String): String {
+        return when (myId) {
+            buyerId -> sellerId
+            sellerId -> buyerId
+            else -> if (myId.isNotBlank()) listOf(buyerId, sellerId).firstOrNull { it != myId } ?: sellerId
+            else sellerId
+        }
     }
 
     private fun setupSendButton() {

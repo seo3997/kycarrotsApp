@@ -20,6 +20,7 @@ class AdAdapter(private val fragment: Fragment) :
     RecyclerView.Adapter<AdAdapter.ViewHolder>() {
 
     private val items: MutableList<AdItem> = mutableListOf()
+    private var onItemClick: ((AdItem, View) -> Unit)? = null   // ⬅ 공유뷰까지 전달
 
     // 새로고침 또는 첫 로딩 시 사용
     fun updateList(newList: List<AdItem>) {
@@ -40,6 +41,7 @@ class AdAdapter(private val fragment: Fragment) :
         items.clear()
         notifyDataSetChanged()
     }
+    fun setOnItemClickListener(listener: (AdItem, View) -> Unit) { onItemClick = listener }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.titleText)
@@ -59,17 +61,7 @@ class AdAdapter(private val fragment: Fragment) :
         holder.brief.text = item.description
 
         holder.itemView.setOnClickListener {
-            val intent = Intent(fragment.requireContext(), AdDetailActivity::class.java).apply {
-                putExtra("imageUrl", item.imageUrl)
-                putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, item.productId)
-                putExtra(AdDetailActivity.EXTRA_USER_ID, item.userId)
-            }
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                fragment.requireActivity(),
-                holder.image,
-                "shared_image"
-            )
-            fragment.requireActivity().startActivity(intent, options.toBundle())
+            onItemClick?.invoke(item, holder.image)
         }
 
         Glide.with(holder.image.context)
@@ -81,4 +73,13 @@ class AdAdapter(private val fragment: Fragment) :
     }
 
     override fun getItemCount(): Int = items.size
+
+    fun removeByProductId(productId: String) {
+        val idx = items.indexOfFirst { it.productId == productId }
+        if (idx != -1) {
+            val mutable = items.toMutableList()
+            mutable.removeAt(idx)
+            updateList(mutable) // or submitList if ListAdapter 사용
+        }
+    }
 }

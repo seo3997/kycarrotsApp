@@ -1,7 +1,6 @@
+// src/main/java/com/whomade/kycarrots/ui/ad/PurchaseListFragment.kt
 package com.whomade.kycarrots.ui.ad
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,8 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -27,13 +24,7 @@ import com.whomade.kycarrots.ui.adapter.AdAdapter
 import com.whomade.kycarrots.ui.common.TokenUtil
 import kotlinx.coroutines.launch
 
-/**
- * 관심상품 목록 전용 Fragment
- * - 레이아웃: fragment_ad_list 재사용
- * - 페이징/프로그레스/어댑터 구조 동일
- * - 데이터 소스만 getInterestList()로 변경
- */
-class InterestListFragment : Fragment() {
+class PurchaseListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: AdAdapter
@@ -45,10 +36,8 @@ class InterestListFragment : Fragment() {
     private var isLoading = false
     private var isLastPage = false
 
-    private lateinit var detailLauncher: ActivityResultLauncher<Intent>
-
     companion object {
-        fun newInstance(): InterestListFragment = InterestListFragment()
+        fun newInstance(): PurchaseListFragment = PurchaseListFragment()
     }
 
     override fun onCreateView(
@@ -65,14 +54,29 @@ class InterestListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = AdAdapter(this)
         recyclerView.adapter = adapter
+
+        adapter.setOnItemClickListener { item, sharedView ->
+            val intent = Intent(requireContext(), AdDetailActivity::class.java).apply {
+                putExtra("imageUrl", item.imageUrl)
+                putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, item.productId) // String
+                putExtra(AdDetailActivity.EXTRA_USER_ID, item.userId)
+            }
+
+            // 공유 요소 전환 (imageView와 "shared_image"는 item_ad.xml과 상세 레이아웃에서 동일해야 함)
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                requireActivity(), sharedView, "shared_image"
+            )
+            startActivity(intent, options.toBundle())
+            // 만약 상세에서 결과를 받아 목록을 갱신하고 싶다면:
+            // detailLauncher.launch(intent, options)
+        }
         progressBarLayout = view.findViewById(R.id.ll_progress_circle)
 
         val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
         val repository = RemoteRepository(adApi)
         appService = AppService(repository)
 
-        fetchInterestList(isRefresh = true)
-
+        fetchPurchaseList(isRefresh = true)
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
@@ -81,43 +85,13 @@ class InterestListFragment : Fragment() {
                 val total = lm.itemCount
                 val last = lm.findLastVisibleItemPosition()
                 if (!isLoading && !isLastPage && last >= total - 5) {
-                    fetchInterestList()
+                    fetchPurchaseList()
                 }
             }
         })
-
-        adapter.setOnItemClickListener { item, sharedView ->
-            val intent = Intent(requireContext(), AdDetailActivity::class.java).apply {
-                putExtra("imageUrl", item.imageUrl)
-                putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, item.productId) // String
-                putExtra(AdDetailActivity.EXTRA_USER_ID, item.userId)
-            }
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                requireActivity(), sharedView, "shared_image"
-            )
-            detailLauncher.launch(intent, options)  // ✅ 결과를 받으려면 반드시 launch 사용
-        }
-
-        detailLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data = result.data
-                val productId = data?.getStringExtra("productId") ?: ""
-                val isInterested = data?.getBooleanExtra("isInterested", true) ?: true
-
-                if (productId.isNotEmpty()) {
-                    if (!isInterested) {
-                        adapter.removeByProductId(productId)
-                        if (adapter.itemCount == 0) {
-                            emptyTextView.visibility = View.VISIBLE
-                            isLastPage = true
-                        }
-                    }
-                }
-            }
-        }
     }
 
-    private fun fetchInterestList(isRefresh: Boolean = false) {
+    private fun fetchPurchaseList(isRefresh: Boolean = false) {
         if (isLoading || isLastPage) return
         isLoading = true
         showProgressBar()
@@ -132,28 +106,27 @@ class InterestListFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val ads: List<AdItem> = appService.getInterestList(token, pageNo)
-
+                val ads: List<AdItem> = appService.getPurchaseList(token, pageNo)
                 if (ads.isEmpty()) {
                     if (pageNo == 1) {
-                        // 첫 페이지부터 데이터 없음 → 안내 문구 노출
+                        // 첫 페이지부터 데이터 없음
                         emptyTextView.visibility = View.VISIBLE
                     }
                     isLastPage = true
                 } else {
-                    // 데이터 있으면 리스트 갱신
                     emptyTextView.visibility = View.GONE
                     if (pageNo == 1) adapter.updateList(ads) else adapter.addList(ads)
                     pageNo++
                 }
             } catch (e: Exception) {
-                Log.e("InterestListFragment", "API 호출 실패: ${e.message}")
+                Log.e("PurchaseListFragment", "API 호출 실패: ${e.message}")
             } finally {
                 isLoading = false
                 hideProgressBar()
             }
         }
     }
+
     private fun showProgressBar() { progressBarLayout.visibility = View.VISIBLE }
     private fun hideProgressBar() { progressBarLayout.visibility = View.GONE }
 }

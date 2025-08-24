@@ -3,13 +3,14 @@ package com.whomade.kycarrots.ui.common
 import android.content.Context
 
 object LoginInfoUtil {
-    private const val PREF_NAME = "SaveLoginInfo"
+    public const val PREF_NAME = "SaveLoginInfo"
 
-    private const val KEY_ID = "LogIn_ID"
-    private const val KEY_NO = "LogIn_NO"
-    private const val KEY_PWD = "LogIn_PWD"
-    private const val KEY_MEMBER_CODE = "LogIn_MEMBERCODE"
-    private const val KEY_IS_LOGIN = "IsLogin"
+    public const val KEY_ID = "LogIn_ID"
+    public const val KEY_NO = "LogIn_NO"
+    public const val KEY_NM = "LogIn_NM"
+    public const val KEY_PWD = "LogIn_PWD"
+    public const val KEY_MEMBER_CODE = "LogIn_MEMBERCODE"
+    public const val KEY_IS_LOGIN = "IsLogin"
 
     fun saveLoginInfo(context: Context, email: String, loginNo: String, password: String, memberCode: String) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().apply {

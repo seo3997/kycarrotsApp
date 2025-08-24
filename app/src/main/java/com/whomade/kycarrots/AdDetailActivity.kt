@@ -15,6 +15,7 @@
  */
 package com.whomade.kycarrots
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -62,6 +63,7 @@ import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import kotlinx.coroutines.launch
 import androidx.core.view.WindowInsetsCompat
+import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.InterestRequest
 
 class AdDetailActivity : AppCompatActivity() {
@@ -75,6 +77,9 @@ class AdDetailActivity : AppCompatActivity() {
     private var memberCode: String? = null   // ← 현재 사용자 권한 저장
     private var isFav: Boolean = false
     private lateinit var btnEditProduct: View
+    private var statusChanged = false
+    private var newStatus: String? = null
+    private var selectedBuyerForCompletion: ChatBuyerDto? = null
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -364,6 +369,11 @@ class AdDetailActivity : AppCompatActivity() {
             return
         }
 
+        if (code == "99") {
+            maybePickBuyerThenConfirm(label, code)
+            return
+        }
+
         if (currentStatus == "0" && code == "98") {
             // 승인요청 → 반려
             showRejectReasonDialog { reason ->
@@ -375,7 +385,54 @@ class AdDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun maybePickBuyerThenConfirm(label: String, code: String) {
+        val pid = productIdStr.toLongOrNull()
+        val sellerId = resolveSellerId() // 로그인한 내 ID
 
+        if (pid == null) {
+            Toast.makeText(this, "상품 ID가 유효하지 않습니다.", Toast.LENGTH_SHORT).show()
+            restoreSpinnerSelection()
+            return
+        }
+        if (sellerId.isBlank()) {
+            Toast.makeText(this, "로그인 정보를 확인해주세요.", Toast.LENGTH_SHORT).show()
+            restoreSpinnerSelection()
+            return
+        }
+
+        lifecycleScope.launch {
+            showLoading(true)
+            try {
+                // ✅ 서버에서 구매자 목록 가져오기
+                val buyers = AppServiceProvider.getService().getChatBuyers(pid, sellerId)
+
+                if (buyers.isEmpty()) {
+                    // 구매자 없음 → 바로 확인 다이얼로그(= 상태만 변경)
+                    selectedBuyerForCompletion = null
+                    showStatusChangeConfirmDialog(label, code, rejectReason = null)
+                } else {
+                    // 구매자 있음 → 목록에서 선택해야 진행
+                    val labels = buyers.mapIndexed { i, b -> "${i+1}. ${b.buyerNm} (${b.buyerId})" }.toTypedArray()
+                    AlertDialog.Builder(this@AdDetailActivity)
+                        .setTitle("판매완료 처리 — 구매자 선택")
+                        .setItems(labels) { _, which ->
+                            selectedBuyerForCompletion = buyers[which]
+                            showStatusChangeConfirmDialog(label, code, rejectReason = null)
+                        }
+                        .setNegativeButton("취소") { _, _ ->
+                            restoreSpinnerSelection()
+                        }
+                        .show()
+                }
+            } catch (e: Exception) {
+                // 에러 시에도 구매자 없이 진행(상태만 변경)
+                selectedBuyerForCompletion = null
+                showStatusChangeConfirmDialog(label, code, rejectReason = null)
+            } finally {
+                showLoading(false)
+            }
+        }
+    }
     private fun showRejectReasonDialog(onReasonEntered: (String) -> Unit) {
         val editText = EditText(this).apply {
             hint = "반려 사유를 입력하세요"
@@ -397,17 +454,26 @@ class AdDetailActivity : AppCompatActivity() {
     }
 
     private fun showStatusChangeConfirmDialog(label: String, code: String, rejectReason: String?) {
+        val buyer = if (code == "99") selectedBuyerForCompletion else null
+        val buyerLine = buyer?.let { "\n\n선택한 구매자: ${it.buyerNm} (${it.buyerId})" } ?: ""
+
         val message = if (rejectReason != null) {
-            "상태를 \"$label\"(으)로 변경하고 아래 사유를 저장하시겠습니까?\n\n사유: $rejectReason"
+            "상태를 \"$label\"(으)로 변경하고 아래 사유를 저장하시겠습니까?\n\n사유: $rejectReason$buyerLine"
         } else {
-            "상태를 \"$label\"(으)로 변경하시겠습니까?"
+            "상태를 \"$label\"(으)로 변경하시겠습니까?$buyerLine"
         }
 
         AlertDialog.Builder(this)
             .setTitle("상태 변경 확인")
             .setMessage(message)
             .setPositiveButton("확인") { _, _ ->
-                updateProductStatus(code, rejectReason)
+                lifecycleScope.launch {
+                    val (ok, msg) = createPurchaseIfNeeded(code, buyer)
+                    if (!ok && !msg.isNullOrBlank()) {
+                        Toast.makeText(this@AdDetailActivity, msg, Toast.LENGTH_SHORT).show()
+                    }                    // 🔸 최종 상태 변경
+                    updateProductStatus(code, rejectReason)
+                }
             }
             .setNegativeButton("취소") { _, _ ->
                 restoreSpinnerSelection()
@@ -415,6 +481,27 @@ class AdDetailActivity : AppCompatActivity() {
             .show()
     }
 
+    private suspend fun createPurchaseIfNeeded(
+        code: String,
+        buyer: ChatBuyerDto?
+    ): Pair<Boolean, String?> {
+        if (code != "99" || buyer == null) return true to null
+
+        val pid = productIdStr.toLongOrNull()
+            ?: return false to "상품 ID가 유효하지 않습니다."
+        val sellerNo = LoginInfoUtil.getUserNo(this).toLongOrNull()
+
+        return try {
+            AppServiceProvider.getService().createPurchase(
+                productId = pid,
+                buyerNo   = buyer.buyerNo,
+                roomId    = buyer.roomId,
+                sellerNo  = buyer.sellerNo
+            )
+        } catch (e: Exception) {
+            false to (e.message ?: "구매이력 생성 중 오류")
+        }
+    }
     private fun updateProductStatus(code: String, rejectReason: String?) {
         val token = TokenUtil.getToken(this)
         val productId = productIdStr
@@ -437,6 +524,9 @@ class AdDetailActivity : AppCompatActivity() {
                     Toast.makeText(this@AdDetailActivity, "상태 변경 실패", Toast.LENGTH_SHORT).show()
                     restoreSpinnerSelection()
                 }
+                newStatus    = code
+                statusChanged = true
+
             } catch (e: Exception) {
                 Toast.makeText(this@AdDetailActivity, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
                 restoreSpinnerSelection()
@@ -444,6 +534,17 @@ class AdDetailActivity : AppCompatActivity() {
                 showLoading(false)
             }
         }
+    }
+    private fun maybeSetResultAndFinish() {
+        if (statusChanged && newStatus in listOf("1", "10", "99")) {
+            setResult(
+                Activity.RESULT_OK,
+                Intent()
+                    .putExtra("status_changed", true)
+                    .putExtra("new_status", newStatus)
+            )
+        }
+        supportFinishAfterTransition()
     }
 
     private fun restoreSpinnerSelection() {
@@ -516,7 +617,7 @@ class AdDetailActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                supportFinishAfterTransition()
+                maybeSetResultAndFinish()
                 true
             }
             R.id.action_favorite -> {
@@ -543,6 +644,14 @@ class AdDetailActivity : AppCompatActivity() {
                 if (resp) {
                     isFav =!isFav
                     menuItem.setIcon(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_border)
+
+                    setResult(
+                        Activity.RESULT_OK,
+                        Intent().apply {
+                            putExtra("productId", productIdStr)    // String
+                            putExtra("isInterested", isFav)         // Boolean
+                        }
+                    )
                     Toast.makeText(
                         this@AdDetailActivity,
                         if (isFav) "관심상품에 추가되었습니다" else "관심상품에서 제거되었습니다",
@@ -555,11 +664,12 @@ class AdDetailActivity : AppCompatActivity() {
                 Toast.makeText(this@AdDetailActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_SHORT).show()
             } finally {
                 showLoading(false)
-            }        }
+            }
+        }
     }
 
     override fun onBackPressed() {
-        supportFinishAfterTransition()
+        maybeSetResultAndFinish()
     }
 
     private fun handleFabClickForSystemType1() {
@@ -576,9 +686,9 @@ class AdDetailActivity : AppCompatActivity() {
         }
 
         // 값 설정
-        val buyerId = if (isBuyer) sUID else ""     //구매자
-        val sellerId = productUserId                 //판매자
-        val productId = productIdStr                  //상품ID
+        val buyerId = if (isBuyer) sUID else ""         //구매자
+        val sellerId  = resolveSellerId()               //판매자
+        val productId = productIdStr                    //상품ID
 
         if (isBuyer) {
             // 구매자 → 채팅방 생성 요청
@@ -600,7 +710,7 @@ class AdDetailActivity : AppCompatActivity() {
             "ROLE_PUB" -> {
                 // 구매자 → 도매상과 채팅 생성
                 val buyerId = myId
-                val sellerId = wholesalerId
+                val sellerId = resolveSellerId()
                 createOrGetRoomFromServer(productId, buyerId, sellerId)
             }
 
@@ -743,4 +853,11 @@ class AdDetailActivity : AppCompatActivity() {
             if (show) View.VISIBLE else View.GONE
     }
 
+    private fun resolveSellerId(): String {
+        return when (Constants.SYSTEM_TYPE) {
+            1 -> productUserId
+            2 -> wholesalerId
+            else -> productUserId // 안전 기본값
+        }
+    }
 }

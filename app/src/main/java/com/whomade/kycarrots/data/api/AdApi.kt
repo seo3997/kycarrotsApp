@@ -2,6 +2,7 @@ package com.whomade.kycarrots.data.api
 
 import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.data.model.AdResponse
+import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.FindEmailResponse
@@ -12,7 +13,9 @@ import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
+import com.whomade.kycarrots.data.model.PurchaseHistoryRequest
 import com.whomade.kycarrots.data.model.PushTokenVo
+import com.whomade.kycarrots.data.model.SimpleResult
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MultipartBody
@@ -156,4 +159,21 @@ interface AdApi {
         @Query("token") token: String,
         @Query("pageno") pageNo: Int
     ): Response<AdResponse>
+
+    @GET("product/purchases/list") // 또는 "/api/purchases/list" (프로젝트 baseUrl 구성에 맞게)
+    suspend fun getPurchaseItems(
+        @Query("token") token: String,
+        @Query("pageno") pageNo: Int
+    ): Response<AdResponse>
+
+    @GET("product/chat/buyers")
+    suspend fun getChatBuyers(
+        @Query("productId") productId: Long,
+        @Query("sellerId") sellerId: String
+    ): Response<List<ChatBuyerDto>>
+
+    @POST("api/purchases")
+    suspend fun createPurchase(
+        @Body body: PurchaseHistoryRequest
+    ): Response<SimpleResult>
 }

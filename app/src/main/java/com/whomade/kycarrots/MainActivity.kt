@@ -50,10 +50,10 @@ class MainActivity : BaseDrawerActivity() {
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
-                val fragment = supportFragmentManager.findFragmentByTag("android:switcher:${R.id.viewpager}:$position")
-                if (fragment is AdListFragment) {
-                    fragment.fetchAdvertiseList()
-                }
+                // 필요 시 탭 전환 때 재조회 (원치 않으면 주석)
+                val tag = "android:switcher:${R.id.viewpager}:$position"
+                (supportFragmentManager.findFragmentByTag(tag) as? AdListFragment)
+                    ?.fetchAdvertiseList(isRefresh = true)
             }
         })
 
@@ -126,14 +126,17 @@ class MainActivity : BaseDrawerActivity() {
     override fun onResume() {
         super.onResume()
         // 돌아왔을 때 뱃지 다시 갱신
+
         NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
         /*
         val pos = viewPager.currentItem
         (pagerAdapter.getFragment(pos) as? Refreshable)?.refresh()
          */
+        /*
         for (i in 0 until pagerAdapter.count) {
             (pagerAdapter.getFragment(i) as? Refreshable)?.refresh()
         }
+         */
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -184,9 +187,21 @@ class MainActivity : BaseDrawerActivity() {
                 supportFragmentManager.setFragmentResult("register_result_key", Bundle().apply {
                     putBoolean("register_result", true)
                 })
+                // (선택) 판매중 탭만 확실히 한 번 더
+                refreshTabBySaleStatus("1")
             }
         }
     }
 
-
+    fun refreshTabBySaleStatus(status: String?) {
+        val position = when (status) {
+            "1"  -> 0  // 판매중 탭
+            "10" -> 1  // 예약중 탭
+            "99" -> 2  // 판매완료 탭
+            else -> return
+        }
+        val tag = "android:switcher:${R.id.viewpager}:$position"
+        (supportFragmentManager.findFragmentByTag(tag) as? AdListFragment)
+            ?.fetchAdvertiseList(isRefresh = true)
+    }
 }

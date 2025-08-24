@@ -7,6 +7,7 @@ import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.StaticDataInfo
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.domain.service.AppService
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -52,6 +53,7 @@ class LoginInfo(
             putString("LogIn_PWD", password)
             putString("LogIn_MEMBERCODE", memberCode)
             putString("LogIn_NO", info.login_idx)
+            putString("LogIn_NM", info.login_nm)
             putBoolean("IsLogin", true)
             apply()
         }

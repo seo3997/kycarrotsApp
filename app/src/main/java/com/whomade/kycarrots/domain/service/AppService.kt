@@ -3,6 +3,7 @@ package com.whomade.kycarrots.domain.service
 import com.google.android.gms.common.api.Response
 import com.whomade.kycarrots.data.model.AdItem
 import com.whomade.kycarrots.data.model.AdListRequest
+import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
 import com.whomade.kycarrots.data.model.InterestRequest
@@ -12,6 +13,7 @@ import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
+import com.whomade.kycarrots.data.model.PurchaseHistoryRequest
 import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.data.repository.RemoteRepository
@@ -215,4 +217,50 @@ class AppService(
         }
     }
 
+    suspend fun getPurchaseList(
+        token: String,
+        pageNo: Int
+    ): List<AdItem> {
+        val response = repository.fetchPurchaseList(token, pageNo)
+        return if (response.isSuccessful) {
+            response.body()?.items ?: emptyList()
+        } else emptyList()
+    }
+
+    suspend fun getChatBuyers(
+        productId: Long,
+        sellerId: String
+    ): List<ChatBuyerDto> {
+        return try {
+            val resp = repository.fetchChatBuyers(productId, sellerId)
+            if (resp.isSuccessful) resp.body().orEmpty() else emptyList()
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    /**
+     * 구매이력 생성: 컨트롤러가 {result, message, id} 반환.
+     * @return Pair(success, message)
+     */
+    suspend fun createPurchase(
+        productId: Long,
+        buyerNo: Long,
+        roomId: String? = null,
+        sellerNo: Long
+    ): Pair<Boolean, String?> {
+        return try {
+            val resp = repository.createPurchase(
+                PurchaseHistoryRequest(productId, buyerNo, roomId, sellerNo)
+            )
+            if (resp.isSuccessful) {
+                val body = resp.body()
+                (body?.result == true) to body?.message
+            } else {
+                false to ("요청 실패 (${resp.code()})")
+            }
+        } catch (e: Exception) {
+            false to e.message
+        }
+    }
 }

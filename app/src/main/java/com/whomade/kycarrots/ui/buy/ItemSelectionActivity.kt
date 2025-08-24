@@ -1,5 +1,6 @@
 package com.whomade.kycarrots.ui.buy
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,6 +14,7 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import com.whomade.kycarrots.BaseDrawerActivity
 import com.whomade.kycarrots.R
+import com.whomade.kycarrots.ui.Noti.NotificationListActivity
 
 class ItemSelectionActivity : BaseDrawerActivity() {
 
@@ -79,6 +81,13 @@ class ItemSelectionActivity : BaseDrawerActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // 여기서 햄버거를 처리하지 않아도, 위의 toolbar.setNavigationOnClickListener에서 Drawer 열림
+        when (item.itemId) {
+            R.id.action_notifications -> {
+                startActivity(Intent(this, NotificationListActivity::class.java))
+                return true
+            }
+        }
         return super.onOptionsItemSelected(item)
+
     }
 }

@@ -304,7 +304,7 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
         }
 
         if(llProgress!=null && llProgress.isShown()) llProgress.setVisibility(View.GONE);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, MAKE_AD_COMPLETE);
     }
 
