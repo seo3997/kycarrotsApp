@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv_label"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/item_margin_left"
+    android:paddingEnd="@dimen/item_margin_left"
+    android:textStyle="bold"
+    android:textColor="@color/color_main_friend_txt"
+    android:textSize="@dimen/login_find_txt_size"
+    android:background="?attr/selectableItemBackground" />

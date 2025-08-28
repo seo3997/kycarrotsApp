@@ -65,6 +65,8 @@ import kotlinx.coroutines.launch
 import androidx.core.view.WindowInsetsCompat
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.InterestRequest
+import com.whomade.kycarrots.ui.dialog.SelectOption
+import com.whomade.kycarrots.ui.dialog.SelectOptionDialogFragment
 
 class AdDetailActivity : AppCompatActivity() {
     private lateinit var productIdStr: String
@@ -132,6 +134,42 @@ class AdDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+
+        supportFragmentManager.setFragmentResultListener(
+            SelectOptionDialogFragment.RESULT_KEY,
+            this
+        ) { _, bundle ->
+            when {
+                bundle.getBoolean(SelectOptionDialogFragment.RESULT_NONE, false) -> {
+                    // "선택 안함" 눌렀을 때 처리
+                    selectedBuyerForCompletion = null
+                    showStatusChangeConfirmDialog("구매확정", "99", rejectReason = null)
+                }
+                bundle.getBoolean(SelectOptionDialogFragment.RESULT_CANCELED, false) -> {
+                    restoreSpinnerSelection()
+                }
+                else -> {
+                    val selected = bundle.getParcelable<SelectOption>(
+                        SelectOptionDialogFragment.RESULT_ITEM
+                    )
+                    if (selected != null) {
+                        // ✅ 여기서 selected.name == labels 의 역할
+                        //    selected.code == buyerId
+                        selectedBuyerForCompletion = ChatBuyerDto(
+                            roomId     = selected.code3,           // 예: roomId
+                            productId  = selected.code6.toLongOrNull() ?: 0L, // 예: productId
+                            sellerId   = selected.code4,           // 예: sellerId
+                            buyerId    = selected.code1,           // 예: buyerId
+                            buyerNo    = selected.code1.toLongOrNull() ?: 0L,   // 필요 없으면 0L
+                            buyerNm    = selected.name,            // 표시용 이름
+                            sellerNo   = selected.code5.toLongOrNull() ?: 0L,
+                            sellerNm   = ""                        // 필요시 추가
+                        )
+                        showStatusChangeConfirmDialog("구매확정", "99", rejectReason = null)
+                    }
+                }
+            }
+        }
     }
 
 
@@ -412,6 +450,7 @@ class AdDetailActivity : AppCompatActivity() {
                     showStatusChangeConfirmDialog(label, code, rejectReason = null)
                 } else {
                     // 구매자 있음 → 목록에서 선택해야 진행
+                    /*
                     val labels = buyers.mapIndexed { i, b -> "${i+1}. ${b.buyerNm} (${b.buyerId})" }.toTypedArray()
                     AlertDialog.Builder(this@AdDetailActivity)
                         .setTitle("판매완료 처리 — 구매자 선택")
@@ -423,6 +462,28 @@ class AdDetailActivity : AppCompatActivity() {
                             restoreSpinnerSelection()
                         }
                         .show()
+                     */
+                    val options = ArrayList(
+                        buyers.map { b ->
+                            SelectOption(
+                                code1 = b.buyerId,   // 내부적으로 사용할 코드
+                                code2 = b.buyerNo.toString(),
+                                code3 = b.roomId,
+                                code4 = b.sellerId,
+                                code5 = b.sellerNo.toString(),
+                                code6 = b.productId.toString(),
+                                name =  b.buyerId+"/"+b.buyerNm    // 다이얼로그에 표시될 라벨
+                            )
+                        }
+                    )
+                    SelectOptionDialogFragment
+                        .newInstance(
+                            title = "판매완료 처리 — 구매자 선택",
+                            options = options,   // name이 곧 labels
+                            numbered = true,      // 번호 붙일지 여부
+                            showNone = true
+                        )
+                        .show(supportFragmentManager, "SelectOptionDialog")
                 }
             } catch (e: Exception) {
                 // 에러 시에도 구매자 없이 진행(상태만 변경)
@@ -455,7 +516,7 @@ class AdDetailActivity : AppCompatActivity() {
 
     private fun showStatusChangeConfirmDialog(label: String, code: String, rejectReason: String?) {
         val buyer = if (code == "99") selectedBuyerForCompletion else null
-        val buyerLine = buyer?.let { "\n\n선택한 구매자: ${it.buyerNm} (${it.buyerId})" } ?: ""
+        val buyerLine = buyer?.let { "\n\n선택한 구매자: ${it.buyerNm}" } ?: ""
 
         val message = if (rejectReason != null) {
             "상태를 \"$label\"(으)로 변경하고 아래 사유를 저장하시겠습니까?\n\n사유: $rejectReason$buyerLine"
