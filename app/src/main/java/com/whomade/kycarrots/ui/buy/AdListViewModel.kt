@@ -35,6 +35,7 @@ class AdListViewModel(
     private var areaGroup:     String? = null
     private var areaMid:       String? = null
     private var areaScls:      String? = null
+    private var saleStatus:    String = "1"
 
     /** 필터, 가격 등 모든 조건을 ViewModel에 저장하고, pageNo 만 전달 */
     private fun getQueryParam(pageNo: Int): QueryParam {
@@ -52,7 +53,8 @@ class AdListViewModel(
             areaMid = areaMid,
             areaScls = areaScls,
             minPrice = minPrice,
-            maxPrice = maxPrice
+            maxPrice = maxPrice,
+            saleStatus = saleStatus
         )
     }
 
@@ -94,9 +96,10 @@ class AdListViewModel(
                     areaMid      = param.areaMid,
                     areaScls     = param.areaScls,
                     minPrice     = param.minPrice,
-                    maxPrice     = param.maxPrice
+                    maxPrice     = param.maxPrice,
+                    saleStatus   = param.saleStatus
                 )
-                val list = appService.getAdvertiseList(req)
+                val list = appService.getBuyAdvertiseList(req)
                 _items.value = list
                 endReached = list.isEmpty()
             } catch (e: Exception) {
@@ -131,10 +134,11 @@ class AdListViewModel(
                     areaMid      = param.areaMid,
                     areaScls     = param.areaScls,
                     minPrice     = param.minPrice,
-                    maxPrice     = param.maxPrice
+                    maxPrice     = param.maxPrice,
+                    saleStatus   = param.saleStatus
                 )
 
-                val newItems = appService.getAdvertiseList(req)
+                val newItems = appService.getBuyAdvertiseList(req)
                 if (newItems.isEmpty()) {
                     endReached = true
                 } else {
@@ -165,6 +169,8 @@ class AdListViewModel(
         this.areaScls  = scls
     }
 
+    fun setSaleOnly(value: String) { saleStatus = value }
+
     fun resetPaging() {
         currentPage = 0
         endReached = false
@@ -191,6 +197,7 @@ class AdListViewModel(
         val areaMid: String?,
         val areaScls: String?,
         val minPrice: Int?,
-        val maxPrice: Int?
+        val maxPrice: Int?,
+        var saleStatus: String? = "1"
     )
 }

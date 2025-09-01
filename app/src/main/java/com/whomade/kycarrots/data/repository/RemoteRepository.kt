@@ -36,6 +36,10 @@ class RemoteRepository(
         return adApi.getAdItems(req)
     }
 
+    suspend fun fetchBuyAdvertiseList(req: AdListRequest): Response<AdResponse> {
+        return adApi.getBuyAdItems(req)
+    }
+
     // 광고 등록
     suspend fun registerAdvertise(
         product: ProductVo,

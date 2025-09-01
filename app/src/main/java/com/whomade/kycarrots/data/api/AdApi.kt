@@ -51,6 +51,11 @@ interface AdApi {
         @Body req: AdListRequest
     ): Response<AdResponse>
 
+    @POST("product/buyListAdvertise")
+    suspend fun getBuyAdItems(
+        @Body req: AdListRequest
+    ): Response<AdResponse>
+
     @Multipart
     @POST("product/register")
     suspend fun registerAdvertise(

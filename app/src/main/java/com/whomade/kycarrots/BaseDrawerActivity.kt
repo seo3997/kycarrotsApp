@@ -16,9 +16,12 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.whomade.kycarrots.setting.SettingActivity
 import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.TokenUtil
 
 open class BaseDrawerActivity : AppCompatActivity() {
     protected lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
 
     override fun setContentView(layoutResID: Int) {
         val fullView = layoutInflater.inflate(R.layout.activity_base_drawer, null)
@@ -30,18 +33,19 @@ open class BaseDrawerActivity : AppCompatActivity() {
         drawerLayout = fullView.findViewById(R.id.drawer_layout)
 
 
-        val navigationView: NavigationView = fullView.findViewById(R.id.nav_view)
+        navView = fullView.findViewById(R.id.nav_view)
 
-        val headerView = navigationView.getHeaderView(0) // 헤더 레이아웃의 첫 번째 뷰
+        val headerView = navView.getHeaderView(0) // 헤더 레이아웃의 첫 번째 뷰
         val navUserIdTextView = headerView.findViewById<TextView>(R.id.nav_userid)
 
         val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
         val userId = prefs.getString("LogIn_ID", "") ?: ""
         navUserIdTextView.text = userId
 
+        val userRole: String? = LoginInfoUtil.getMemberCode(this) // 예: ROLE_PUB / ROLE_SELL / ROLE_PROJ
+        applyMenuForRole(userRole)
 
-
-        navigationView.setNavigationItemSelectedListener { menuItem ->
+        navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
                     val intent = Intent(this, DashboardActivity::class.java).apply {
@@ -80,6 +84,8 @@ open class BaseDrawerActivity : AppCompatActivity() {
         }
 
 
+
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -92,5 +98,13 @@ open class BaseDrawerActivity : AppCompatActivity() {
         }
     }
 
-
+    private fun applyMenuForRole(role: String?) {
+        navView.menu.clear()
+        val menuRes = when (role) {
+            "ROLE_SELL" -> R.menu.drawer_view_seller
+            "ROLE_PROJ" -> R.menu.drawer_view_wholesaler
+            else        -> R.menu.drawer_view_buyer
+        }
+        navView.inflateMenu(menuRes)
+    }
 }

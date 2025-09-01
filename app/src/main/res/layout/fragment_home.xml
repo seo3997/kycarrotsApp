@@ -126,12 +126,29 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-        <CheckBox
-            android:id="@+id/checkbox_price"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/layout_filter_switches"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="희망 단가로 조회"
-            android:layout_marginBottom="8dp"/>
+            android:orientation="horizontal"
+            android:gravity="start|center_vertical"
+            android:layout_marginBottom="8dp">
+            <CheckBox
+                android:id="@+id/checkbox_sale_only"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:layout_marginEnd="16dp"
+                android:text="판매중인 상품만 보기"/>
+
+            <CheckBox
+                android:id="@+id/checkbox_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="희망 단가로 조회"
+                />
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layout_price_range"

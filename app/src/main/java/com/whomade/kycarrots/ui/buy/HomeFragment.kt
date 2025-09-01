@@ -43,6 +43,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var dropdownCity: AutoCompleteTextView
     private lateinit var dropdownDistrict: AutoCompleteTextView
     private lateinit var emptyTextView: TextView
+    private lateinit var checkboxSaleOnly: CheckBox
 
     // Data
     private var categoryList    = listOf<TxtListDataInfo>()
@@ -83,6 +84,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         llProgress          = view.findViewById(R.id.ll_progress_circle)
         llProgress.visibility = View.GONE
         emptyTextView       = view.findViewById(R.id.emptyTextView)
+        checkboxSaleOnly    = view.findViewById(R.id.checkbox_sale_only)
 
         // 2) 리스트/어댑터 (어댑터가 Activity 타입을 요구 → requireActivity())
         adapter = AdActivityAdapter(requireActivity())
@@ -100,8 +102,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val priceLayout = view.findViewById<View>(R.id.layout_price_range)
         checkBox.setOnCheckedChangeListener { _, isChecked ->
             priceLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+            sliderPrice.setValues(sliderPrice.valueFrom, sliderPrice.valueTo)
         }
 
+        viewModel.setSaleOnly(if (checkboxSaleOnly.isChecked) "1" else "0")
+        checkboxSaleOnly.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.setSaleOnly(if (isChecked) "1" else "0")
+            applyFiltersAndReload()    // ✅ 요청하신 대로 이 함수 호출
+        }
         // 5) 조회하기 버튼
         btnInquiry.setOnClickListener {
             viewModel.setCategoryFilter(selectedCategoryGroup, selectedCategoryMid, selectedCategoryScls)

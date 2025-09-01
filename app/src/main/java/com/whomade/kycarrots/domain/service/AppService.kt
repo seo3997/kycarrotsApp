@@ -32,6 +32,13 @@ class AppService(
         } else emptyList()
     }
 
+    suspend fun getBuyAdvertiseList(req: AdListRequest): List<AdItem> {
+        val response = repository.fetchBuyAdvertiseList(req)
+        return if (response.isSuccessful) {
+            response.body()?.items ?: emptyList()
+        } else emptyList()
+    }
+
     // 광고 등록
     suspend fun registerAdvertise(
         product: ProductVo,
