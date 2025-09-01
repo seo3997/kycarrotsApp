@@ -45,7 +45,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.card.MaterialCardView
-import com.whomade.kycarrots.Cheeses.randomCheeseDrawable
 import com.whomade.kycarrots.chatting.ChatActivity
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.common.RetrofitProvider
@@ -65,6 +64,7 @@ import kotlinx.coroutines.launch
 import androidx.core.view.WindowInsetsCompat
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.InterestRequest
+import com.whomade.kycarrots.ui.ad.ImageViewerActivity
 import com.whomade.kycarrots.ui.dialog.SelectOption
 import com.whomade.kycarrots.ui.dialog.SelectOptionDialogFragment
 
@@ -161,7 +161,7 @@ class AdDetailActivity : AppCompatActivity() {
                             productId  = selected.code6.toLongOrNull() ?: 0L, // 예: productId
                             sellerId   = selected.code4,           // 예: sellerId
                             buyerId    = selected.code1,           // 예: buyerId
-                            buyerNo    = selected.code1.toLongOrNull() ?: 0L,   // 필요 없으면 0L
+                            buyerNo    = selected.code2.toLongOrNull() ?: 0L,   // 필요 없으면 0L
                             buyerNm    = selected.name,            // 표시용 이름
                             sellerNo   = selected.code5.toLongOrNull() ?: 0L,
                             sellerNm   = ""                        // 필요시 추가
@@ -224,6 +224,12 @@ class AdDetailActivity : AppCompatActivity() {
         val imageView: ImageView = findViewById(R.id.backdrop)
         val mainImageUrl = detail.imageMetas.firstOrNull { it.represent == "1" }?.imageUrl
 
+        // ... Glide 로드 코드는 그대로 두고
+        imageView.setOnClickListener {
+            mainImageUrl?.let { openImageViewer(it) }
+        }
+
+
         // 공유 요소 전환을 위해 transition 일시 지연
         postponeEnterTransition()
 
@@ -277,6 +283,11 @@ class AdDetailActivity : AppCompatActivity() {
                         .apply(RequestOptions.centerCropTransform())
                         .into(imageViews[i])
                     imageViews[i].visibility = View.VISIBLE
+
+                    imageViews[i].setOnClickListener {
+                        openImageViewer(imageUrl!!)
+                    }
+
                 } else {
                     imageViews[i].visibility = View.GONE
                 }
@@ -617,13 +628,7 @@ class AdDetailActivity : AppCompatActivity() {
             }
         }
     }
-    private fun loadBackdrop() {
-        val imageView: ImageView = findViewById(R.id.backdrop)
-        Glide.with(imageView)
-            .load(randomCheeseDrawable)
-            .apply(RequestOptions.centerCropTransform())
-            .into(imageView)
-    }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         //menuInflater.inflate(R.menu.sample_actions, menu)
@@ -927,4 +932,7 @@ class AdDetailActivity : AppCompatActivity() {
         return statusList.find { it.strIdx == code }?.strMsg ?: code
     }
 
+    private fun openImageViewer(url: String) {
+        startActivity(Intent(this, ImageViewerActivity::class.java).putExtra("url", url))
+    }
 }

@@ -66,8 +66,8 @@ class AdAdapter(private val fragment: Fragment) :
 
         Glide.with(holder.image.context)
             .load(item.imageUrl)
-            .placeholder(R.drawable.cheese_1)
-            .error(R.drawable.cheese_1)
+            .placeholder(R.drawable.ic_placeholder_default)
+            .error(R.drawable.ic_placeholder_default)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.image)
     }

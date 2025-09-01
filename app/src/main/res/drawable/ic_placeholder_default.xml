@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 배경 -->
+    <path
+        android:fillColor="#F3F4F6"
+        android:pathData="M2,2 H22 V22 H2 Z"/>
+
+    <!-- 프레임 보더 -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#C9CDD3"
+        android:strokeWidth="1"
+        android:pathData="M2.5,2.5 H21.5 V21.5 H2.5 Z"/>
+
+    <!-- 산(이미지 플레이스홀더 형태) -->
+    <path
+        android:fillColor="#B6BCC3"
+        android:pathData="M4,16 L9.5,10 L13,14 L15,12 L20,16 L4,16 Z"/>
+
+    <!-- 해 (작은 사각형) -->
+    <path
+        android:fillColor="#B6BCC3"
+        android:pathData="M16,6 H18 V8 H16 Z"/>
+</vector>
