@@ -204,37 +204,51 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- 리스트: 필터 아래 ~ 프래그먼트 바닥 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <FrameLayout
+        android:id="@+id/listContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:overScrollMode="always"
-        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/filterBar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- 로딩 오버레이 (리스트 영역만 덮음) -->
-    <LinearLayout
-        android:id="@+id/ll_progress_circle"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:background="#99FFFFFF"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/recyclerView"
-        app:layout_constraintBottom_toBottomOf="@id/recyclerView"
-        app:layout_constraintStart_toStartOf="@id/recyclerView"
-        app:layout_constraintEnd_toEndOf="@id/recyclerView">
+        <!-- 1) 리스트 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="always"
+            android:clipToPadding="false"/>
 
-        <ProgressBar
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:indeterminate="true"
-            android:indeterminateDrawable="@drawable/loading_intro_animation"/>
-    </LinearLayout>
+        <!-- 2) 빈 화면 메시지 -->
+        <TextView
+            android:id="@+id/emptyTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="데이타가 없습니다."
+            android:textColor="@android:color/darker_gray"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+
+        <!-- 3) 로딩 오버레이 (id 유지) -->
+        <FrameLayout
+            android:id="@+id/ll_progress_circle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/loading_intro_animation"/>
+        </FrameLayout>
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

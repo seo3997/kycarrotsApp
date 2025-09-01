@@ -42,6 +42,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var dropdownSubcategory: AutoCompleteTextView
     private lateinit var dropdownCity: AutoCompleteTextView
     private lateinit var dropdownDistrict: AutoCompleteTextView
+    private lateinit var emptyTextView: TextView
 
     // Data
     private var categoryList    = listOf<TxtListDataInfo>()
@@ -81,6 +82,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         dropdownDistrict    = view.findViewById(R.id.dropdown_district)
         llProgress          = view.findViewById(R.id.ll_progress_circle)
         llProgress.visibility = View.GONE
+        emptyTextView       = view.findViewById(R.id.emptyTextView)
 
         // 2) 리스트/어댑터 (어댑터가 Activity 타입을 요구 → requireActivity())
         adapter = AdActivityAdapter(requireActivity())
@@ -116,6 +118,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         viewModel.items.observe(viewLifecycleOwner) { list ->
             adapter.updateList(list)
+            emptyTextView.visibility = if (list.isNullOrEmpty()) View.VISIBLE else View.GONE
+            recyclerView.visibility  = if (list.isNullOrEmpty()) View.GONE   else View.VISIBLE
         }
         viewModel.isProgressLoading.observe(viewLifecycleOwner) { isLoading ->
             llProgress.visibility = if (isLoading) View.VISIBLE else View.GONE

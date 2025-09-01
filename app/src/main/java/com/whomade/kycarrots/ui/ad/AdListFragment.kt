@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.Fragment
@@ -38,7 +39,7 @@ class AdListFragment : Fragment() {
     private var isLastPage = false
 
     private var saleStatus: String = "1"
-
+    private lateinit var emptyTextView: TextView
     // TAB_CD -> saleStatus 매핑: 1->"1"(판매중), 2->"10"(예약중), 3->"99"(판매완료)
     private fun mapSaleStatusFromTab(tabCd: String?): String = when (tabCd) {
         "1" -> "1"
@@ -94,7 +95,7 @@ class AdListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        emptyTextView = view.findViewById(R.id.tv_empty)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = AdAdapter(this) // 클릭 리스너 사용하니 this 전달 유지
@@ -167,6 +168,7 @@ class AdListFragment : Fragment() {
 
                 if (ads.isEmpty()) {
                     isLastPage = true
+                    emptyTextView.visibility = View.VISIBLE
                 } else {
                     if (pageNo == 1) adapter.updateList(ads) else adapter.addList(ads)
                     pageNo++

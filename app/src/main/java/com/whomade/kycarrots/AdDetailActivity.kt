@@ -75,6 +75,7 @@ class AdDetailActivity : AppCompatActivity() {
     private lateinit var spinner: AppCompatSpinner
     private var currentStatus: String? = null
     private lateinit var filteredList: List<TxtListDataInfo>  // ← 전역 선언 필요
+    private lateinit var statusList: List<TxtListDataInfo>  // ← 전역 선언 필요
     private lateinit var statusTextView: TextView // ← 추가
     private var memberCode: String? = null   // ← 현재 사용자 권한 저장
     private var isFav: Boolean = false
@@ -337,9 +338,9 @@ class AdDetailActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val apiList = AppServiceProvider.getService().getCodeList("R010630")
+                statusList = AppServiceProvider.getService().getCodeList("R010630")
 
-                filteredList = apiList.filter {
+                filteredList = statusList.filter {
                     when {
                         systemType == 1 && memberCode == "ROLE_SELL" ->
                             it.strIdx in listOf("1", "10", "99") || it.strIdx == currentStatus
@@ -578,9 +579,9 @@ class AdDetailActivity : AppCompatActivity() {
                 )
 
                 val success = AppServiceProvider.getService().updateProductStatus(token,productItem)
-
+                val statusName = getStatusName(code)
                 if (success) {
-                    Toast.makeText(this@AdDetailActivity, "상태가 \"$code\"(으)로 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AdDetailActivity, "상태가 \"$statusName\"(으)로 변경되었습니다.", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this@AdDetailActivity, "상태 변경 실패", Toast.LENGTH_SHORT).show()
                     restoreSpinnerSelection()
@@ -921,4 +922,9 @@ class AdDetailActivity : AppCompatActivity() {
             else -> productUserId // 안전 기본값
         }
     }
+
+    private fun getStatusName(code: String): String {
+        return statusList.find { it.strIdx == code }?.strMsg ?: code
+    }
+
 }

@@ -166,7 +166,7 @@ class AdListViewModel(
     }
 
     fun resetPaging() {
-        currentPage = 1
+        currentPage = 0
         endReached = false
         _items.value = emptyList()
     }
