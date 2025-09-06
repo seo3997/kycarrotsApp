@@ -290,15 +290,15 @@ class MakeADPreviewActivity : AppCompatActivity(), View.OnClickListener {
             strADName.orEmpty(),              // title
             strADDetail.orEmpty(),            // description
             strADAmount.orEmpty(),            // price
-            "R010610",                        // categoryGroup
+            "R010610",          // categoryGroup
             strADCategory.orEmpty(),          // categoryMid
             strADCategoryScls.orEmpty(),      // categoryScls
             saleStatus,                       // saleStatus
-            "R010070",                        // cityGroup
+            "R010070",             // cityGroup
             strADAreaMid.orEmpty(),           // areaMid
             strADAreaScls.orEmpty(),          // areaScls
             strADQuantity.orEmpty(),          // quantity
-            "R010620",                        // unitGroup
+            "R010620",              // unitGroup
             strADUnitCode.orEmpty(),          // unitCode
             strADDesiredShippingDate.orEmpty(), // desiredShippingDate
             userNo, "", userNo, "", ""        // registerNo, registDt, updusrNo, updtDt, imageUrl

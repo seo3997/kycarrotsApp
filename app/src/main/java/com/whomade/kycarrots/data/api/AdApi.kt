@@ -35,29 +35,29 @@ import retrofit2.http.Query
 
 interface AdApi {
 
-    @GET("common/codelist")
+    @GET("api/common/codelist")
     suspend fun getCodeList(
         @Query("groupId") groupId: String
     ): Response<List<TxtListDataInfo>>
 
-    @GET("common/sCodeList")
+    @GET("api/common/sCodeList")
     suspend fun getSCodeList(
         @Query("groupId") groupId: String,
         @Query("mcode") mcode: String
     ): Response<List<TxtListDataInfo>>
 
-    @POST("product")
+    @POST("api/product")
     suspend fun getAdItems(
         @Body req: AdListRequest
     ): Response<AdResponse>
 
-    @POST("product/buyListAdvertise")
+    @POST("api/product/buyListAdvertise")
     suspend fun getBuyAdItems(
         @Body req: AdListRequest
     ): Response<AdResponse>
 
     @Multipart
-    @POST("product/register")
+    @POST("api/product/register")
     suspend fun registerAdvertise(
         @Part("product") product: RequestBody,
         @Part("imageMetas") imageMetas: RequestBody,
@@ -65,24 +65,24 @@ interface AdApi {
     ): Response<ResponseBody>
 
     @Multipart
-    @POST("product/update")
+    @POST("api/product/update")
     suspend fun updateAdvertise(
         @Part("product") product: RequestBody,
         @Part("imageMetas") imageMetas: RequestBody,
         @Part images: List<MultipartBody.Part>
     ): Response<ResponseBody>
 
-    @GET("product/detail/{productId}")
+    @GET("api/product/detail/{productId}")
     suspend fun getProductDetail(@Path("productId") productId: Long,
                                  @Query("userNo") userNo: Long): Response<ProductDetailResponse>
 
-    @POST("product/image/delete")
+    @POST("api/product/image/delete")
     suspend fun deleteImageById(
         @Query("imageId") imageId: String
     ): Response<ResponseBody>
 
     @FormUrlEncoded
-    @POST("members/login")
+    @POST("api/members/login")
     suspend fun login(
         @Field("id") email: String,
         @Field("pass") password: String,
@@ -91,13 +91,13 @@ interface AdApi {
         @Field("appver") appVersion: String
     ): Response<LoginResponse>
 
-    @GET("user/find-password")
+    @GET("api/members/find-password")
     suspend fun findPassword(
         @Query("hp") hp: String,
         @Query("mail") mail: String
     ): Response<FindPasswordResponse>
 
-    @GET("user/find-email")
+    @GET("api/members/find-email")
     suspend fun findEmail(
         @Query("nm") name: String,
         @Query("birth") birthDate: String,
@@ -121,36 +121,36 @@ interface AdApi {
     suspend fun getChatMessages(@Path("roomId") roomId: String): Response<List<ChatMessageResponse>>
 
     @FormUrlEncoded
-    @POST("members/email-check")
+    @POST("api/members/email-check")
     suspend fun checkEmailDuplicate(
         @Field("email") email: String
     ): Response<SimpleResultResponse>
 
-    @POST("members/register")
+    @POST("api/members/register")
     suspend fun registerUser(@Body user: OpUserVO): Response<SimpleResultResponse>
 
     @FormUrlEncoded
-    @POST("members/userinfo")
+    @POST("api/members/userinfo")
     suspend fun getUserInfoByToken(
         @Field("token") token: String
     ): Response<OpUserVO>
 
-    @GET("product/dashboard")
+    @GET("api/product/dashboard")
     suspend fun getProductDashboard(
         @Query("token") token: String
     ): Response<Map<String, Int>>
 
-    @GET("product/recent")
+    @GET("api/product/recent")
     suspend fun getRecentProducts(
         @Query("token") token: String
     ): Response<List<ProductVo>>
 
-    @POST("/members/push/savetoken")
+    @POST("api/members/push/savetoken")
     suspend fun registerPushToken(
         @Body request: PushTokenVo
     ): Response<Void>
 
-    @POST("product/status/update")
+    @POST("api/product/status/update")
     suspend fun updateProductStatus(
         @Query("token") token: String,
         @Body product: ProductItem
@@ -159,19 +159,19 @@ interface AdApi {
     @POST("api/interests/toggle")
     suspend fun toggle(@Body req: InterestRequest): Response<Boolean>
 
-    @GET("product/interests/list")
+    @GET("api/product/interests/list")
     suspend fun getInterestItems(
         @Query("token") token: String,
         @Query("pageno") pageNo: Int
     ): Response<AdResponse>
 
-    @GET("product/purchases/list") // 또는 "/api/purchases/list" (프로젝트 baseUrl 구성에 맞게)
+    @GET("api/product/purchases/list") // 또는 "/api/purchases/list" (프로젝트 baseUrl 구성에 맞게)
     suspend fun getPurchaseItems(
         @Query("token") token: String,
         @Query("pageno") pageNo: Int
     ): Response<AdResponse>
 
-    @GET("product/chat/buyers")
+    @GET("api/product/chat/buyers")
     suspend fun getChatBuyers(
         @Query("productId") productId: Long,
         @Query("sellerId") sellerId: String
@@ -181,4 +181,23 @@ interface AdApi {
     suspend fun createPurchase(
         @Body body: PurchaseHistoryRequest
     ): Response<SimpleResult>
+
+    // 도매상(중간센터) 목록 조회
+    @GET("api/members/wholesalers")
+    suspend fun getWholesalers(
+        @Query("memberCode") memberCode: String
+    ): Response<List<OpUserVO>>
+
+    //사용자 기본 중간센터 조회 (Long 하나만 반환)
+    @GET("api/members/default-wholesaler")
+    suspend fun getDefaultWholesaler(
+        @Query("userId") userId: String
+    ): Response<Long>
+
+    // 사용자 기본 중간센터 설정
+    @POST("api/members/default-wholesaler")
+    suspend fun setDefaultWholesaler(
+        @Query("userId") userId: String,
+        @Query("wholesalerNo") wholesalerNo: String
+    ): Response<Void>
 }

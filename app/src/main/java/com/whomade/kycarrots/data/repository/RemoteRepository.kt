@@ -200,4 +200,19 @@ class RemoteRepository(
     suspend fun createPurchase(
         body: PurchaseHistoryRequest
     ): Response<SimpleResult> = adApi.createPurchase(body)
+
+    //도매상(중간센터) 목록 조회
+    suspend fun fetchWholesalers(memberCode: String): Response<List<OpUserVO>> {
+        return adApi.getWholesalers(memberCode)
+    }
+
+    //기본 중간센터 조회
+    suspend fun fetchDefaultWholesaler(userId: String): Response<Long> {
+        return adApi.getDefaultWholesaler(userId)
+    }
+
+    //기본 중간센터 설정
+    suspend fun updateDefaultWholesaler(userId: String, wholesalerNo: String): Response<Void> {
+        return adApi.setDefaultWholesaler(userId, wholesalerNo)
+    }
 }

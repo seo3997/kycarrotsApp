@@ -8,23 +8,27 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
+import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.common.RetrofitProvider
 import com.whomade.kycarrots.data.api.AdApi
+import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
 import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
 import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
 import com.whomade.kycarrots.ui.common.TokenUtil
+import com.whomade.kycarrots.ui.dialog.BottomDto
+import com.whomade.kycarrots.ui.dialog.BottomDtoPickerSheet
 import kotlinx.coroutines.launch
 
 class DashboardActivity : BaseDrawerActivity() {
@@ -45,13 +49,91 @@ class DashboardActivity : BaseDrawerActivity() {
 
         val btnAddProduct: View = findViewById(R.id.btn_add_product)
         btnAddProduct.setOnClickListener {
-            val intent = Intent(this, MakeADMainActivity::class.java)
-            intent.putExtra(MakeADDetail1.STR_PUT_AD_IDX, "")
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)
+            if (Constants.SYSTEM_TYPE == 1) {
+                // 바로 상품등록 화면으로
+                moveToMakeAD()
+            } else if (Constants.SYSTEM_TYPE == 2) {
+                // 기본 중간센터 확인 후 상품등록
+                handleAddProductClick()
+            }
         }
 
 
+    }
+
+    private fun handleAddProductClick() {
+        val userId = LoginInfoUtil.getUserId(this)
+        showProgressBar()
+
+        lifecycleScope.launch {
+            try {
+
+                // 1) 기본 중간센터 조회 (Long? 반환)
+                val defaultWholesalerNo = appService.getDefaultWholesaler(userId)
+                if (defaultWholesalerNo != null) {
+                    // 이미 지정됨 → 바로 이동
+                    moveToMakeAD()
+                    return@launch
+                }
+
+                // 2) 기본센터 없음 → 도매상(중간센터) 목록 불러오기
+                val wholesalers = appService.getWholesalers("ROLE_PROJ")
+                val centers = wholesalers.map { it.toCenterDto() }
+
+                if (centers.isEmpty()) {
+                    Toast.makeText(this@DashboardActivity, "선택 가능한 중간센터가 없습니다.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                // 3) 센터 선택 다이얼로그
+                BottomDtoPickerSheet.new(
+                    centers = centers,
+                    title = "센터/도매상 선택",
+                    onPicked = { picked ->
+                        lifecycleScope.launch {
+                            showProgressBar()
+                            try {
+                                val ok = appService.setDefaultWholesaler(userId, picked.code)
+                                if (ok) {
+                                    Toast.makeText(this@DashboardActivity,"기본 중간센터 지정 완료",Toast.LENGTH_SHORT).show()
+                                    moveToMakeAD()
+                                } else {
+                                    Toast.makeText(this@DashboardActivity,"센터 지정 실패",Toast.LENGTH_SHORT).show()
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                Toast.makeText(this@DashboardActivity,"센터 지정 중 오류가 발생했습니다.",Toast.LENGTH_SHORT).show()
+                            } finally {
+                                hideProgressBar()
+                            }
+                        }
+                    }
+                ).show(supportFragmentManager, "center_picker")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this@DashboardActivity, "처리 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+            } finally {
+                hideProgressBar()
+            }
+        }
+    }
+    private fun OpUserVO.toCenterDto(): BottomDto =
+        BottomDto(
+            code = this.userNo.toString() ?: "",
+            name = this.userNm +"("+ this.userNo +")",
+            text1 = null,
+            text2 = null,
+            text3 = null,
+            text4 = null,
+        )
+
+    private fun moveToMakeAD() {
+        val intent = Intent(this, MakeADMainActivity::class.java).apply {
+            putExtra(MakeADDetail1.STR_PUT_AD_IDX, "")
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        startActivity(intent)
     }
 
     private fun initToolbar() {
