@@ -58,7 +58,7 @@ open class BaseDrawerActivity : AppCompatActivity() {
                     val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
                     val sMEMBERCODE= prefs.getString("LogIn_MEMBERCODE", "").orEmpty()
 
-                    if (sMEMBERCODE == "ROLE_SELL") {
+                    if (sMEMBERCODE == "ROLE_SELL" || sMEMBERCODE == "ROLE_PROJ") {
                         var intent = Intent(this, MainActivity::class.java).apply {
                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                         }

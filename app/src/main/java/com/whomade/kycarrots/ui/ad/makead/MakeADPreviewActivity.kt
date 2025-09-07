@@ -301,7 +301,11 @@ class MakeADPreviewActivity : AppCompatActivity(), View.OnClickListener {
             "R010620",              // unitGroup
             strADUnitCode.orEmpty(),          // unitCode
             strADDesiredShippingDate.orEmpty(), // desiredShippingDate
-            userNo, "", userNo, "", ""        // registerNo, registDt, updusrNo, updtDt, imageUrl
+            userNo,
+            "",
+            userNo,
+            "",
+            systemType = SYSTEM_TYPE.toString()
         )
 
         // 이미지 메타 + 파일

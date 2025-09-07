@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.whomade.kycarrots.AdDetailActivity
 import com.whomade.kycarrots.MainActivity
 import com.whomade.kycarrots.R
+import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.common.RetrofitProvider
 import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.AdItem
@@ -25,6 +26,7 @@ import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.adapter.AdAdapter
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
 
 class AdListFragment : Fragment() {
@@ -42,6 +44,7 @@ class AdListFragment : Fragment() {
     private lateinit var emptyTextView: TextView
     // TAB_CD -> saleStatus 매핑: 1->"1"(판매중), 2->"10"(예약중), 3->"99"(판매완료)
     private fun mapSaleStatusFromTab(tabCd: String?): String = when (tabCd) {
+        "0" -> "0"
         "1" -> "1"
         "2" -> "10"
         "3" -> "99"
@@ -148,7 +151,7 @@ class AdListFragment : Fragment() {
 
         val prefs = requireActivity().getSharedPreferences("TokenInfo", Context.MODE_PRIVATE)
         val token = prefs.getString("token", "") ?: ""
-
+        val memberCode = LoginInfoUtil.getMemberCode(requireActivity())
         if (isRefresh) {
             pageNo = 1
             isLastPage = false
@@ -162,7 +165,8 @@ class AdListFragment : Fragment() {
                     token = token,
                     adCode = 1,
                     pageno = pageNo,
-                    saleStatus = saleStatus
+                    saleStatus = saleStatus,
+                    memberCode = memberCode
                 )
                 val ads: List<AdItem> = appService.getAdvertiseList(req)
 

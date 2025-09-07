@@ -24,8 +24,10 @@ import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
 import kotlinx.coroutines.launch
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.whomade.kycarrots.chatting.ChatActivity
+import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.message.PushTokenUtil
 
 class IntroActivity : AppCompatActivity() {
@@ -145,6 +147,12 @@ class IntroActivity : AppCompatActivity() {
         val sMEMBERCODE= prefs.getString("LogIn_MEMBERCODE", "").orEmpty()
         Log.d("FCM", "autoLoginCheck: true")
 
+        if (sMEMBERCODE == "ROLE_PROJ" && Constants.SYSTEM_TYPE.toString() == "1" ) {
+            Toast.makeText(this, "직거래앱은 센터로 로그인 할수 없습니다.", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this@IntroActivity, LoginActivity::class.java))
+            finish()
+            return
+        }
         if (sUID.isNotBlank() && sPWD.isNotBlank() && sMEMBERCODE.isNotBlank() && mThisAppVersion.isNotEmpty()) {
             val appService = AppServiceProvider.getService()
 
@@ -239,7 +247,7 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun defaultIntentForMember(memberCode: String): Intent {
-        return if (memberCode == "ROLE_SELL") {
+        return if (memberCode == "ROLE_SELL" || memberCode == "ROLE_PROJ") {
             Intent(this, DashboardActivity::class.java)
         } else {
             Intent(this, ItemSelectionActivity::class.java)

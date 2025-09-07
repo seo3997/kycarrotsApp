@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -15,11 +17,23 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
+import com.whomade.kycarrots.common.Constants.SYSTEM_TYPE
+import com.whomade.kycarrots.common.RetrofitProvider
+import com.whomade.kycarrots.data.api.AdApi
+import com.whomade.kycarrots.data.model.OpUserVO
+import com.whomade.kycarrots.data.repository.RemoteRepository
+import com.whomade.kycarrots.domain.service.AppService
+import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
 import com.whomade.kycarrots.ui.ad.AdListFragment
 import com.whomade.kycarrots.ui.ad.Refreshable
+import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
 import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
+import com.whomade.kycarrots.ui.dialog.BottomDto
+import com.whomade.kycarrots.ui.dialog.BottomDtoPickerSheet
+import kotlinx.coroutines.launch
 import java.util.ArrayList
 
 class MainActivity : BaseDrawerActivity() {
@@ -65,7 +79,13 @@ class MainActivity : BaseDrawerActivity() {
             val intent = Intent(context, MakeADMainActivity::class.java)
             context.startActivity(intent)
              */
-            registerLauncher.launch(Intent(this, MakeADMainActivity::class.java))
+            //registerLauncher.launch(Intent(this, MakeADMainActivity::class.java))
+            if (SYSTEM_TYPE == 1) {
+                moveToMakeAD()
+            } else {
+                launchMakeAdWithCenterGuard()
+            }
+
         }
 
         val tabLayout: TabLayout = findViewById(R.id.tabs)
@@ -83,6 +103,78 @@ class MainActivity : BaseDrawerActivity() {
          */
 
     }
+
+    private fun launchMakeAdWithCenterGuard() {
+        showProgressBar()
+        val appService = AppServiceProvider.getService();
+        val userId = LoginInfoUtil.getUserId(this)
+        lifecycleScope.launch {
+            try {
+
+
+                // 1) 기본 중간센터 있는지 확인
+                val defaultNo = appService.getDefaultWholesaler(userId)
+                if (defaultNo != null) {
+                    moveToMakeAD()
+                    return@launch
+                }
+
+                // 2) 없으면 도매상 목록 → 선택 다이얼로그
+                val wholesalers = appService.getWholesalers("ROLE_PROJ")
+                val centers = wholesalers.map { it.toBottomDto() }
+                if (centers.isEmpty()) {
+                    Toast.makeText(this@MainActivity, "선택 가능한 중간센터가 없습니다.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                BottomDtoPickerSheet.new(
+                    centers = centers,
+                    title = "중간센터 선택",
+                    onPicked = { picked ->
+                        lifecycleScope.launch {
+                            showProgressBar()
+                            try {
+                                val ok = appService.setDefaultWholesaler(userId, picked.code)
+                                if (ok) {
+                                    Toast.makeText(this@MainActivity, "기본 중간센터 지정 완료", Toast.LENGTH_SHORT).show()
+                                    moveToMakeAD()
+                                } else {
+                                    Toast.makeText(this@MainActivity, "센터 지정 실패", Toast.LENGTH_SHORT).show()
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                Toast.makeText(this@MainActivity, "센터 지정 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                            } finally {
+                                hideProgressBar()
+                            }
+                        }
+                    }
+                ).show(supportFragmentManager, "center_picker")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this@MainActivity, "처리 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+            } finally {
+                hideProgressBar()
+            }
+        }
+    }
+    private fun moveToMakeAD() {
+        registerLauncher.launch(Intent(this, MakeADMainActivity::class.java))
+    }
+
+    private fun showProgressBar() {
+        findViewById<View>(R.id.ll_progress_circle)?.visibility = View.VISIBLE
+    }
+    private fun hideProgressBar() {
+        findViewById<View>(R.id.ll_progress_circle)?.visibility = View.GONE
+    }
+    private fun OpUserVO.toBottomDto(): BottomDto =
+        BottomDto(
+            code = this.userNo?.toString() ?: "", // Long → String
+            name = this.userNm ?: (this.userId ?: ""),
+            text1 = null, text2 = null, text3 = null, text4 = null
+        )
 
     /*
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -152,15 +244,34 @@ class MainActivity : BaseDrawerActivity() {
 
 
     private fun setupViewPager(viewPager: ViewPager) {
-        pagerAdapter  = Adapter(supportFragmentManager).apply {
-            addFragment(AdListFragment.newInstance("1"), "판매중")
-            addFragment(AdListFragment.newInstance("2"), "예약중")
-            addFragment(AdListFragment.newInstance("3"), "판매완료")
-        }
+        pagerAdapter  = buildPagerAdapter()
         viewPager.adapter = pagerAdapter
 
         // ✅ 모든 프래그먼트를 미리 생성해서 onViewCreated/fetchAdvertiseList가 즉시 실행되도록
         viewPager.offscreenPageLimit = pagerAdapter.count
+    }
+
+    private fun buildPagerAdapter(): Adapter {
+        val items = if (SYSTEM_TYPE == 2) {
+            listOf(
+                "0" to "승인요청",
+                "1" to "판매중",
+                "2" to "예약중",
+                "3" to "판매완료"
+            )
+        } else {
+            listOf(
+                "1" to "판매중",
+                "2" to "예약중",
+                "3" to "판매완료"
+            )
+        }
+
+        return Adapter(supportFragmentManager).apply {
+            items.forEach { (status, title) ->
+                addFragment(AdListFragment.newInstance(status), title)
+            }
+        }
     }
 
     internal class Adapter(
@@ -195,9 +306,10 @@ class MainActivity : BaseDrawerActivity() {
 
     fun refreshTabBySaleStatus(status: String?) {
         val position = when (status) {
-            "1"  -> 0  // 판매중 탭
-            "10" -> 1  // 예약중 탭
-            "99" -> 2  // 판매완료 탭
+            "0"  -> 0  // 판매중 탭
+            "1"  -> 1  // 판매중 탭
+            "10" -> 2  // 예약중 탭
+            "99" -> 3  // 판매완료 탭
             else -> return
         }
         val tag = "android:switcher:${R.id.viewpager}:$position"

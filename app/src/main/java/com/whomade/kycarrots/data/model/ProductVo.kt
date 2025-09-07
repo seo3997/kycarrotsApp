@@ -32,5 +32,6 @@ data class ProductVo @JvmOverloads constructor(
     val userId: String = "",
     val wholesalerNo: String = "",
     val wholesalerId: String = "",
-    val fav: String = ""
+    val fav: String = "",
+    val systemType: String = "1"
 )

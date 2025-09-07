@@ -14,6 +14,7 @@ import com.whomade.kycarrots.IntroActivity
 import com.whomade.kycarrots.MainActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.StaticDataInfo
+import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.membership.TermsAgreeActivity
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
@@ -122,6 +123,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
 
             strPwd.trim().isEmpty() -> {
                 Toast.makeText(this, getString(R.string.str_input_pwd_err), Toast.LENGTH_SHORT).show()
+            }
+
+            strMemberCode == "ROLE_PROJ" && Constants.SYSTEM_TYPE.toString() == "1" -> {
+                Toast.makeText(this, "직거래앱은 센터로 로그인 할수 없습니다.", Toast.LENGTH_SHORT).show()
             }
 
             else -> {

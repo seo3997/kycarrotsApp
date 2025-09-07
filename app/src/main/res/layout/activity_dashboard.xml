@@ -77,6 +77,15 @@
                         android:layout_marginTop="12dp"
                         android:backgroundTint="#5F567E"
                         android:textColor="#FFFFFF" />
+                    <Button
+                        android:id="@+id/btn_approval_product"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="승인하기"
+                        android:visibility="gone"
+                        android:layout_marginTop="12dp"
+                        android:backgroundTint="#5F567E"
+                        android:textColor="#FFFFFF" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

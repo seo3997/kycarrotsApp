@@ -13,9 +13,10 @@ object PushTokenUtil {
     fun sendTokenToServer(context: Context, token: String) {
         val prefs = context.getSharedPreferences("SaveLoginInfo", Context.MODE_PRIVATE)
         val sUID = prefs.getString("LogIn_ID", "").orEmpty()
+        val sUNo = prefs.getString("LogIn_NO", "").orEmpty()
 
         if (sUID.isNotEmpty()) {
-            val pushTokenVo = PushTokenVo(userId = sUID, pushToken = token)
+            val pushTokenVo = PushTokenVo(userNo = sUNo, userId = sUID, pushToken = token)
 
             CoroutineScope(Dispatchers.IO).launch {
                 val result = AppServiceProvider.getService().registerPushToken(pushTokenVo)

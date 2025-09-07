@@ -44,8 +44,8 @@ class DashboardActivity : BaseDrawerActivity() {
         initToolbar()
         initMoreButton()
 
-        val token = TokenUtil.getToken(this)
-        initDashboard(token)
+
+        initDashboard()
 
         val btnAddProduct: View = findViewById(R.id.btn_add_product)
         btnAddProduct.setOnClickListener {
@@ -56,6 +56,18 @@ class DashboardActivity : BaseDrawerActivity() {
                 // 기본 중간센터 확인 후 상품등록
                 handleAddProductClick()
             }
+        }
+
+        val btnApprovalProduct: View = findViewById(R.id.btn_approval_product)
+        btnApprovalProduct.setOnClickListener {
+        }
+
+        if (Constants.SYSTEM_TYPE == 1) {
+            btnAddProduct.visibility = View.VISIBLE
+            btnApprovalProduct.visibility = View.GONE
+        } else if (Constants.SYSTEM_TYPE == 2) {
+            btnAddProduct.visibility = View.GONE
+            btnApprovalProduct.visibility = View.VISIBLE
         }
 
 
@@ -152,7 +164,8 @@ class DashboardActivity : BaseDrawerActivity() {
         }
     }
 
-    private fun initDashboard(token: String) {
+    private fun initDashboard() {
+        val token = TokenUtil.getToken(this)
         loadDashboardStats(token)
         loadRecentProducts(token)
     }
@@ -171,7 +184,7 @@ class DashboardActivity : BaseDrawerActivity() {
 
     private fun updateDashboardUI(stats: Map<String, Int>) {
         findViewById<TextView>(R.id.tv_total_products).text = "총 등록 매물: ${stats["totalCount"] ?: 0}건"
-        findViewById<TextView>(R.id.tv_stats).text = "처리 중: ${stats["processingCount"] ?: 0}건 / 완료: ${stats["completedCount"] ?: 0}건"
+        findViewById<TextView>(R.id.tv_stats).text = "승인요청:${stats["reguestCount"] ?: 0}건 / 처리 중: ${stats["processingCount"] ?: 0}건 / 완료: ${stats["completedCount"] ?: 0}건"
     }
 
     private fun loadRecentProducts(token: String) {
@@ -260,6 +273,7 @@ class DashboardActivity : BaseDrawerActivity() {
 
     override fun onResume() {
         super.onResume()
+        initDashboard()
         // 돌아왔을 때 뱃지 다시 갱신
         NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
     }

@@ -13,5 +13,6 @@ data class AdListRequest(
     val areaScls: String? = null,
     val minPrice: Int? = null,
     val maxPrice: Int? = null,
-    var saleStatus: String? = "1"
+    var saleStatus: String? = "1",
+    var memberCode: String? = ""
 )
