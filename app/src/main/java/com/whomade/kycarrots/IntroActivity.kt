@@ -178,8 +178,8 @@ class IntroActivity : AppCompatActivity() {
     private fun nextPage(isLogin: Boolean, memberCode: String) {
 
         // ROLE_PUB 푸시 토픽 구독
-        if (memberCode == "ROLE_PUB") {
-            FirebaseMessaging.getInstance().subscribeToTopic("ROLE_PUB")
+        if (memberCode == Constants.ROLE_PUB) {
+            FirebaseMessaging.getInstance().subscribeToTopic(Constants.ROLE_PUB)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Log.d("FCM", "ROLE_PUB 토픽 구독 성공")
@@ -247,7 +247,7 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun defaultIntentForMember(memberCode: String): Intent {
-        return if (memberCode == "ROLE_SELL" || memberCode == "ROLE_PROJ") {
+        return if (memberCode == Constants.ROLE_SELL || memberCode == Constants.ROLE_PROJ) {
             Intent(this, DashboardActivity::class.java)
         } else {
             Intent(this, ItemSelectionActivity::class.java)

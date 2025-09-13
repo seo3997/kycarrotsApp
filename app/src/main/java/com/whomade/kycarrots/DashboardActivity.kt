@@ -60,9 +60,13 @@ class DashboardActivity : BaseDrawerActivity() {
 
         val btnApprovalProduct: View = findViewById(R.id.btn_approval_product)
         btnApprovalProduct.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
+            startActivity(intent)
         }
 
-        if (Constants.SYSTEM_TYPE == 1) {
+        if (LoginInfoUtil.getMemberCode(this) == Constants.ROLE_SELL) {
             btnAddProduct.visibility = View.VISIBLE
             btnApprovalProduct.visibility = View.GONE
         } else if (Constants.SYSTEM_TYPE == 2) {
@@ -89,7 +93,7 @@ class DashboardActivity : BaseDrawerActivity() {
                 }
 
                 // 2) 기본센터 없음 → 도매상(중간센터) 목록 불러오기
-                val wholesalers = appService.getWholesalers("ROLE_PROJ")
+                val wholesalers = appService.getWholesalers(Constants.ROLE_PROJ)
                 val centers = wholesalers.map { it.toCenterDto() }
 
                 if (centers.isEmpty()) {
@@ -184,7 +188,7 @@ class DashboardActivity : BaseDrawerActivity() {
 
     private fun updateDashboardUI(stats: Map<String, Int>) {
         findViewById<TextView>(R.id.tv_total_products).text = "총 등록 매물: ${stats["totalCount"] ?: 0}건"
-        findViewById<TextView>(R.id.tv_stats).text = "승인요청:${stats["reguestCount"] ?: 0}건 / 처리 중: ${stats["processingCount"] ?: 0}건 / 완료: ${stats["completedCount"] ?: 0}건"
+        findViewById<TextView>(R.id.tv_stats).text = "승인반려:${stats["reguestCount"] ?: 0}건 / 처리 중: ${stats["processingCount"] ?: 0}건 / 완료: ${stats["completedCount"] ?: 0}건"
     }
 
     private fun loadRecentProducts(token: String) {

@@ -33,9 +33,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -61,7 +58,6 @@ import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import kotlinx.coroutines.launch
-import androidx.core.view.WindowInsetsCompat
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.InterestRequest
 import com.whomade.kycarrots.ui.ad.ImageViewerActivity
@@ -126,7 +122,7 @@ class AdDetailActivity : AppCompatActivity() {
 
         }
 
-        val isSeller = (memberCode == "ROLE_SELL")
+        val isSeller = (memberCode == Constants.ROLE_SELL)
         btnEditProduct.visibility = if (isSeller) View.VISIBLE else View.GONE
         btnEditProduct.setOnClickListener {
             val intent = Intent(this, MakeADMainActivity::class.java)
@@ -313,6 +309,8 @@ class AdDetailActivity : AppCompatActivity() {
          */
         currentStatus = detail.product.saleStatus
         loadProductStatusOptions( Constants.SYSTEM_TYPE, currentStatus)
+        renderRejectReason(detail.product.saleStatus,detail.product.rejectReason)
+
         invalidateOptionsMenu()
     }
 
@@ -322,9 +320,12 @@ class AdDetailActivity : AppCompatActivity() {
 
         val memberCode = LoginInfoUtil.getMemberCode(this)
 
-        val isReadonly =
-            (memberCode == "ROLE_PUB") || // 구매자
-                    (systemType == 2 && memberCode == "ROLE_SELL" && currentStatus != "98") // 도매상 시스템의 판매자이고 반려상태가 아님
+        val isReadonly = when {
+            memberCode == Constants.ROLE_PUB -> true
+            systemType == 2 && memberCode == Constants.ROLE_SELL && currentStatus == "0" -> true
+            systemType == 2 && memberCode == Constants.ROLE_PROJ && currentStatus == "98" -> true
+            else -> false
+        }
 
         if (isReadonly) {
             // 상태만 보여주기
@@ -343,6 +344,7 @@ class AdDetailActivity : AppCompatActivity() {
             return
         }
 
+
         // 이 아래는 Spinner 표시 및 상태 변경 가능한 경우
         spinner.visibility = View.VISIBLE
         statusTextView.visibility = View.GONE
@@ -353,13 +355,13 @@ class AdDetailActivity : AppCompatActivity() {
 
                 filteredList = statusList.filter {
                     when {
-                        systemType == 1 && memberCode == "ROLE_SELL" ->
+                        systemType == 1 && memberCode == Constants.ROLE_SELL ->
                             it.strIdx in listOf("1", "10", "99") || it.strIdx == currentStatus
-                        systemType == 2 && memberCode == "ROLE_PROJ" ->
+                        systemType == 2 && memberCode == Constants.ROLE_PROJ ->
                             it.strIdx in listOf("0", "1", "10", "98", "99") || it.strIdx == currentStatus
-                        systemType == 2 && memberCode == "ROLE_SELL" ->
+                        systemType == 2 && memberCode == Constants.ROLE_SELL ->
                             // 반려 상태인 경우 승인요청만 허용
-                            it.strIdx in listOf("0", "98", "1", "10", "99")
+                            it.strIdx in listOf("0", "98")
                         else -> false
                     }
                 }.distinctBy { it.strIdx }
@@ -406,9 +408,9 @@ class AdDetailActivity : AppCompatActivity() {
         val memberCode = LoginInfoUtil.getMemberCode(this)
         val systemType  = Constants.SYSTEM_TYPE
         val canChange = when {
-            systemType == 1 && memberCode == "ROLE_SELL" -> code in listOf("1", "10", "99")
-            systemType == 2 && memberCode == "ROLE_PROJ" -> code in listOf("1", "10", "98", "99") // 예: 승인요청, 반려
-            systemType == 2 && memberCode == "ROLE_SELL" ->
+            systemType == 1 && memberCode == Constants.ROLE_SELL -> code in listOf("1", "10", "99")
+            systemType == 2 && memberCode == Constants.ROLE_PROJ -> code in listOf("1", "10", "98", "99") // 예: 승인요청, 반려
+            systemType == 2 && memberCode == Constants.ROLE_SELL ->
                 currentStatus == "98" && code == "0" // 반려 → 승인요청만 허용
             else -> false
         }
@@ -586,7 +588,8 @@ class AdDetailActivity : AppCompatActivity() {
                     productId = productId,
                     saleStatus = code,
                     updusrNo = 0,
-                    rejectReason = rejectReason
+                    rejectReason = rejectReason,
+                    systemType = Constants.SYSTEM_TYPE.toString()
                 )
 
                 val success = AppServiceProvider.getService().updateProductStatus(token,productItem)
@@ -634,7 +637,7 @@ class AdDetailActivity : AppCompatActivity() {
         //menuInflater.inflate(R.menu.sample_actions, menu)
         menuInflater.inflate(R.menu.menu_ad_detail, menu)
         val favItem = menu.findItem(R.id.action_favorite)
-        val isBuyer = (memberCode == "ROLE_PUB")
+        val isBuyer = (memberCode == Constants.ROLE_PUB)
 
         // 구매자만 보이도록
         favItem.isVisible = isBuyer
@@ -688,7 +691,7 @@ class AdDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.action_favorite -> {
-                if (memberCode == "ROLE_PUB") {
+                if (memberCode == Constants.ROLE_PUB) {
                     toggleFavorite(item)
                 } else {
                     Toast.makeText(this, "구매자만 찜하기가 가능합니다", Toast.LENGTH_SHORT).show()
@@ -934,5 +937,18 @@ class AdDetailActivity : AppCompatActivity() {
 
     private fun openImageViewer(url: String) {
         startActivity(Intent(this, ImageViewerActivity::class.java).putExtra("url", url))
+    }
+
+    private fun renderRejectReason(currentStatus: String?, rejectReason: String?) {
+        val card = findViewById<MaterialCardView>(R.id.card_reject_reason)
+        val tv = findViewById<TextView>(R.id.tv_reject_reason)
+
+        if (currentStatus == "98" && !rejectReason.isNullOrBlank()) {
+            card.visibility = View.VISIBLE
+            tv.text = rejectReason
+        } else {
+            card.visibility = View.GONE
+            tv.text = ""
+        }
     }
 }

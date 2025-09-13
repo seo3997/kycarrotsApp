@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.whomade.kycarrots.R
+import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -84,7 +85,7 @@ class ChatActivity : AppCompatActivity() {
         otherId = resolveOtherId(sUID, buyerId, sellerId)
 
         currentUserId = sUID
-        isBuyer = sMemberCode == "ROLE_PUB"
+        isBuyer = sMemberCode == Constants.ROLE_PUB
         senderId = sUID
 
         StompManager.connect(sUID)

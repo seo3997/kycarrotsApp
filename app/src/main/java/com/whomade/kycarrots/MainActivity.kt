@@ -17,6 +17,7 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
+import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.common.Constants.SYSTEM_TYPE
 import com.whomade.kycarrots.common.RetrofitProvider
 import com.whomade.kycarrots.data.api.AdApi
@@ -120,7 +121,7 @@ class MainActivity : BaseDrawerActivity() {
                 }
 
                 // 2) 없으면 도매상 목록 → 선택 다이얼로그
-                val wholesalers = appService.getWholesalers("ROLE_PROJ")
+                val wholesalers = appService.getWholesalers(Constants.ROLE_PROJ)
                 val centers = wholesalers.map { it.toBottomDto() }
                 if (centers.isEmpty()) {
                     Toast.makeText(this@MainActivity, "선택 가능한 중간센터가 없습니다.", Toast.LENGTH_SHORT).show()
@@ -254,7 +255,7 @@ class MainActivity : BaseDrawerActivity() {
     private fun buildPagerAdapter(): Adapter {
         val items = if (SYSTEM_TYPE == 2) {
             listOf(
-                "0" to "승인요청",
+                "0" to "승인반려",
                 "1" to "판매중",
                 "2" to "예약중",
                 "3" to "판매완료"

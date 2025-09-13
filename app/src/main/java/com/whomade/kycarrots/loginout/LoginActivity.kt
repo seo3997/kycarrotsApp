@@ -56,9 +56,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 selectedUserType = when (position) {
-                    0 -> "ROLE_SELL" // 판매자
-                    1 -> "ROLE_PUB" // 구매자
-                    2 -> "ROLE_PROJ" // 센터
+                    0 -> Constants.ROLE_SELL // 판매자
+                    1 -> Constants.ROLE_PUB // 구매자
+                    2 -> Constants.ROLE_PROJ // 센터
                     else -> ""
                 }
                 // TODO: selectedValue 사용
@@ -125,7 +125,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                 Toast.makeText(this, getString(R.string.str_input_pwd_err), Toast.LENGTH_SHORT).show()
             }
 
-            strMemberCode == "ROLE_PROJ" && Constants.SYSTEM_TYPE.toString() == "1" -> {
+            strMemberCode == Constants.ROLE_PROJ && Constants.SYSTEM_TYPE.toString() == "1" -> {
                 Toast.makeText(this, "직거래앱은 센터로 로그인 할수 없습니다.", Toast.LENGTH_SHORT).show()
             }
 
