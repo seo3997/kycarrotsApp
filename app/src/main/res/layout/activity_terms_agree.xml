@@ -118,6 +118,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/cardTerms1"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_marginTop="@dimen/item_padding"
@@ -127,7 +128,8 @@
                         <WebView
                             android:id="@+id/wv_terms_1"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
+                            android:layout_height="match_parent"
+                            android:background="@android:color/white"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -182,6 +184,7 @@
                         android:textStyle="bold" />
 
                     <LinearLayout
+                        android:id="@+id/cardTerms2"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_marginTop="@dimen/item_padding"
@@ -191,7 +194,8 @@
                         <WebView
                             android:id="@+id/wv_terms_2"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
+                            android:layout_height="match_parent"
+                            android:background="@android:color/white"/>
                     </LinearLayout>
 
                     <LinearLayout

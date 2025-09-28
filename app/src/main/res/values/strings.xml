@@ -370,8 +370,8 @@
     <!--<string name="str_network_err">네트워크 연결 상태를 확인해 주세요.\n네트워크 연결 시에만 포인트적립이 됩니다.</string>-->
 
     <!-- webView 연결 url -->
-    <string name="str_url_join_terms1">http://cashcuk.com/link/join_terms1</string>
-    <string name="str_url_join_terms2">http://cashcuk.com/link/join_terms2</string>
+    <string name="str_url_join_terms1">link/join_terms1.do</string>
+    <string name="str_url_join_terms2">link/join_terms2.do</string>
     <string name="str_url_terms1">http://cashcuk.com/link/terms1</string>
     <string name="str_url_terms2">http://cashcuk.com/link/terms2</string>
     <string name="str_url_notice">http://cashcuk.com/link/notice</string>

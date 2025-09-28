@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.webkit.WebView
 import android.widget.*
@@ -12,6 +14,7 @@ import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.MainTitleBar
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.TitleBar
+import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.dialog.DlgBtnActivity
 
 class TermsAgreeActivity : Activity(), View.OnClickListener {
@@ -56,10 +59,53 @@ class TermsAgreeActivity : Activity(), View.OnClickListener {
 
         val wvTerms1 = findViewById<WebView>(R.id.wv_terms_1)
         val wvTerms2 = findViewById<WebView>(R.id.wv_terms_2)
-        wvTerms1.loadUrl(getString(R.string.str_url_join_terms1))
-        wvTerms2.loadUrl(getString(R.string.str_url_join_terms2))
-        wvTerms1.setBackgroundColor(0)
-        wvTerms2.setBackgroundColor(0)
+        wvTerms1.loadUrl(Constants.BASE_URL+getString(R.string.str_url_join_terms1))
+        wvTerms2.loadUrl(Constants.BASE_URL+getString(R.string.str_url_join_terms2))
+        //wvTerms1.setBackgroundColor(0)
+        //wvTerms2.setBackgroundColor(0)
+
+        val detector1 = GestureDetector(
+            this,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onSingleTapUp(e: MotionEvent): Boolean {
+                    TermsZoomActivity.start(
+                        context  = this@TermsAgreeActivity,
+                        title    = "이용약관",
+                        url      = Constants.BASE_URL + getString(R.string.str_url_join_terms1),
+                        textZoom = 140
+                    )
+                    return true
+                }
+            }
+        )
+        wvTerms1.setOnTouchListener { _, event ->
+            detector1.onTouchEvent(event)
+            // 스크롤/링크 동작은 그대로 두고 싶으면 false,
+            // 탭만 처리하고 나머지를 막고 싶으면 true
+            false
+        }
+        val detector2 = GestureDetector(
+            this,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onSingleTapUp(e: MotionEvent): Boolean {
+                    TermsZoomActivity.start(
+                        context  = this@TermsAgreeActivity,
+                        title    = "개인정보 수집·이용·제 3자 제공동의",
+                        url      = Constants.BASE_URL + getString(R.string.str_url_join_terms2),
+                        textZoom = 140
+                    )
+                    return true
+                }
+            }
+        )
+        wvTerms2.setOnTouchListener { _, event ->
+            detector2.onTouchEvent(event)
+            // 스크롤/링크 동작은 그대로 두고 싶으면 false,
+            // 탭만 처리하고 나머지를 막고 싶으면 true
+            false
+        }
+
+
     }
 
     override fun onDestroy() {
