@@ -2,13 +2,20 @@ package com.whomade.kycarrots.membership
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.*
 import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.MainTitleBar
@@ -59,8 +66,21 @@ class TermsAgreeActivity : Activity(), View.OnClickListener {
 
         val wvTerms1 = findViewById<WebView>(R.id.wv_terms_1)
         val wvTerms2 = findViewById<WebView>(R.id.wv_terms_2)
-        wvTerms1.loadUrl(Constants.BASE_URL+getString(R.string.str_url_join_terms1))
-        wvTerms2.loadUrl(Constants.BASE_URL+getString(R.string.str_url_join_terms2))
+        val pg1 = findViewById<ProgressBar>(R.id.progress_terms_1)
+        val pg2 = findViewById<ProgressBar>(R.id.progress_terms_2)
+        //wvTerms1.loadUrl(Constants.BASE_URL+getString(R.string.str_url_join_terms1))
+        //wvTerms2.loadUrl(Constants.BASE_URL+getString(R.string.str_url_join_terms2))
+        setupTermsWebView(
+            webView  = wvTerms1,
+            progress = pg1,
+            url      = Constants.BASE_URL + getString(R.string.str_url_join_terms1)
+        )
+        setupTermsWebView(
+            webView  = wvTerms2,
+            progress = pg2,
+            url      = Constants.BASE_URL + getString(R.string.str_url_join_terms2)
+        )
+
         //wvTerms1.setBackgroundColor(0)
         //wvTerms2.setBackgroundColor(0)
 
@@ -106,6 +126,50 @@ class TermsAgreeActivity : Activity(), View.OnClickListener {
         }
 
 
+    }
+
+    @Suppress("SetJavaScriptEnabled")
+    private fun setupTermsWebView(
+        webView: WebView,
+        progress: ProgressBar,
+        url: String? = null,
+        html: String? = null
+    ) {
+        with(webView.settings) {
+            javaScriptEnabled = false
+            domStorageEnabled = true
+            setSupportZoom(true)
+            builtInZoomControls = true
+            displayZoomControls = false
+            useWideViewPort = true
+            loadWithOverviewMode = true
+            textZoom = 100
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                forceDark = WebSettings.FORCE_DARK_OFF
+            }
+        }
+        webView.setBackgroundColor(Color.WHITE)
+
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                progress.visibility = View.VISIBLE
+            }
+            override fun onPageFinished(view: WebView?, url: String?) {
+                progress.visibility = View.GONE
+            }
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                progress.visibility = View.GONE
+            }
+        }
+
+        when {
+            !url.isNullOrBlank()  -> webView.loadUrl(url)
+            !html.isNullOrBlank() -> webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+        }
     }
 
     override fun onDestroy() {

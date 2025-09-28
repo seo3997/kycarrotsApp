@@ -117,7 +117,7 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <LinearLayout
+                    <FrameLayout
                         android:id="@+id/cardTerms1"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
@@ -129,8 +129,17 @@
                             android:id="@+id/wv_terms_1"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@android:color/white"/>
-                    </LinearLayout>
+                            android:background="@android:color/white"
+                            android:overScrollMode="never"/>
+
+                        <ProgressBar
+                            android:id="@+id/progress_terms_1"
+                            style="?android:attr/progressBarStyleLarge"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:visibility="gone"/>
+                    </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -183,7 +192,8 @@
                         android:textSize="@dimen/login_find_txt_size"
                         android:textStyle="bold" />
 
-                    <LinearLayout
+                    <!-- 약관 2 -->
+                    <FrameLayout
                         android:id="@+id/cardTerms2"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
@@ -195,9 +205,17 @@
                             android:id="@+id/wv_terms_2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@android:color/white"/>
-                    </LinearLayout>
+                            android:background="@android:color/white"
+                            android:overScrollMode="never"/>
 
+                        <ProgressBar
+                            android:id="@+id/progress_terms_2"
+                            style="?android:attr/progressBarStyleLarge"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:visibility="gone"/>
+                    </FrameLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
