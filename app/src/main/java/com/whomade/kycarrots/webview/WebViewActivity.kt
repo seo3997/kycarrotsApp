@@ -167,6 +167,8 @@ class WebViewActivity : BaseDrawerActivity() {
         settings.setSupportZoom(false)
         settings.builtInZoomControls = false
         settings.displayZoomControls = false
+        settings.cacheMode = WebSettings.LOAD_NO_CACHE
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             settings.safeBrowsingEnabled = true
         }
