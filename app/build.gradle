@@ -77,5 +77,6 @@ dependencies {
     kapt "androidx.room:room-compiler:2.6.1"     // Kotlin KAPT 사용 시
     implementation "androidx.room:room-ktx:2.6.1" // 코루틴 지원
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0" // 안정
 
 }

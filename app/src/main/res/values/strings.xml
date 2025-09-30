@@ -938,5 +938,6 @@
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
 
-
+    <string name="navigation_drawer_open">내비게이션 열기</string>
+    <string name="navigation_drawer_close">내비게이션 닫기</string>
 </resources>

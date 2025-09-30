@@ -19,6 +19,7 @@ import com.whomade.kycarrots.setting.SettingActivity
 import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.TokenUtil
+import com.whomade.kycarrots.webview.WebViewActivity
 
 open class BaseDrawerActivity : AppCompatActivity() {
     protected lateinit var drawerLayout: DrawerLayout
@@ -78,6 +79,9 @@ open class BaseDrawerActivity : AppCompatActivity() {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     }
                     startActivity(intent)
+                }
+                R.id.nav_notice -> {
+                    WebViewActivity.start(this, Constants.BASE_URL + "front/board/selectPageListBoard.do", title = "공지사항")
                 }
             }
             drawerLayout.closeDrawers()

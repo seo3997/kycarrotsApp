@@ -34,12 +34,15 @@
     <item android:title="고객지원">
         <menu>
             <item
+                android:id="@+id/nav_notice"
                 android:icon="@drawable/ic_dashboard"
                 android:title="공지사항" />
             <item
+                android:id="@+id/nav_ic_discuss"
                 android:icon="@drawable/ic_discuss"
                 android:title="문의하기" />
             <item
+                android:id="@+id/nav_ic_forum"
                 android:icon="@drawable/ic_forum"
                 android:title="약관 및 정책" />
         </menu>
