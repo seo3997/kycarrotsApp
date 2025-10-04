@@ -46,6 +46,7 @@ open class BaseDrawerActivity : AppCompatActivity() {
 
         val userRole: String? = LoginInfoUtil.getMemberCode(this) // 예: ROLE_PUB / ROLE_SELL / ROLE_PROJ
         applyMenuForRole(userRole)
+        val loginNo = LoginInfoUtil.getUserNo(this);
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -81,7 +82,10 @@ open class BaseDrawerActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.nav_notice -> {
-                    WebViewActivity.start(this, Constants.BASE_URL + "front/board/selectPageListBoard.do", title = "공지사항")
+                    WebViewActivity.start(this, Constants.BASE_URL + "front/board/selectPageListBoard.do?sch_bbs_se_code_m=10&ss_user_no="+loginNo, title = "공지사항")
+                }
+                R.id.nav_discuss -> {
+                    WebViewActivity.start(this, Constants.BASE_URL + "front/board/selectPageListBoard.do?sch_bbs_se_code_m=20&ss_user_no="+loginNo, title = "문의하기")
                 }
             }
             drawerLayout.closeDrawers()
