@@ -87,6 +87,9 @@ open class BaseDrawerActivity : AppCompatActivity() {
                 R.id.nav_discuss -> {
                     WebViewActivity.start(this, Constants.BASE_URL + "front/board/selectPageListBoard.do?sch_bbs_se_code_m=20&ss_user_no="+loginNo, title = "문의하기")
                 }
+                R.id.nav_forum -> {
+                    WebViewActivity.start(this, Constants.BASE_URL + "link/join_terms.do", title = "약관 및 정책")
+                }
             }
             drawerLayout.closeDrawers()
             true
