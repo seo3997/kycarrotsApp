@@ -7,7 +7,7 @@ object Constants {
     }
 
     //여기서 서버 선택만 바꾸면 전체가 따라감
-    private val currentServer = ServerType.DEV
+    private val currentServer = ServerType.LOCAL
 
     val BASE_URL: String
         get() = when (currentServer) {
@@ -24,7 +24,7 @@ object Constants {
         }
 
 
-    const val SYSTEM_TYPE = 2  // 또는 2로 설정
+    const val SYSTEM_TYPE = 1  // 또는 2로 설정
 
     const val ROLE_PUB = "ROLE_PUB"
     const val ROLE_SELL = "ROLE_SELL"

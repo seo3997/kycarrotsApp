@@ -113,18 +113,16 @@ class RemoteRepository(
     }
 
     suspend fun findPassword(
-        phone: String,
         email: String
     ): Response<FindPasswordResponse> {
-        return adApi.findPassword(phone, email)
+        return adApi.findPassword(email)
     }
 
     suspend fun findEmail(
         name: String,
-        birth: String,
         phone: String
     ): Response<FindEmailResponse> {
-        return adApi.findEmail(name, birth, phone)
+        return adApi.findEmail(name, phone)
     }
     // 채팅방 생성
     suspend fun createOrGetChatRoom(

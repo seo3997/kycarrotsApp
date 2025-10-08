@@ -105,8 +105,8 @@ class AppService(
         }
     }
 
-    suspend fun findPassword(phone: String, email: String): String? {
-        val response = repository.findPassword(phone, email)
+    suspend fun findPassword(email: String): String? {
+        val response = repository.findPassword(email)
         return if (response.isSuccessful) {
             response.body()?.password
         } else {
@@ -114,8 +114,8 @@ class AppService(
         }
     }
 
-    suspend fun findEmail(name: String, birth: String, phone: String): String? {
-        val response = repository.findEmail(name, birth, phone)
+    suspend fun findEmail(name: String, phone: String): String? {
+        val response = repository.findEmail(name, phone)
         return if (response.isSuccessful) response.body()?.email else null
     }
 

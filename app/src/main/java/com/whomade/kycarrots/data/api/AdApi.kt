@@ -93,14 +93,12 @@ interface AdApi {
 
     @GET("api/members/find-password")
     suspend fun findPassword(
-        @Query("hp") hp: String,
         @Query("mail") mail: String
     ): Response<FindPasswordResponse>
 
     @GET("api/members/find-email")
     suspend fun findEmail(
         @Query("nm") name: String,
-        @Query("birth") birthDate: String,
         @Query("hp") phone: String
     ): Response<FindEmailResponse>
 

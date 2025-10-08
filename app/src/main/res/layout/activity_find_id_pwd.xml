@@ -29,7 +29,7 @@
                 android:id="@+id/txt_find_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/color_main_friend_txt"
+                android:background="@color/colorRAccent"
                 android:gravity="center"
                 android:paddingBottom="@dimen/item_margin_left"
                 android:paddingTop="@dimen/item_margin_left"
@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_divider_height"
                 android:layout_alignBottom="@+id/txt_find_email"
-                android:background="@color/color_tab_under_color"
+                android:background="@color/color_point_list_nm_txt"
                 android:orientation="horizontal" />
         </RelativeLayout>
 
@@ -70,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_divider_height"
                 android:layout_alignBottom="@+id/txt_find_pwd"
-                android:background="@color/color_tab_under_color"
+                android:background="@color/color_point_list_nm_txt"
                 android:orientation="horizontal"
                 android:visibility="gone" />
         </RelativeLayout>
@@ -80,7 +80,7 @@
         android:id="@+id/txt_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color_main_friend_txt"
+        android:background="@color/colorRAccent"
         android:gravity="center"
         android:paddingBottom="@dimen/item_margin_left"
         android:paddingTop="@dimen/item_margin_left"

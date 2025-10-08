@@ -9,6 +9,7 @@ import android.view.Window
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.whomade.kycarrots.CheckLoginService
@@ -99,8 +100,12 @@ class FindEmailPwdActivity : FragmentActivity(), View.OnClickListener {
         txtInfo.text = getString(R.string.str_find_pwd_info)
         llFindEmailUnder.visibility = View.GONE
         llFindPwdUnder.visibility = View.VISIBLE
-        //txtFindEmail.setBackgroundColor(getColor(R.color.color_white))
-        //txtFindPwd.setBackgroundColor(getColor(R.color.color_main_friend_txt))
+        txtFindEmail.setBackgroundColor(
+            ContextCompat.getColor(this, R.color.color_white)
+        )
+        txtFindPwd.setBackgroundColor(
+            ContextCompat.getColor(this, R.color.colorRAccent)
+        )
         switchFragment(BOOL_FIND_MODE_PWD, phoneNum)
     }
 
@@ -111,20 +116,18 @@ class FindEmailPwdActivity : FragmentActivity(), View.OnClickListener {
                 txtInfo.text = getString(R.string.str_find_email_info)
                 llFindEmailUnder.visibility = View.VISIBLE
                 llFindPwdUnder.visibility = View.GONE
-                //txtFindEmail.setBackgroundColor(getColor(R.color.color_main_friend_txt))
-                //txtFindPwd.setBackgroundColor(getColor(R.color.color_white))
+                txtFindEmail.setBackgroundColor(
+                    ContextCompat.getColor(this, R.color.colorRAccent)
+                )
+                txtFindPwd.setBackgroundColor(
+                    ContextCompat.getColor(this, R.color.color_white)
+                )
+
                 switchFragment(BOOL_FIND_MODE_EMAIL, "")
             }
 
             R.id.txt_find_pwd -> {
-               /*
-                val intent = Intent(this, MobileAuthenticationWebActivity::class.java).apply {
-                    putExtra("ReturnCd", 3)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                }
-                startActivityForResult(intent, REQUEST_PHONE_NUM)
-
-                */
+                setFindPwdInit("")
             }
         }
     }

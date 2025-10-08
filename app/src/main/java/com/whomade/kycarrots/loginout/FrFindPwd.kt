@@ -18,12 +18,7 @@ import java.util.regex.Pattern
 class FrFindPwd : Fragment(), View.OnClickListener {
 
     private lateinit var etEmail: EditText
-    private lateinit var txtFirstNum: TextView
-    private lateinit var etMiddleNum: TextView
-    private lateinit var etLastNum: TextView
 
-    private var mPhoneNum: String = ""
-    private var mArrPhoneNum = arrayOf("", "", "")
 
     companion object {
         private const val REQUEST_CODE_EMAIL_PWD = 888
@@ -33,23 +28,8 @@ class FrFindPwd : Fragment(), View.OnClickListener {
         val view = inflater.inflate(R.layout.fr_find_pwd_new, container, false)
 
         etEmail = view.findViewById(R.id.et_email)
-        txtFirstNum = view.findViewById(R.id.txt_first_num)
-        etMiddleNum = view.findViewById(R.id.et_middle_num)
-        etLastNum = view.findViewById(R.id.et_last_num)
 
         view.findViewById<Button>(R.id.btn_find_pwd_ok).setOnClickListener(this)
-
-        mPhoneNum = arguments?.getString("PhoneNum") ?: ""
-        Log.d("FrFindPwd", "mPhoneNum = [$mPhoneNum]")
-
-        if (mPhoneNum.isNotEmpty()) {
-            mArrPhoneNum = mPhoneNum.split("-").toTypedArray()
-        }
-
-        txtFirstNum.text = mArrPhoneNum.getOrNull(0) ?: ""
-        etMiddleNum.text = mArrPhoneNum.getOrNull(1) ?: ""
-        etLastNum.text = mArrPhoneNum.getOrNull(2) ?: ""
-
         return view
     }
 
@@ -87,17 +67,16 @@ class FrFindPwd : Fragment(), View.OnClickListener {
 
     private fun chkInputData() {
         val strEmail = etEmail.text.toString()
-        val strPhoneNum = "${txtFirstNum.text}-${etMiddleNum.text}-${etLastNum.text}"
 
-        if (etMiddleNum.text.toString().isBlank() || etLastNum.text.toString().isBlank()) {
-            Toast.makeText(requireContext(), getString(R.string.str_empty_phone_num), Toast.LENGTH_SHORT).show()
+        if (strEmail.isBlank() || strEmail.isBlank()) {
+            Toast.makeText(requireContext(), getString(R.string.str_input_email_err), Toast.LENGTH_SHORT).show()
             return
         }
 
         val appService = AppServiceProvider.getService()
 
         lifecycleScope.launch {
-            val resultCode = FindPassword(requireContext(), strPhoneNum, strEmail, appService).find()
+            val resultCode = FindPassword(requireContext(), strEmail, appService).find()
 
             when (resultCode) {
                 StaticDataInfo.RESULT_CODE_ERR -> {

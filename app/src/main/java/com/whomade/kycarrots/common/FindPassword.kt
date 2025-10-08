@@ -10,14 +10,13 @@ import kotlinx.coroutines.withContext
 
 class FindPassword(
     private val context: Context,
-    private val phone: String,
     private val email: String,
     private val appService: AppService
 ) {
 
     suspend fun find(): Int = withContext(Dispatchers.IO) {
         try {
-            val password = appService.findPassword(phone, email)
+            val password = appService.findPassword(email)
 
             return@withContext if (!password.isNullOrBlank()) {
                 saveTempPassword(password)

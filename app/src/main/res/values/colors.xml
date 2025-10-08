@@ -91,5 +91,7 @@
     <color name="color_push_back">#b3000000</color>
     <color name="color_ad_main">#302c32</color>
     <color name="divider">#DDDDDD</color>
+    <color name="color_password">#6E6C64</color>
+
 
 </resources>
