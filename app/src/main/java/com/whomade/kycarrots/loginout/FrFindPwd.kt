@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.whomade.kycarrots.R
@@ -74,9 +76,10 @@ class FrFindPwd : Fragment(), View.OnClickListener {
         }
 
         val appService = AppServiceProvider.getService()
-
         lifecycleScope.launch {
+            setLoading(true)
             val resultCode = FindPassword(requireContext(), strEmail, appService).find()
+            setLoading(false)
 
             when (resultCode) {
                 StaticDataInfo.RESULT_CODE_ERR -> {
@@ -88,13 +91,9 @@ class FrFindPwd : Fragment(), View.OnClickListener {
                 }
 
                 StaticDataInfo.RESULT_CODE_200 -> {
-                    val tempPwd = requireContext()
-                        .getSharedPreferences("TempPasswordInfo", android.content.Context.MODE_PRIVATE)
-                        .getString("TempPassword", "") ?: ""
-
                     val intent = Intent(requireContext(), DlgBtnActivity::class.java).apply {
                         putExtra("DlgTitle", getString(R.string.str_setting_alrim))
-                        putExtra("BtnDlgMsg", getString(R.string.str_init_pwd, tempPwd))
+                        putExtra("BtnDlgMsg", getString(R.string.str_init_pwd, strEmail))
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     }
                     startActivityForResult(intent, REQUEST_CODE_EMAIL_PWD)
@@ -102,4 +101,18 @@ class FrFindPwd : Fragment(), View.OnClickListener {
             }
         }
     }
+    fun setLoading(show: Boolean) {
+        val v = view?.findViewById<View>(R.id.ll_progress_circle) ?: return
+        if (show) {
+            v.isVisible = true
+            activity?.window?.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+        } else {
+            v.isGone = true
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
+    }
+
 }

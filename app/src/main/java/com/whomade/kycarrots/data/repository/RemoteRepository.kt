@@ -7,8 +7,7 @@ import com.whomade.kycarrots.data.model.AdResponse
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
-import com.whomade.kycarrots.data.model.FindEmailResponse
-import com.whomade.kycarrots.data.model.FindPasswordResponse
+import com.whomade.kycarrots.data.model.StringResponse
 import com.whomade.kycarrots.data.model.InterestRequest
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
@@ -114,14 +113,14 @@ class RemoteRepository(
 
     suspend fun findPassword(
         email: String
-    ): Response<FindPasswordResponse> {
+    ): Response<StringResponse> {
         return adApi.findPassword(email)
     }
 
     suspend fun findEmail(
         name: String,
         phone: String
-    ): Response<FindEmailResponse> {
+    ): Response<StringResponse> {
         return adApi.findEmail(name, phone)
     }
     // 채팅방 생성

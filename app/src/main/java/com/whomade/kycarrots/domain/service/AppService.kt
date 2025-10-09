@@ -108,7 +108,7 @@ class AppService(
     suspend fun findPassword(email: String): String? {
         val response = repository.findPassword(email)
         return if (response.isSuccessful) {
-            response.body()?.password
+            response.body()?.resultString
         } else {
             null
         }
@@ -116,7 +116,7 @@ class AppService(
 
     suspend fun findEmail(name: String, phone: String): String? {
         val response = repository.findEmail(name, phone)
-        return if (response.isSuccessful) response.body()?.email else null
+        return if (response.isSuccessful) response.body()?.resultString else null
     }
 
     suspend fun createOrGetChatRoom(

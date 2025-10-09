@@ -3,7 +3,6 @@ package com.whomade.kycarrots.common
 import android.content.Context
 import android.util.Log
 import com.whomade.kycarrots.StaticDataInfo
-import com.whomade.kycarrots.data.model.FindPasswordResponse
 import com.whomade.kycarrots.domain.service.AppService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,18 +15,21 @@ class FindPassword(
 
     suspend fun find(): Int = withContext(Dispatchers.IO) {
         try {
-            val password = appService.findPassword(email)
+            // 서버 응답: "200","601","602","604"... (null 또는 비정상이면 에러로 처리)
+            val codeStr = appService.findPassword(email)?.trim().orEmpty()
+            val code = codeStr.toIntOrNull() ?: return@withContext StaticDataInfo.RESULT_CODE_ERR
 
-            return@withContext if (!password.isNullOrBlank()) {
-                saveTempPassword(password)
-                StaticDataInfo.RESULT_CODE_200
-            } else {
-                StaticDataInfo.RESULT_NO_USER
+            return@withContext when (code) {
+                StaticDataInfo.RESULT_CODE_200,
+                StaticDataInfo.RESULT_NO_USER,
+                StaticDataInfo.RESULT_PWD_ERR,
+                StaticDataInfo.RESULT_MEMBER_CODE_ERR,
+                StaticDataInfo.RESULT_NO_DATA -> code
+                else -> StaticDataInfo.RESULT_CODE_ERR
             }
-
         } catch (e: Exception) {
             Log.e("FindPassword", "Exception during find(): ${e.message}", e)
-            return@withContext StaticDataInfo.RESULT_CODE_ERR
+            StaticDataInfo.RESULT_CODE_ERR
         }
     }
 

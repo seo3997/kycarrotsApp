@@ -5,8 +5,7 @@ import com.whomade.kycarrots.data.model.AdResponse
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
-import com.whomade.kycarrots.data.model.FindEmailResponse
-import com.whomade.kycarrots.data.model.FindPasswordResponse
+import com.whomade.kycarrots.data.model.StringResponse
 import com.whomade.kycarrots.data.model.InterestRequest
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OpUserVO
@@ -28,7 +27,6 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -94,13 +92,13 @@ interface AdApi {
     @GET("api/members/find-password")
     suspend fun findPassword(
         @Query("mail") mail: String
-    ): Response<FindPasswordResponse>
+    ): Response<StringResponse>
 
     @GET("api/members/find-email")
     suspend fun findEmail(
         @Query("nm") name: String,
         @Query("hp") phone: String
-    ): Response<FindEmailResponse>
+    ): Response<StringResponse>
 
     @POST("/api/chat/room")
     suspend fun createOrGetChatRoom(

@@ -203,7 +203,7 @@
     <string name="str_chk_email_err">이메일을 확인해주세요.</string>
     <string name="str_chk_email">이메일이 확인되었습니다.</string>
     <string name="str_send_pwd">입력하신 휴대폰 번호로\n임시 비밀번호가 발송되었습니다.</string>
-    <string name="str_init_pwd">패스워드가 %1$s로 \n초기화 되었습니다.\n 로그인 화면으로 이동 됩니다.</string>
+    <string name="str_init_pwd">요청하신 %1$s로 \n 비밀번호 재설정 메일이 발송 되었습니다..\n 비밀번호 재설정후 로그인하세요.</string>
 
     <!-- main -->
     <string name="str_home">Home</string>
