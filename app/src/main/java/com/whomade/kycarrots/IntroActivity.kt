@@ -26,9 +26,11 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import com.kakao.sdk.common.util.Utility
 import com.whomade.kycarrots.chatting.ChatActivity
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.message.PushTokenUtil
+
 
 class IntroActivity : AppCompatActivity() {
     private var pushRoomId: String? = null
@@ -83,6 +85,9 @@ class IntroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_intro)
+
+        val keyHash = Utility.getKeyHash(this)   // this = Activity/Context
+        Log.d("KAKAO", "keyHash=$keyHash")
 
         // 1. 인텐트에서 푸시 데이터 추출 (항상 먼저 호출)
         savePushIntentData(intent)

@@ -4,10 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.user.UserApiClient
 import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.DashboardActivity
 import com.whomade.kycarrots.IntroActivity
@@ -15,6 +20,7 @@ import com.whomade.kycarrots.MainActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.StaticDataInfo
 import com.whomade.kycarrots.common.Constants
+import com.whomade.kycarrots.data.model.KakaoAuthRequest
 import com.whomade.kycarrots.membership.TermsAgreeActivity
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
@@ -36,6 +42,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
 
         findViewById<Button>(R.id.btn_membership).setOnClickListener(this)
         findViewById<Button>(R.id.btn_login).setOnClickListener(this)
+        findViewById<Button>(R.id.btn_kakaologin).setOnClickListener(this)
+        findViewById<Button>(R.id.btn_kakaounlink).setOnClickListener(this)
         findViewById<Button>(R.id.btn_find_id_pwd).setOnClickListener(this)
 
         etEmail = findViewById(R.id.et_email)
@@ -86,6 +94,21 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                 chkLoginCondition()
                 null
             }
+            R.id.btn_kakaologin -> {
+                startKakaoLogin()
+                null
+            }
+            R.id.btn_kakaounlink -> {
+                UserApiClient.instance.unlink { error ->
+                    if (error != null) Log.e("KAKAO", "unlink 실패", error)
+                    else {
+                        // 옵션: 카카오 로그아웃도
+                        UserApiClient.instance.logout { /* ignore */ }
+                        Toast.makeText(this, "카카오 연결 해제 완료. 다음 로그인 시 재동의 필요", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                null
+            }
 
             else -> null
         }
@@ -94,6 +117,88 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
             it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(it)
         }
+    }
+    private fun startKakaoLogin() {
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            when {
+                error != null -> {
+                    // 카카오톡 취소 시 계정 로그인으로 폴백
+                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                        // 사용자가 취소한 경우
+                        Toast.makeText(this,"로그인이 취소되었습니다.",Toast.LENGTH_SHORT).show()
+
+                    } else {
+                        // 기타 에러면 계정 로그인으로 폴백
+                        loginWithKakaoAccount()
+                    }
+                }
+                token != null -> {
+                    // 로그인 성공 → 사용자 정보 조회
+                    fetchKakaoUserAndGo(token)
+                }
+            }
+        }
+
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+            UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
+        } else {
+            loginWithKakaoAccount()
+        }
+    }
+    private fun loginWithKakaoAccount() {
+        UserApiClient.instance.loginWithKakaoAccount(this) { token, error ->
+            if (error != null) {
+                Toast.makeText(this,"카카오 계정 로그인 실패: ${error.message}",Toast.LENGTH_SHORT).show()
+                return@loginWithKakaoAccount
+            }
+            if (token != null) {
+                fetchKakaoUserAndGo(token)
+            }
+        }
+    }
+    private fun fetchKakaoUserAndGo(token: OAuthToken) {
+        UserApiClient.instance.me { user, error ->
+            if (error != null || user == null) {
+                Toast.makeText(this,"카카오 사용자 정보 조회 실패",Toast.LENGTH_SHORT).show()
+                return@me
+            }
+            val nickname   = user.kakaoAccount?.profile?.nickname ?: ""
+            val email      = user.kakaoAccount?.email               // null 가능
+            val profileUrl = user.kakaoAccount?.profile?.profileImageUrl
+            val kakaoAuthRequest = KakaoAuthRequest(token.accessToken)
+
+            Toast.makeText(this,"카카오 로그인 성공: ${token}",Toast.LENGTH_SHORT).show()
+
+            // 1) 서버에 먼저 물어본다 (이미 가입인지/온보딩 필요한지)
+            /*
+            lifecycleScope.launch {
+                showLoading(true)
+                try {
+                    val appService = AppServiceProvider.getService()
+                    val auth = appService.authKakao(kakaoAuthRequest)
+
+                    if (auth != null && !auth.needOnboarding && !auth.needEmail && !auth.jwt.isNullOrBlank()) {
+                        appService.saveJwt(auth.jwt!!)
+                        //goMain()
+                    } else {
+                        // 온보딩으로
+                        startActivity(Intent(this@LoginActivity, OnboardingActivity::class.java).apply {
+                            putExtra("nickname", nickname)
+                            // 서버가 이메일 필요하면 null 전달해서 입력/인증 플로우로 보내기
+                            putExtra("email", if (auth?.needEmail == true) null else email)
+                            putExtra("profileUrl", profileUrl)
+                        })
+                        finish()
+                    }
+                } finally {
+                    showLoading(false)
+                }
+            }
+
+             */
+        }
+
+
     }
 
     override fun onResume() {
@@ -256,5 +361,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         } catch (e: PackageManager.NameNotFoundException) {
             "unknown"
         }
+    }
+    private fun showLoading(show: Boolean) {
+        findViewById<View>(R.id.ll_progress_circle).visibility =
+            if (show) View.VISIBLE else View.GONE
     }
 }

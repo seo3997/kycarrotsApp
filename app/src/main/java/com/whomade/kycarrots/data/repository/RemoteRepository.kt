@@ -7,9 +7,16 @@ import com.whomade.kycarrots.data.model.AdResponse
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
+import com.whomade.kycarrots.data.model.EmailSendReq
+import com.whomade.kycarrots.data.model.EmailVerifyReq
+import com.whomade.kycarrots.data.model.EmailVerifyResp
 import com.whomade.kycarrots.data.model.StringResponse
 import com.whomade.kycarrots.data.model.InterestRequest
+import com.whomade.kycarrots.data.model.KakaoAuthRequest
+import com.whomade.kycarrots.data.model.KakaoAuthResponse
 import com.whomade.kycarrots.data.model.LoginResponse
+import com.whomade.kycarrots.data.model.OnboardingRequest
+import com.whomade.kycarrots.data.model.OnboardingResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
@@ -212,4 +219,19 @@ class RemoteRepository(
     suspend fun updateDefaultWholesaler(userId: String, wholesalerNo: String): Response<Void> {
         return adApi.setDefaultWholesaler(userId, wholesalerNo)
     }
+
+    suspend fun sendEmailCode(req: EmailSendReq) :Response<Void> {
+       return adApi.sendEmailCode(req)
+    }
+    suspend fun verifyEmailCode(req: EmailVerifyReq): Response<EmailVerifyResp> {
+        return adApi.verifyEmailCode(req)
+    }
+    suspend fun postOnboarding(req: OnboardingRequest): Response<OnboardingResponse> {
+        return adApi.postOnboarding(req)
+    }
+
+    suspend fun authKakao(accessToken: KakaoAuthRequest) : Response<KakaoAuthResponse> {
+        return adApi.authKakao(accessToken)
+    }
+
 }

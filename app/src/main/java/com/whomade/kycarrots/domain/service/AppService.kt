@@ -6,8 +6,15 @@ import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
+import com.whomade.kycarrots.data.model.EmailSendReq
+import com.whomade.kycarrots.data.model.EmailVerifyReq
+import com.whomade.kycarrots.data.model.EmailVerifyResp
 import com.whomade.kycarrots.data.model.InterestRequest
+import com.whomade.kycarrots.data.model.KakaoAuthRequest
+import com.whomade.kycarrots.data.model.KakaoAuthResponse
 import com.whomade.kycarrots.data.model.LoginResponse
+import com.whomade.kycarrots.data.model.OnboardingRequest
+import com.whomade.kycarrots.data.model.OnboardingResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
@@ -292,4 +299,25 @@ class AppService(
         return resp.isSuccessful
     }
 
+    suspend fun sendEmailCode(req: EmailSendReq) :Boolean {
+        val resp = repository.sendEmailCode(req)
+        return resp.isSuccessful
+    }
+
+    suspend fun verifyEmailCode(req: EmailVerifyReq): EmailVerifyResp? {
+        val resp = repository.verifyEmailCode(req)
+        return if (resp.isSuccessful) resp.body() else null
+    }
+    suspend fun postOnboarding(req: OnboardingRequest): OnboardingResponse? {
+        val resp = repository.postOnboarding(req)
+        return if (resp.isSuccessful) resp.body() else null
+    }
+    suspend fun authKakao(accessToken: KakaoAuthRequest): KakaoAuthResponse? {
+        val resp = repository.authKakao(accessToken)
+        return if (resp.isSuccessful) resp.body() else null
+    }
+
+    fun saveJwt(jwt: String) {
+        // TODO: SharedPreferences / DataStore 등에 저장
+    }
 }

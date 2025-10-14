@@ -41,6 +41,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application xmlns:tools="http://schemas.android.com/tools"
+        android:name=".KycarrotsApp"
         android:allowBackup="false"
         android:extractNativeLibs="true"
         android:fullBackupContent="false"
@@ -62,7 +63,6 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -106,7 +106,16 @@
         <activity android:name=".ui.dialog.DlgBtnActivity" />
         <activity
             android:name=".loginout.LoginActivity"
-            android:screenOrientation="portrait" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="kakao7cfedd989e5e9c768c1f70d85ece26e2"
+                    android:host="oauth"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".dialog.DlgBtnActivity"
             android:screenOrientation="portrait"
@@ -138,6 +147,9 @@
         <activity
             android:name=".webview.WebViewActivity"
             android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".loginout.OnboardingActivity"
             android:screenOrientation="portrait" />
 
         <service

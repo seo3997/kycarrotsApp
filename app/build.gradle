@@ -18,7 +18,7 @@ android {
     }
     defaultConfig {
         applicationId "com.whomade.kycarrots"
-        minSdk  = 21
+        minSdk  = 23
         targetSdk = 35
         versionCode  = 1
         versionName = "1.0"
@@ -78,5 +78,5 @@ dependencies {
     implementation "androidx.room:room-ktx:2.6.1" // 코루틴 지원
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0" // 안정
-
+    implementation "com.kakao.sdk:v2-user:2.21.3"
 }

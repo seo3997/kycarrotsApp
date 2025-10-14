@@ -5,9 +5,16 @@ import com.whomade.kycarrots.data.model.AdResponse
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
+import com.whomade.kycarrots.data.model.EmailSendReq
+import com.whomade.kycarrots.data.model.EmailVerifyReq
+import com.whomade.kycarrots.data.model.EmailVerifyResp
 import com.whomade.kycarrots.data.model.StringResponse
 import com.whomade.kycarrots.data.model.InterestRequest
+import com.whomade.kycarrots.data.model.KakaoAuthRequest
+import com.whomade.kycarrots.data.model.KakaoAuthResponse
 import com.whomade.kycarrots.data.model.LoginResponse
+import com.whomade.kycarrots.data.model.OnboardingRequest
+import com.whomade.kycarrots.data.model.OnboardingResponse
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductItem
@@ -196,4 +203,16 @@ interface AdApi {
         @Query("userId") userId: String,
         @Query("wholesalerNo") wholesalerNo: String
     ): Response<Void>
+
+    @POST("api/email/send-code")
+    suspend fun sendEmailCode(@Body req: EmailSendReq): Response<Void>
+
+    @POST("api/email/verify-code")
+    suspend fun verifyEmailCode(@Body req: EmailVerifyReq):Response<EmailVerifyResp>
+
+    @POST("api/user/onboarding")
+    suspend fun postOnboarding(@Body req: OnboardingRequest): Response<OnboardingResponse>
+
+    @POST("/auth/kakao")
+    suspend fun authKakao(@Body req: KakaoAuthRequest): Response<KakaoAuthResponse>
 }

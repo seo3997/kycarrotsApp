@@ -7,7 +7,7 @@ object Constants {
     }
 
     //여기서 서버 선택만 바꾸면 전체가 따라감
-    private val currentServer = ServerType.LOCAL
+    private val currentServer = ServerType.DEV
 
     val BASE_URL: String
         get() = when (currentServer) {

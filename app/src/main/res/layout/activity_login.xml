@@ -100,10 +100,30 @@
                 android:textSize="@dimen/input_info_txt_size" />
 
             <Button
+                android:id="@+id/btn_kakaologin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="@dimen/item_margin_left"
+                android:paddingTop="@dimen/item_margin_left"
+                android:text="@string/str_login_kakao"
+                android:textColor="@color/color_white"
+                android:textSize="@dimen/input_info_txt_size" />
+            <Button
+                android:id="@+id/btn_kakaounlink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="@dimen/item_margin_left"
+                android:paddingTop="@dimen/item_margin_left"
+                android:text="카카오 링크해제"
+                android:textColor="@color/color_white"
+                android:textSize="@dimen/input_info_txt_size" />
+
+            <Button
                 android:id="@+id/btn_membership"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/agreement_margin"
                 android:gravity="center"
                 android:paddingBottom="@dimen/item_margin_left"
                 android:paddingTop="@dimen/item_margin_left"
@@ -115,7 +135,6 @@
                 android:id="@+id/btn_find_id_pwd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/agreement_margin"
                 android:gravity="center"
                 android:paddingBottom="@dimen/item_margin_left"
                 android:paddingTop="@dimen/item_margin_left"
