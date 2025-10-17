@@ -1,224 +1,279 @@
 package com.whomade.kycarrots.loginout
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Patterns
-import android.widget.ArrayAdapter
-import android.widget.CheckBox
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
+import android.util.Log
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.whomade.kycarrots.data.model.EmailSendReq
-import com.whomade.kycarrots.data.model.EmailVerifyReq
-import com.whomade.kycarrots.data.model.EmailVerifyResp
-import com.whomade.kycarrots.data.model.OnboardingRequest
-import com.whomade.kycarrots.data.model.OnboardingResponse
-import com.whomade.kycarrots.databinding.ActivityOnboardingBinding
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.whomade.kycarrots.CheckLoginService
+import com.whomade.kycarrots.MainTitleBar
+import com.whomade.kycarrots.R
+import com.whomade.kycarrots.TitleBar
+import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.domain.service.AppServiceProvider
+import com.whomade.kycarrots.loginout.LoginActivity
 import kotlinx.coroutines.launch
 
 class OnboardingActivity : AppCompatActivity() {
 
-    private lateinit var b: ActivityOnboardingBinding
-    private val appService by lazy { AppServiceProvider.getService() }
+    private lateinit var etEmail: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var etName: EditText
+    private lateinit var etPhone: EditText
+    private lateinit var etBirth: EditText
+    private lateinit var rgSex: RadioGroup
+    private lateinit var btnRegister: Button
+    private lateinit var btnCheckEmail: Button
+    private lateinit var spinnerCity: MaterialAutoCompleteTextView
+    private lateinit var spinnerTown: MaterialAutoCompleteTextView
 
-    private var emailVerified = false
-    private var lastVerifiedEmail: String? = null
+    private var isEmailChecked = false
 
-    // 화면 진입 파라미터 (카카오에서 넘긴 값들)
-    private val nicknameFromKakao by lazy { intent.getStringExtra("nickname").orEmpty() }
-    private val emailFromKakao by lazy { intent.getStringExtra("email") } // null 가능
-    private val profileUrl by lazy { intent.getStringExtra("profileUrl") }
+    private var selectedCityName = ""
+    private var selectedCityValue = ""
 
-    private val roleMap = mapOf(
-        "구매자" to "ROLE_PUB",
+    private var selectedTownName = ""
+    private var selectedTownValue = ""
+
+    val roleMap = mapOf(
         "판매자" to "ROLE_SELL",
-        "도매상" to "ROLE_PROJ"
+        "센터관리" to "ROLE_PROJ",
+        "구매자" to "ROLE_PUB"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        b = ActivityOnboardingBinding.inflate(layoutInflater)
-        setContentView(b.root)
+        setContentView(R.layout.activity_onboarding)
+        CheckLoginService.mActivityList.add(this)
 
-        // 1) 기본 값 채우기
-        b.etNickname.setText(nicknameFromKakao)
-        emailFromKakao?.let {
-            b.etEmail.setText(it)
-            emailVerified = true
-            lastVerifiedEmail = it
+        findViewById<MainTitleBar>(R.id.main_title_bar).apply {
+            findViewById<ImageButton>(R.id.ib_refresh).visibility = View.GONE
+            findViewById<ImageButton>(R.id.ib_home).visibility = View.GONE
         }
-        // (원하면 Glide/Coil로 b.ivProfile 에 profileUrl 로드)
+        findViewById<TitleBar>(R.id.title_bar).setTitle(getString(R.string.str_membership))
 
-        // 2) 역할 드롭다운
-        val roleAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, roleMap.keys.toList())
-        b.ddRole.setAdapter(roleAdapter)
+        etEmail = findViewById(R.id.et_email)
+        etPassword = findViewById(R.id.et_pwd)
+        etName = findViewById(R.id.et_name)
+        etPhone = findViewById(R.id.et_phone)
+        etBirth = findViewById(R.id.et_birth)
+        rgSex = findViewById(R.id.rg_sex)
+        btnRegister = findViewById(R.id.btn_register)
+        btnCheckEmail = findViewById(R.id.btn_check_email)
+        spinnerCity = findViewById(R.id.spinner_city)
+        spinnerTown = findViewById(R.id.spinner_town)
 
-        // 3) 지역 스피너 (placeholder → 후에 코드리스트로 교체)
-        b.spAreaGroup.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("선택","서울","경기","부산"))
-        b.spAreaMid.adapter   = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("선택"))
-        b.spAreaScls.adapter  = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("선택"))
+        val roles = roleMap.keys.toList()
+        val adapter = ArrayAdapter(this, R.layout.list_txt_item, roles)
+        findViewById<MaterialAutoCompleteTextView>(R.id.dropdown_role).setAdapter(adapter)
 
-        // 이메일이 바뀌면 인증 플래그 리셋
-        b.etEmail.addTextChangedListener(simpleWatcher {
-            val cur = b.etEmail.text?.toString()?.trim().orEmpty()
-            if (cur != lastVerifiedEmail) {
-                emailVerified = false
+        val dropdown = findViewById<MaterialAutoCompleteTextView>(R.id.dropdown_role)
+        dropdown.setOnClickListener {
+            dropdown.showDropDown()
+        }
+
+        dropdown.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) dropdown.showDropDown()
+        }
+
+        loadCityList()
+
+        etEmail.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                isEmailChecked = false
             }
-            updateSubmitEnabled()
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // 4) 인증코드 보내기
-        b.btnSendCode.setOnClickListener {
-            val email = b.etEmail.text?.toString()?.trim().orEmpty()
-            if (!isEmail(email)) {
-                b.etEmail.error = "유효한 이메일을 입력하세요"
-                return@setOnClickListener
-            }
-            lifecycleScope.launch {
-                showLoading(true)
-                try {
-                    val ok = appService.sendEmailCode(EmailSendReq(email))
-                    if (ok) Toast.makeText(this@OnboardingActivity, "인증코드를 전송했습니다.", Toast.LENGTH_SHORT).show()
-                    else Toast.makeText(this@OnboardingActivity, "코드 전송 실패", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    Toast.makeText(this@OnboardingActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_SHORT).show()
-                } finally {
-                    showLoading(false)
-                }
-            }
-        }
 
-        // 5) 인증코드 확인
-        b.btnVerifyCode.setOnClickListener {
-            val email = b.etEmail.text?.toString()?.trim().orEmpty()
-            val code  = b.etCode.text?.toString()?.trim().orEmpty()
-            if (!isEmail(email) || code.isBlank()) {
-                Toast.makeText(this, "이메일과 인증코드를 입력하세요", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            lifecycleScope.launch {
-                showLoading(true)
-                try {
-                    val resp: EmailVerifyResp? = appService.verifyEmailCode(EmailVerifyReq(email, code))
-                    if (resp?.verified == true) {
-                        emailVerified = true
-                        lastVerifiedEmail = email
-                        Toast.makeText(this@OnboardingActivity, "이메일 인증 완료", Toast.LENGTH_SHORT).show()
-                    } else {
-                        emailVerified = false
-                        Toast.makeText(this@OnboardingActivity, "인증 실패", Toast.LENGTH_SHORT).show()
-                    }
-                    updateSubmitEnabled()
-                } catch (e: Exception) {
-                    Toast.makeText(this@OnboardingActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_SHORT).show()
-                } finally {
-                    showLoading(false)
-                }
-            }
-        }
 
-        // 6) 약관 링크(예시)
-        b.tvTermsLinks.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://your.domain/terms")))
-        }
-
-        // 7) 제출
-        b.btnSubmit.setOnClickListener { submit() }
-
-        // 8) 버튼 활성화 조건 연결
-        attachCommonWatchers()
-        updateSubmitEnabled()
+        btnCheckEmail.setOnClickListener { checkEmailDuplicate() }
+        btnRegister.setOnClickListener { registerUser() }
     }
 
-    private fun submit() {
-        val email = b.etEmail.text?.toString()?.trim().orEmpty()
-        val roleDisp = b.ddRole.text?.toString().orEmpty()
-        val role = roleMap[roleDisp] ?: "ROLE_PUB"
-
-        if (!isEmail(email)) {
-            b.etEmail.error = "유효한 이메일을 입력하세요"
+    private fun checkEmailDuplicate() {
+        val email = etEmail.text.toString().trim()
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showToast("유효한 이메일을 입력하세요.")
             return
         }
-        if (!emailVerified || email != lastVerifiedEmail) {
-            Toast.makeText(this, "이메일 인증이 필요합니다.", Toast.LENGTH_SHORT).show()
-            return
-        }
-        val req = OnboardingRequest(
-            nickname = b.etNickname.text!!.toString().trim(),
-            email = email, // 카카오 제공 or 사용자 입력(인증 완료)
-            role = role,
-            areaGroup = sel(b.spAreaGroup),
-            areaMid   = sel(b.spAreaMid),
-            areaScls  = sel(b.spAreaScls),
-            marketingPush = b.swMarketingPush.isChecked,
-            marketingEmail = b.swMarketingEmail.isChecked,
-            tosAgreed = b.cbTos.isChecked,
-            privacyAgreed = b.cbPrivacy.isChecked
-        )
 
+        val appService = AppServiceProvider.getService()
         lifecycleScope.launch {
-            showLoading(true)
             try {
-                val resp: OnboardingResponse? = appService.postOnboarding(req)
-                if (resp != null) {
-                    Toast.makeText(this@OnboardingActivity, "환영합니다!", Toast.LENGTH_SHORT).show()
-                    setResult(RESULT_OK, Intent().apply {
-                        putExtra("userId", resp.userId)
-                        putExtra("role", resp.role)
-                    })
-                    finish()
-                } else {
-                    Toast.makeText(this@OnboardingActivity, "저장 실패(서버 오류)", Toast.LENGTH_SHORT).show()
+                val response = appService.checkEmailDuplicate(email)
+                if (response.result) {
+                    showToast("사용 가능한 이메일입니다.")
+                    isEmailChecked = true
+                } else  {
+                    showToast("이미 사용 중인 이메일입니다.")
+                    isEmailChecked = false
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@OnboardingActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_SHORT).show()
-            } finally {
-                showLoading(false)
+                Log.e("MembershipActivity", "이메일 중복 확인 오류", e)
+                showToast("네트워크 오류 발생")
+                isEmailChecked = false
             }
         }
     }
 
-    // ===== 유틸 =====
+    private fun registerUser() {
+        val name = etName.text.toString().trim()
+        val email = etEmail.text.toString().trim()
+        val password = etPassword.text.toString().trim()
+        val phone = etPhone.text.toString().trim()
+        val birth = etBirth.text.toString().trim()
+        val genderId = rgSex.checkedRadioButtonId
+        val gender = if (genderId == R.id.rb_man) "1" else if (genderId == R.id.rb_woman) "2" else ""
 
-    private fun attachCommonWatchers() {
-        listOf<TextView>(b.etNickname, b.ddRole).forEach {
-            it.addTextChangedListener(simpleWatcher { updateSubmitEnabled() })
+        val selectedText = findViewById<MaterialAutoCompleteTextView>(R.id.dropdown_role).text.toString()
+        val selectedCode = roleMap[selectedText] ?: ""
+
+        if (name.isEmpty()) {
+            showToast("이름을 입력하세요.")
+            return
         }
-        listOf<CheckBox>(b.cbTos, b.cbPrivacy).forEach {
-            it.setOnCheckedChangeListener { _, _ -> updateSubmitEnabled() }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showToast("유효한 이메일을 입력하세요.")
+            return
+        }
+        if (!isEmailChecked) {
+            showToast("이메일 중복 확인을 해주세요.")
+            return
+        }
+        if (password.length < 4) {
+            showToast("비밀번호는 최소 4자 이상이어야 합니다.")
+            return
+        }
+        if (!birth.matches(Regex("\\d{4}-\\d{2}-\\d{2}"))) {
+            showToast("생년월일은 YYYY-MM-DD 형식으로 입력하세요.")
+            return
+        }
+        if (!phone.matches(Regex("^01[016789]-\\d{3,4}-\\d{4}$"))) {
+            showToast("유효한 전화번호를 입력하세요.")
+            return
+        }
+        if (gender.isEmpty()) {
+            showToast("성별을 선택하세요.")
+            return
+        }
+        if (selectedCityValue.isEmpty() || selectedTownValue.isEmpty()) {
+            showToast("지역을 모두 선택하세요.")
+            return
+        }
+
+        val user = OpUserVO(
+            userNm = name,
+            email = email,
+            userId = email,
+            password = password,
+            cttpc = phone,
+            gender = gender.toInt(),
+            userAge = "",
+            birthDate = birth,
+            areaCode    =selectedCityValue,
+            areaSeCodeS = selectedTownValue,
+            areaSeCodeD = "",
+            referrerId = "",
+            userSttusCode = "10",
+            memberCode = selectedCode
+        )
+
+        val appService = AppServiceProvider.getService()
+        lifecycleScope.launch {
+            try {
+                val response = appService.registerUser(user)
+                if (response.result) {
+                    showToast("회원가입 성공!")
+                    startActivity(Intent(this@OnboardingActivity, LoginActivity::class.java))
+                    finish()
+                } else {
+                    showToast("회원가입 실패")
+                }
+            } catch (e: Exception) {
+                Log.e("MembershipActivity", "회원가입 오류", e)
+                showToast("네트워크 오류 발생")
+            }
         }
     }
 
-    private fun updateSubmitEnabled() {
-        val nickOk = b.etNickname.text?.isNotBlank() == true
-        val roleOk = !b.ddRole.text.isNullOrBlank()
-        val tosOk = b.cbTos.isChecked && b.cbPrivacy.isChecked
-        val email = b.etEmail.text?.toString()?.trim().orEmpty()
-        val emailOk = isEmail(email)
-        val verifiedOk = emailVerified && (email == lastVerifiedEmail)
-        b.btnSubmit.isEnabled = nickOk && roleOk && tosOk && emailOk && verifiedOk
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun isEmail(v: String) = Patterns.EMAIL_ADDRESS.matcher(v).matches()
+    private fun loadCityList() {
+        val cityDropdown = findViewById<MaterialAutoCompleteTextView>(R.id.spinner_city)
+        val appService = AppServiceProvider.getService()
+        lifecycleScope.launch {
+            try {
+                val codeList = appService.getCodeList("R010070") // "AREA1" = 시/도 그룹 ID
+                val cityNames = codeList.map { it.strMsg}
 
-    private fun sel(spinner: Spinner): String? =
-        spinner.selectedItem?.toString()?.takeIf { it.isNotBlank() && it != "선택" }
+                val adapter = ArrayAdapter(this@OnboardingActivity, R.layout.list_txt_item, cityNames)
+                cityDropdown.setAdapter(adapter)
 
-    private fun simpleWatcher(onChange: () -> Unit) = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = onChange()
-        override fun afterTextChanged(s: Editable?) {}
+                cityDropdown.setOnClickListener {
+                    cityDropdown.showDropDown()
+                }
+
+                cityDropdown.setOnFocusChangeListener { _, hasFocus ->
+                    if (hasFocus) cityDropdown.showDropDown()
+                }
+
+                // 선택된 시/도 코드 저장 가능하도록 설정
+                cityDropdown.setOnItemClickListener { _, _, position, _ ->
+                    val selectedCityCode = codeList[position].strIdx
+                    selectedCityName = codeList[position].strMsg
+                    selectedCityValue = selectedCityCode
+                    loadTownList()
+                    Log.d("지역 선택", "선택된 지역: $selectedCityName ($selectedCityCode)")
+                }
+
+            } catch (e: Exception) {
+                Log.e("MembershipActivity", "지역 코드 조회 실패", e)
+                Toast.makeText(this@OnboardingActivity, "지역 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    /** 프로젝트에 이미 있는 showLoading(true/false)를 그대로 사용 */
-    private fun showLoading(show: Boolean) {
-        // Activity/Fragment 공통 로딩 표시 메서드가 있으면 그걸 호출하세요.
-        // 여기선 너의 패턴에 맞춰 그냥 그대로 둠.
+    private fun loadTownList() {
+        val cityTowndown = findViewById<MaterialAutoCompleteTextView>(R.id.spinner_town)
+        val appService = AppServiceProvider.getService()
+        lifecycleScope.launch {
+            try {
+                val codeList = appService.getSCodeList("R010070",selectedCityValue) // "AREA1" = 시/도 그룹 ID
+                val cityNames = codeList.map { it.strMsg}
+
+                val adapter = ArrayAdapter(this@OnboardingActivity, R.layout.list_txt_item, cityNames)
+                cityTowndown.setAdapter(adapter)
+
+                cityTowndown.setOnClickListener {
+                    cityTowndown.showDropDown()
+                }
+
+                cityTowndown.setOnFocusChangeListener { _, hasFocus ->
+                    if (hasFocus) cityTowndown.showDropDown()
+                }
+
+                // 선택된 시/도 코드 저장 가능하도록 설정
+                cityTowndown.setOnItemClickListener { _, _, position, _ ->
+                    val selectedTownCode = codeList[position].strIdx
+                    selectedTownName = codeList[position].strMsg
+                    selectedTownValue = selectedTownCode
+                    Log.d("지역 선택", "선택된 지역: $selectedTownName ($selectedTownCode)")
+                }
+
+            } catch (e: Exception) {
+                Log.e("MembershipActivity", "지역 코드 조회 실패", e)
+                Toast.makeText(this@OnboardingActivity, "지역 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
 }

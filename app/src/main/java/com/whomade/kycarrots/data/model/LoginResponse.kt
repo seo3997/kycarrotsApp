@@ -8,5 +8,6 @@ data class LoginResponse(
     val login_gu: String? = null,
     val login_sex: String? = null,
     val login_age: String? = null,
-    val login_nm: String? = null
+    val login_nm: String? = null,
+    val member_code: String? = null
 )

@@ -12,8 +12,6 @@ import com.whomade.kycarrots.data.model.EmailVerifyReq
 import com.whomade.kycarrots.data.model.EmailVerifyResp
 import com.whomade.kycarrots.data.model.StringResponse
 import com.whomade.kycarrots.data.model.InterestRequest
-import com.whomade.kycarrots.data.model.KakaoAuthRequest
-import com.whomade.kycarrots.data.model.KakaoAuthResponse
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
@@ -26,6 +24,8 @@ import com.whomade.kycarrots.data.model.PurchaseHistoryRequest
 import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResult
 import com.whomade.kycarrots.data.model.SimpleResultResponse
+import com.whomade.kycarrots.data.model.SocialAuthRequest
+import com.whomade.kycarrots.data.model.SocialAuthResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -230,8 +230,8 @@ class RemoteRepository(
         return adApi.postOnboarding(req)
     }
 
-    suspend fun authKakao(accessToken: KakaoAuthRequest) : Response<KakaoAuthResponse> {
-        return adApi.authKakao(accessToken)
+    suspend fun authSocial(accessToken: SocialAuthRequest) : Response<LoginResponse> {
+        return adApi.authSocial(accessToken)
     }
 
 }

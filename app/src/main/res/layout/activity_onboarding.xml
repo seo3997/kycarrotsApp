@@ -1,175 +1,221 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fillViewport="true"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:padding="16dp"
+    <!-- 타이틀 바 -->
+    <com.whomade.kycarrots.MainTitleBar
+        android:id="@+id/main_title_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" />
 
-        <!-- 프로필 (원하면 Coil/Glide로 로딩) -->
-        <ImageView
-            android:id="@+id/ivProfile"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center_horizontal"
-            android:contentDescription="@null"
-            android:src="@drawable/profile_circle_background"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp"/>
+    <com.whomade.kycarrots.TitleBar
+        android:id="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-        <!-- 닉네임 -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="닉네임">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etNickname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- 이메일(필수: 카카오에서 오면 자동채움, 없으면 입력) -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="이메일(필수)">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:singleLine="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- 인증 코드 발송/확인 -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSendCode"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="인증코드 보내기"
-            android:layout_marginTop="8dp"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="인증코드"
-            android:layout_marginTop="6dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:singleLine="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnVerifyCode"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="인증 확인"
-            android:layout_marginTop="6dp"/>
-
-        <!-- 역할 선택 드롭다운 -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="역할 선택"
-            android:layout_marginTop="12dp"
-            app:endIconMode="dropdown_menu">
-            <AutoCompleteTextView
-                android:id="@+id/ddRole"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- 지역 3단 (placeholder) -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="지역"
-            android:layout_marginTop="12dp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="3"
-            android:layout_marginTop="4dp">
+            android:padding="16dp"
+            android:orientation="vertical">
 
-            <Spinner
-                android:id="@+id/spAreaGroup"
-                android:layout_width="0dp"
+            <!-- 이름 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:hint="@string/str_find_email_name">
 
-            <Spinner
-                android:id="@+id/spAreaMid"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <Spinner
-                android:id="@+id/spAreaScls"
-                android:layout_width="0dp"
+            <!-- 이메일 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_marginTop="12dp"
+                android:hint="@string/str_email_en">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 이메일 중복확인 버튼 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_check_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/str_chk_overlap"
+                app:cornerRadius="12dp" />
+
+            <!-- 비밀번호 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/str_pwd">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_pwd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 비밀번호 확인 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/str_pwd_chk">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_pwd_chk"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 휴대폰 번호 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/str_mobile_en">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789-"
+                    android:text="010-0000-0000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 성별 선택 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/str_sex"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/rg_sex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rb_man"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_man" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rb_woman"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_woman"
+                    android:layout_marginStart="24dp" />
+            </RadioGroup>
+
+            <!-- 생년월일 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="생년월일"
+                app:placeholderText="YYYY-MM-DD">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_birth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789-"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 지역 선택 라벨 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="지역 선택"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- 시/도 + 구/군 Spinner 나란히 배치 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:weightSum="2">
+
+                <!-- 시/도 Spinner -->
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/spinner_city"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:hint="시/도 선택"
+                    android:inputType="none" />
+
+                <!-- 구/군 Spinner -->
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/spinner_town"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="구/군 선택"
+                    android:inputType="none" />
+            </LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="사용자구분"
+                app:boxBackgroundMode="outline">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/dropdown_role"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:minHeight="56dp"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <!-- 가입 버튼 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_register"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/str_join"
+                app:cornerRadius="12dp" />
+
         </LinearLayout>
-
-        <!-- 마케팅 수신 동의(선택) -->
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/swMarketingPush"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="마케팅 푸시 동의(선택)"
-            android:layout_marginTop="12dp"/>
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/swMarketingEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="마케팅 이메일 동의(선택)"/>
-
-        <!-- 약관 동의 -->
-        <CheckBox
-            android:id="@+id/cbTos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="(필수) 이용약관 동의"
-            android:layout_marginTop="12dp"/>
-
-        <CheckBox
-            android:id="@+id/cbPrivacy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="(필수) 개인정보처리방침 동의"/>
-
-        <TextView
-            android:id="@+id/tvTermsLinks"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="약관 보기"
-            android:layout_marginTop="4dp"
-            android:textColor="?attr/colorPrimary"/>
-
-        <!-- 완료 버튼 -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSubmit"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="완료"
-            android:enabled="false"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"/>
-
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

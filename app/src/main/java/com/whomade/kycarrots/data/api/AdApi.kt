@@ -10,8 +10,6 @@ import com.whomade.kycarrots.data.model.EmailVerifyReq
 import com.whomade.kycarrots.data.model.EmailVerifyResp
 import com.whomade.kycarrots.data.model.StringResponse
 import com.whomade.kycarrots.data.model.InterestRequest
-import com.whomade.kycarrots.data.model.KakaoAuthRequest
-import com.whomade.kycarrots.data.model.KakaoAuthResponse
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
@@ -23,6 +21,8 @@ import com.whomade.kycarrots.data.model.PurchaseHistoryRequest
 import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResult
 import com.whomade.kycarrots.data.model.SimpleResultResponse
+import com.whomade.kycarrots.data.model.SocialAuthRequest
+import com.whomade.kycarrots.data.model.SocialAuthResponse
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -213,6 +213,6 @@ interface AdApi {
     @POST("api/user/onboarding")
     suspend fun postOnboarding(@Body req: OnboardingRequest): Response<OnboardingResponse>
 
-    @POST("/auth/kakao")
-    suspend fun authKakao(@Body req: KakaoAuthRequest): Response<KakaoAuthResponse>
+    @POST("api/members/social")
+    suspend fun authSocial(@Body req: SocialAuthRequest): Response<LoginResponse>
 }

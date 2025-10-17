@@ -32,21 +32,6 @@ data class OnboardingResponse(
     val role: String
 )
 
-data class KakaoAuthRequest(
-    val accessToken: String
-)
 
-data class KakaoAuthUser(
-    val userId: Long,
-    val email: String?,
-    val nickname: String?,
-    val role: String?
-)
 
-data class KakaoAuthResponse(
-    val jwt: String?,
-    val user: KakaoAuthUser?,
-    val needOnboarding: Boolean,
-    val needEmail: Boolean,
-    val isNew: Boolean
-)
+

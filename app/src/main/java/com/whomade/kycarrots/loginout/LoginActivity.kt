@@ -14,16 +14,14 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.whomade.kycarrots.CheckLoginService
-import com.whomade.kycarrots.DashboardActivity
 import com.whomade.kycarrots.IntroActivity
-import com.whomade.kycarrots.MainActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.StaticDataInfo
 import com.whomade.kycarrots.common.Constants
-import com.whomade.kycarrots.data.model.KakaoAuthRequest
+import com.whomade.kycarrots.data.model.LoginResponse
+import com.whomade.kycarrots.data.model.SocialAuthRequest
 import com.whomade.kycarrots.membership.TermsAgreeActivity
 import com.whomade.kycarrots.domain.service.AppServiceProvider
-import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
@@ -159,48 +157,75 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     private fun fetchKakaoUserAndGo(token: OAuthToken) {
         UserApiClient.instance.me { user, error ->
             if (error != null || user == null) {
-                Toast.makeText(this,"카카오 사용자 정보 조회 실패",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "카카오 사용자 정보 조회 실패", Toast.LENGTH_SHORT).show()
                 return@me
             }
-            val nickname   = user.kakaoAccount?.profile?.nickname ?: ""
-            val email      = user.kakaoAccount?.email               // null 가능
-            val profileUrl = user.kakaoAccount?.profile?.profileImageUrl
-            val kakaoAuthRequest = KakaoAuthRequest(token.accessToken)
 
-            Toast.makeText(this,"카카오 로그인 성공: ${token}",Toast.LENGTH_SHORT).show()
+            val kakaoUserId = user.id?.toString().orEmpty()      // provider_user_id
+            val nickname    = user.kakaoAccount?.profile?.nickname.orEmpty()
+            val email       = user.kakaoAccount?.email           // null 가능
+            val profileUrl  = user.kakaoAccount?.profile?.profileImageUrl
 
-            // 1) 서버에 먼저 물어본다 (이미 가입인지/온보딩 필요한지)
-            /*
+            // 안전장치: id 없으면 온보딩으로 보냄
+            if (kakaoUserId.isBlank()) {
+                Toast.makeText(this, "카카오 ID를 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                return@me
+            }
+            Toast.makeText(this, "카카오 로그인 성공: ${token.accessToken.take(10)}...", Toast.LENGTH_SHORT).show()
+
             lifecycleScope.launch {
                 showLoading(true)
                 try {
                     val appService = AppServiceProvider.getService()
-                    val auth = appService.authKakao(kakaoAuthRequest)
 
-                    if (auth != null && !auth.needOnboarding && !auth.needEmail && !auth.jwt.isNullOrBlank()) {
-                        appService.saveJwt(auth.jwt!!)
-                        //goMain()
-                    } else {
-                        // 온보딩으로
-                        startActivity(Intent(this@LoginActivity, OnboardingActivity::class.java).apply {
-                            putExtra("nickname", nickname)
-                            // 서버가 이메일 필요하면 null 전달해서 입력/인증 플로우로 보내기
-                            putExtra("email", if (auth?.needEmail == true) null else email)
-                            putExtra("profileUrl", profileUrl)
-                        })
-                        finish()
+                    // 공용 소셜 인증 요청 (서버는 LoginResponse 반환)
+                    val req = SocialAuthRequest(
+                        provider = SocialProvider.KAKAO.name,   // "KAKAO"
+                        providerUserId = kakaoUserId,
+                        accessToken = token.accessToken,        // 카카오는 accessToken으로 검증
+                        idToken = null
+                    )
+
+                    val auth: LoginResponse? = appService.authSocial(req)
+                    // 서버 표준: code=200 성공 / 604 온보딩 필요 (token은 성공시에만 존재)
+                    when {
+                        auth == null -> {
+                            Toast.makeText(this@LoginActivity, "로그인 응답이 없습니다.", Toast.LENGTH_SHORT).show()
+                        }
+                        auth.resultCode == 200 && !auth.token.isNullOrBlank() -> {
+                            appService.saveJwt(auth.token!!)
+                            //goMain()
+                            return@launch
+                        }
+                        auth.resultCode == 604 -> {
+                            // 매핑 없음 → 온보딩 필요
+                            startActivity(Intent(this@LoginActivity, OnboardingActivity::class.java).apply {
+                                putExtra("provider", SocialProvider.KAKAO.name)
+                                putExtra("providerUserId", kakaoUserId)
+                                putExtra("nickname", nickname)
+                                // 서버 정책상 이메일 필수 → 카카오가 안 준 경우 null로 넘겨 온보딩에서 입력/인증
+                                putExtra("email", email)
+                                putExtra("profileUrl", profileUrl)
+                            })
+                            finish()
+                        }
+                        else -> {
+                            // 그 외 코드(400/500 등) 공통 처리
+                            Toast.makeText(
+                                this@LoginActivity,
+                                "로그인 실패(code=${auth.resultCode})",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
+                } catch (e: Exception) {
+                    Toast.makeText(this@LoginActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_SHORT).show()
                 } finally {
                     showLoading(false)
                 }
             }
-
-             */
         }
-
-
     }
-
     override fun onResume() {
         super.onResume()
         if (etEmail.text.toString().trim().isEmpty()) {

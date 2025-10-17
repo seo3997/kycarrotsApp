@@ -10,8 +10,6 @@ import com.whomade.kycarrots.data.model.EmailSendReq
 import com.whomade.kycarrots.data.model.EmailVerifyReq
 import com.whomade.kycarrots.data.model.EmailVerifyResp
 import com.whomade.kycarrots.data.model.InterestRequest
-import com.whomade.kycarrots.data.model.KakaoAuthRequest
-import com.whomade.kycarrots.data.model.KakaoAuthResponse
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
@@ -23,7 +21,10 @@ import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.model.PurchaseHistoryRequest
 import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
+import com.whomade.kycarrots.data.model.SocialAuthRequest
+import com.whomade.kycarrots.data.model.SocialAuthResponse
 import com.whomade.kycarrots.data.repository.RemoteRepository
+import com.whomade.kycarrots.loginout.SocialProvider
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.ResponseBody
 import java.io.File
@@ -312,8 +313,9 @@ class AppService(
         val resp = repository.postOnboarding(req)
         return if (resp.isSuccessful) resp.body() else null
     }
-    suspend fun authKakao(accessToken: KakaoAuthRequest): KakaoAuthResponse? {
-        val resp = repository.authKakao(accessToken)
+
+    suspend fun authSocial(req: SocialAuthRequest): LoginResponse? {
+        val resp = repository.authSocial(req) // 옵션 B면 authApi.authSocial("KAKAO", req)
         return if (resp.isSuccessful) resp.body() else null
     }
 
