@@ -118,8 +118,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         }
     }
     private fun startKakaoLogin() {
-        showLoading(true)
+
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            showLoading(true)
             when {
                 error != null -> {
                     // 카카오톡 취소 시 계정 로그인으로 폴백
@@ -158,6 +159,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     }
     private fun fetchKakaoUserAndGo(token: OAuthToken) {
         UserApiClient.instance.me { user, error ->
+            showLoading(true)
             if (error != null || user == null) {
                 Toast.makeText(this, "카카오 사용자 정보 조회 실패", Toast.LENGTH_SHORT).show()
                 return@me

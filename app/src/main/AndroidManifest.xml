@@ -106,6 +106,7 @@
         <activity android:name=".ui.dialog.DlgBtnActivity" />
         <activity
             android:name=".loginout.LoginActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
