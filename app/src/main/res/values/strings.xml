@@ -87,6 +87,7 @@
     <string name="str_login_kakao">KAKAO LOGIN</string>
     <string name="str_pwd_err">비밀번호를 잘못입력하셨습니다.</string>
     <string name="str_member_code_err">회원유형을 잘못 선택 하였습니다.</string>
+    <string name="str_social_code_err">SNS 회원이 아닙니다.</string>
     <string name="str_find_email_info">E-mail주소를 찾기위해 아래 항목을 입력해 주세요.</string>
     <string name="str_find_pwd_info">비밀번호를 찾기위해 아래 항목을 입력해 주세요.</string>
     <string name="str_find_email_ok">해당 정보로 가입된 E-mail 입니다.\n\n</string>

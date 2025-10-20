@@ -8,6 +8,7 @@ import com.whomade.kycarrots.StaticDataInfo
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.TokenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -15,8 +16,9 @@ class LoginInfo(
     private val context: Context,
     private val email: String,
     private val password: String,
-    private val memberCode: String,
+    private val loginCd: String,
     private val appVersion: String,
+    private val providerUserId: String,
     private val appService: AppService
 ) {
 
@@ -32,7 +34,7 @@ class LoginInfo(
             val regId = context.getSharedPreferences("SaveRegId", Context.MODE_PRIVATE)
                 .getString("setRegId", "1") ?: "1"
 
-            val response = appService.login(email, password,memberCode, regId, appVersion)
+            val response = appService.login(email, password,loginCd, regId, appVersion,providerUserId)
             if (response != null && response.resultCode == StaticDataInfo.RESULT_CODE_200) {
                 saveLoginInfo(response)
                 return@withContext StaticDataInfo.RESULT_CODE_200
@@ -48,19 +50,7 @@ class LoginInfo(
     }
 
     private fun saveLoginInfo(info: LoginResponse) {
-        context.getSharedPreferences("SaveLoginInfo", Context.MODE_PRIVATE).edit().apply {
-            putString("LogIn_ID", email)
-            putString("LogIn_PWD", password)
-            putString("LogIn_MEMBERCODE", memberCode)
-            putString("LogIn_NO", info.login_idx)
-            putString("LogIn_NM", info.login_nm)
-            putBoolean("IsLogin", true)
-            apply()
-        }
-
-        context.getSharedPreferences("TokenInfo", Context.MODE_PRIVATE).edit().apply {
-            putString("token", info.token ?: "")
-            apply()
-        }
+        LoginInfoUtil.saveLoginInfo(context,email,info.login_idx?: "", password,info.member_code?: "",info.login_nm?: "","PWD",info.login_idx?: "")
+        TokenUtil.saveToken(context,info.token ?: "")
     }
 }

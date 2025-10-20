@@ -16,6 +16,7 @@ object StaticDataInfo {
     const val RESULT_MEMBER_CODE_ERR = 603
     const val RESULT_CODE_200 = 200
     const val RESULT_NO_DATA = 604
+    const val RESULT_NO_SOCAIL_DATA = 605
     const val RESULT_CODE_ERR = 0
 
 

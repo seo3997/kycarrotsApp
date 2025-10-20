@@ -10,6 +10,7 @@ import com.whomade.kycarrots.data.model.EmailVerifyReq
 import com.whomade.kycarrots.data.model.EmailVerifyResp
 import com.whomade.kycarrots.data.model.StringResponse
 import com.whomade.kycarrots.data.model.InterestRequest
+import com.whomade.kycarrots.data.model.LinkSocialRequest
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
@@ -91,9 +92,10 @@ interface AdApi {
     suspend fun login(
         @Field("id") email: String,
         @Field("pass") password: String,
-        @Field("member_code") memberCode: String,
+        @Field("login_cd") loginCd: String,
         @Field("reg_id") regId: String,
-        @Field("appver") appVersion: String
+        @Field("appver") appVersion: String,
+        @Field("providerUserId") providerUserId: String,
     ): Response<LoginResponse>
 
     @GET("api/members/find-password")
@@ -215,4 +217,7 @@ interface AdApi {
 
     @POST("api/members/social")
     suspend fun authSocial(@Body req: SocialAuthRequest): Response<LoginResponse>
+
+    @POST("api/members/link")
+    suspend fun linkSocial(@Body req: LinkSocialRequest): Response<LoginResponse>
 }

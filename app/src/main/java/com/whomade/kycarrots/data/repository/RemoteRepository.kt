@@ -12,6 +12,7 @@ import com.whomade.kycarrots.data.model.EmailVerifyReq
 import com.whomade.kycarrots.data.model.EmailVerifyResp
 import com.whomade.kycarrots.data.model.StringResponse
 import com.whomade.kycarrots.data.model.InterestRequest
+import com.whomade.kycarrots.data.model.LinkSocialRequest
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
@@ -33,6 +34,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.Field
 import java.io.File
 
 class RemoteRepository(
@@ -111,11 +113,12 @@ class RemoteRepository(
     suspend fun login(
         email: String,
         password: String,
-        memberCode: String,
+        loginCd: String,
         regId: String,
-        appVersion: String
+        appVersion: String,
+        providerUserId: String,
     ): Response<LoginResponse> {
-        return adApi.login(email, password,memberCode, regId, appVersion)
+        return adApi.login(email, password,loginCd, regId, appVersion,providerUserId)
     }
 
     suspend fun findPassword(
@@ -230,8 +233,12 @@ class RemoteRepository(
         return adApi.postOnboarding(req)
     }
 
-    suspend fun authSocial(accessToken: SocialAuthRequest) : Response<LoginResponse> {
-        return adApi.authSocial(accessToken)
+    suspend fun authSocial(req: SocialAuthRequest) : Response<LoginResponse> {
+        return adApi.authSocial(req)
+    }
+
+    suspend fun linkSocial(req: LinkSocialRequest) : Response<LoginResponse> {
+        return adApi.linkSocial(req)
     }
 
 }

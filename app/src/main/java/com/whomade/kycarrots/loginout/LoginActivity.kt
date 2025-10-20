@@ -30,7 +30,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     private lateinit var etEmail: EditText
     private lateinit var etPwd: EditText
     private lateinit var llProgress: LinearLayout
-    private lateinit var spinner: Spinner
     private var selectedUserType: String = "1" // 기본값: 판매자
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +51,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         etPwd.onFocusChangeListener = this
 
 
+        /*
         spinner = findViewById<Spinner>(R.id.spinner_user_type)
         val userTypeList = listOf("판매자", "구매자", "센터")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, userTypeList)
@@ -72,6 +72,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+         */
     }
 
     override fun onClick(v: View?) {
@@ -117,6 +118,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         }
     }
     private fun startKakaoLogin() {
+        showLoading(true)
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             when {
                 error != null -> {
@@ -194,7 +196,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                         }
                         auth.resultCode == 200 && !auth.token.isNullOrBlank() -> {
                             appService.saveJwt(auth.token!!)
+                            showLoading(false)
                             //goMain()
+                            MainNavigation.goMain(this@LoginActivity, auth)
                             return@launch
                         }
                         auth.resultCode == 604 -> {
@@ -267,7 +271,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
 
                 lifecycleScope.launch {
                     try {
-                        val resultCode = LoginInfo(this@LoginActivity, strEmail, strPwd, strMemberCode, appVersion , appService).login()
+                        val resultCode = LoginInfo(this@LoginActivity, strEmail, strPwd, "PWD", appVersion ,"", appService).login()
                         when (resultCode) {
                             StaticDataInfo.RESULT_CODE_200 -> {
                                 /*
@@ -307,6 +311,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
 
                             StaticDataInfo.RESULT_MEMBER_CODE_ERR -> {
                                 Toast.makeText(this@LoginActivity, getString(R.string.str_member_code_err), Toast.LENGTH_SHORT).show()
+                            }
+
+                            StaticDataInfo.RESULT_NO_SOCAIL_DATA -> {
+                                Toast.makeText(this@LoginActivity, getString(R.string.str_social_code_err), Toast.LENGTH_SHORT).show()
                             }
 
                             StaticDataInfo.RESULT_PWD_ERR -> {
@@ -391,4 +399,5 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         findViewById<View>(R.id.ll_progress_circle).visibility =
             if (show) View.VISIBLE else View.GONE
     }
+
 }

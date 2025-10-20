@@ -14,6 +14,7 @@ import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.MainTitleBar
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.TitleBar
+import com.whomade.kycarrots.data.model.LinkSocialRequest
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.loginout.LoginActivity
@@ -31,6 +32,8 @@ class OnboardingActivity : AppCompatActivity() {
     private lateinit var btnCheckEmail: Button
     private lateinit var spinnerCity: MaterialAutoCompleteTextView
     private lateinit var spinnerTown: MaterialAutoCompleteTextView
+    private lateinit var tvEmailStatus: TextView
+    private lateinit var groupMore: View
 
     private var isEmailChecked = false
 
@@ -45,11 +48,14 @@ class OnboardingActivity : AppCompatActivity() {
         "센터관리" to "ROLE_PROJ",
         "구매자" to "ROLE_PUB"
     )
+    private val provider by lazy { intent.getStringExtra("provider") ?: "KAKAO" }
+    private val providerUserId by lazy { intent.getStringExtra("providerUserId").orEmpty() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
         CheckLoginService.mActivityList.add(this)
+
 
         findViewById<MainTitleBar>(R.id.main_title_bar).apply {
             findViewById<ImageButton>(R.id.ib_refresh).visibility = View.GONE
@@ -67,6 +73,10 @@ class OnboardingActivity : AppCompatActivity() {
         btnCheckEmail = findViewById(R.id.btn_check_email)
         spinnerCity = findViewById(R.id.spinner_city)
         spinnerTown = findViewById(R.id.spinner_town)
+        tvEmailStatus = findViewById(R.id.tv_email_status)
+        groupMore     = findViewById(R.id.group_more)
+        // 초기: 나머지 폼 감춤
+        groupMore.visibility = View.GONE
 
         val roles = roleMap.keys.toList()
         val adapter = ArrayAdapter(this, R.layout.list_txt_item, roles)
@@ -98,7 +108,8 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun checkEmailDuplicate() {
-        val email = etEmail.text.toString().trim()
+        val email  = etEmail.text.toString().trim()
+        var userNo =""
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             showToast("유효한 이메일을 입력하세요.")
             return
@@ -106,21 +117,88 @@ class OnboardingActivity : AppCompatActivity() {
 
         val appService = AppServiceProvider.getService()
         lifecycleScope.launch {
+            showLoading(true)
             try {
                 val response = appService.checkEmailDuplicate(email)
-                if (response.result) {
-                    showToast("사용 가능한 이메일입니다.")
+
+                userNo = response.message
+                showLoading(false)
+                if (response.result == true) {
+                    //showToast("사용 가능한 이메일입니다.")
+                    openFullOnboarding()
                     isEmailChecked = true
                 } else  {
-                    showToast("이미 사용 중인 이메일입니다.")
+                    tvEmailStatus.visibility = View.VISIBLE
+                    tvEmailStatus.text = "이미 가입된 이메일입니다. 계정 연결을 진행합니다."
+                    //showToast("이미 사용 중인 이메일입니다.")
                     isEmailChecked = false
+
+                    val body = appService.linkSocial(
+                        LinkSocialRequest(
+                            userNo = userNo,
+                            userId = email,
+                            provider = provider,
+                            providerUserId = providerUserId
+                        )
+                    )
+                    if (body == null) {
+                        showToast("연결 응답이 비어 있습니다.")
+                        return@launch
+                    }
+                    when (body.resultCode) {
+                        200 -> {
+                            // 토큰 저장 후 메인 이동
+                            /*
+                            val jwt = body.token
+                            if (!jwt.isNullOrBlank()) {
+                                appService.saveJwt(jwt)
+                                goMain()
+                                return@launch
+                            } else {
+                                showToast("토큰이 없습니다. (code=200)")
+                            }
+                             */
+                            showToast("소셜계정 링크 성공!!!")
+                            //goMain()
+                        }
+                        409 -> {
+                            // 이미 다른 유저에 매핑된 경우
+                            showToast("이미 다른 사용자에 연결된 소셜 계정입니다. (409)")
+                            // 필요 시 추가 가이드 처리
+                        }
+                        400 -> {
+                            showToast("요청이 올바르지 않습니다. (400)")
+                        }
+                        601 -> {
+                            showToast("사용자를 찾을 수 없습니다. (601)")
+                        }
+                        500 -> {
+                            showToast( "서버 오류가 발생했습니다. (500)")
+                        }
+                        else -> {
+                            showToast("연결 실패)")
+                        }
+                    }
+
+
                 }
             } catch (e: Exception) {
                 Log.e("MembershipActivity", "이메일 중복 확인 오류", e)
                 showToast("네트워크 오류 발생")
+                showLoading(false)
                 isEmailChecked = false
             }
         }
+    }
+
+    private fun openFullOnboarding() {
+        tvEmailStatus.visibility = View.VISIBLE
+        tvEmailStatus.text = "신규 가입입니다. 추가 정보를 입력해 주세요."
+        if (groupMore.visibility != View.VISIBLE) {
+            groupMore.visibility = View.VISIBLE
+        }
+        // 여기서부터는 너가 만들어둔 인증코드 발송/검증 + postOnboarding 흐름 그대로 진행
+        // (postOnboarding 성공 시 서버가 TB_USER 생성 & TB_SOCIAL_ACCOUNT insert까지 처리하도록 해두면 베스트)
     }
 
     private fun registerUser() {
@@ -274,6 +352,11 @@ class OnboardingActivity : AppCompatActivity() {
                 Toast.makeText(this@OnboardingActivity, "지역 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun showLoading(show: Boolean) {
+        findViewById<View>(R.id.ll_progress_circle).visibility =
+            if (show) View.VISIBLE else View.GONE
     }
 
 }

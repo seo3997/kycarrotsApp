@@ -11,14 +11,19 @@ object LoginInfoUtil {
     public const val KEY_PWD = "LogIn_PWD"
     public const val KEY_MEMBER_CODE = "LogIn_MEMBERCODE"
     public const val KEY_IS_LOGIN = "IsLogin"
+    public const val KEY_LOGIN_CD = "LogIn_CD"
+    public const val KEY_SOCIAL_ID = "LogIn_SOCIAL_ID"
 
-    fun saveLoginInfo(context: Context, email: String, loginNo: String, password: String, memberCode: String) {
+    fun saveLoginInfo(context: Context, email: String, loginNo: String, password: String, memberCode: String, loginNm: String, loginCd: String, loginSocialId: String) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().apply {
-            putString(KEY_NO, loginNo)
             putString(KEY_ID, email)
+            putString(KEY_NO, loginNo)
+            putString(KEY_NM, loginNm)
             putString(KEY_PWD, password)
             putString(KEY_MEMBER_CODE, memberCode)
             putBoolean(KEY_IS_LOGIN, true)
+            putString(KEY_LOGIN_CD, loginCd)
+            putString(KEY_SOCIAL_ID, loginSocialId)
             apply()
         }
     }
@@ -35,10 +40,27 @@ object LoginInfoUtil {
             .getString(KEY_NO, "") ?: ""
     }
 
+    /** 저장된 사용자 ID 가져오기 */
+    fun getUserPassword(context: Context): String {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_PWD, "") ?: ""
+    }
+
     fun getMemberCode(context: Context): String {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .getString(KEY_MEMBER_CODE, "") ?: ""
     }
+
+    fun getUserLoginCd(context: Context): String {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_LOGIN_CD, "") ?: ""
+    }
+
+    fun getUserSocialId(context: Context): String {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_SOCIAL_ID, "") ?: ""
+    }
+
 
     fun isLoggedIn(context: Context): Boolean {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

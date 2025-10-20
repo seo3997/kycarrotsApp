@@ -30,6 +30,7 @@ import com.kakao.sdk.common.util.Utility
 import com.whomade.kycarrots.chatting.ChatActivity
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.message.PushTokenUtil
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 
 
 class IntroActivity : AppCompatActivity() {
@@ -146,37 +147,61 @@ class IntroActivity : AppCompatActivity() {
     private fun autoLoginCheck() {
         mHandler.removeCallbacks(mRunnable ?: return)
 
-        val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
-        val sUID       = prefs.getString("LogIn_ID",    "").orEmpty()
-        val sPWD       = prefs.getString("LogIn_PWD",   "").orEmpty()
-        val sMEMBERCODE= prefs.getString("LogIn_MEMBERCODE", "").orEmpty()
+        val sUID            = LoginInfoUtil.getUserId(this)
+        val sPWD            = LoginInfoUtil.getUserPassword(this)
+        val sLoginCd        = LoginInfoUtil.getUserLoginCd(this)
+        val sProviderUserId = LoginInfoUtil.getUserSocialId(this)
         Log.d("FCM", "autoLoginCheck: true")
 
+        /*
         if (sMEMBERCODE == "ROLE_PROJ" && Constants.SYSTEM_TYPE.toString() == "1" ) {
             Toast.makeText(this, "직거래앱은 센터로 로그인 할수 없습니다.", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this@IntroActivity, LoginActivity::class.java))
             finish()
             return
         }
-        if (sUID.isNotBlank() && sPWD.isNotBlank() && sMEMBERCODE.isNotBlank() && mThisAppVersion.isNotEmpty()) {
+         */
+        if (sUID.isNotBlank() && sPWD.isNotBlank() && sLoginCd.isNotBlank() && mThisAppVersion.isNotEmpty()) {
             val appService = AppServiceProvider.getService()
 
             lifecycleScope.launch {
-                val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, sMEMBERCODE, mThisAppVersion, appService).login()
+                val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, sLoginCd, mThisAppVersion,sProviderUserId, appService).login()
                 if (resultCode == StaticDataInfo.RESULT_CODE_200) {
                     val regPrefs = getSharedPreferences("SaveRegId", MODE_PRIVATE)
                     val token = regPrefs.getString("setRegId", "") ?: ""
                     if (token.isNotBlank()) {
                         PushTokenUtil.sendTokenToServer(this@IntroActivity, token)
                     }
-                    nextPage(true, sMEMBERCODE)
+                    nextPage(true, LoginInfoUtil.getMemberCode(this@IntroActivity))
                 } else {
-                    nextPage(false, sMEMBERCODE)
+                    when (resultCode) {
+                        StaticDataInfo.RESULT_NO_USER,
+                        StaticDataInfo.RESULT_NO_DATA -> {
+                            Toast.makeText(this@IntroActivity, getString(R.string.str_find_email_err), Toast.LENGTH_SHORT).show()
+                        }
+
+                        StaticDataInfo.RESULT_MEMBER_CODE_ERR -> {
+                            Toast.makeText(this@IntroActivity, getString(R.string.str_member_code_err), Toast.LENGTH_SHORT).show()
+                        }
+
+                        StaticDataInfo.RESULT_NO_SOCAIL_DATA -> {
+                            Toast.makeText(this@IntroActivity, getString(R.string.str_social_code_err), Toast.LENGTH_SHORT).show()
+                        }
+
+                        StaticDataInfo.RESULT_PWD_ERR -> {
+                            Toast.makeText(this@IntroActivity, getString(R.string.str_pwd_err), Toast.LENGTH_SHORT).show()
+                        }
+
+                        else -> {
+                            Toast.makeText(this@IntroActivity, getString(R.string.str_http_error), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    nextPage(false, LoginInfoUtil.getMemberCode(this@IntroActivity))
                 }
             }
         } else {
             // sUSERTYPE 이 비어 있을 수 있지만, nextPage 에 빈 문자열이라도 넘겨서 NPE 방지
-            nextPage(false, sMEMBERCODE)
+            nextPage(false, LoginInfoUtil.getMemberCode(this@IntroActivity))
         }
     }
 

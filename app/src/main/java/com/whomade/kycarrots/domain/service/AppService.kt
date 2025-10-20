@@ -10,6 +10,7 @@ import com.whomade.kycarrots.data.model.EmailSendReq
 import com.whomade.kycarrots.data.model.EmailVerifyReq
 import com.whomade.kycarrots.data.model.EmailVerifyResp
 import com.whomade.kycarrots.data.model.InterestRequest
+import com.whomade.kycarrots.data.model.LinkSocialRequest
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
@@ -101,11 +102,12 @@ class AppService(
     suspend fun login(
         email: String,
         password: String,
-        memberCode: String,
+        loginCd: String,
         regId: String,
-        appVersion: String
+        appVersion: String,
+        providerUserId: String
     ): LoginResponse? {
-        val response = repository.login(email, password, memberCode,regId, appVersion)
+        val response = repository.login(email, password, loginCd,regId, appVersion,providerUserId)
         return if (response.isSuccessful) {
             response.body()
         } else {
@@ -322,4 +324,9 @@ class AppService(
     fun saveJwt(jwt: String) {
         // TODO: SharedPreferences / DataStore 등에 저장
     }
+    suspend fun linkSocial(req: LinkSocialRequest): LoginResponse? {
+        val resp = repository.linkSocial(req) // 옵션 B면 authApi.authSocial("KAKAO", req)
+        return if (resp.isSuccessful) resp.body() else null
+    }
+
 }

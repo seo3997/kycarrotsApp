@@ -79,15 +79,6 @@
             android:layout_marginRight="@dimen/login_margin"
             android:layout_marginTop="@dimen/agreement_margin"
             android:orientation="vertical">
-            <Spinner
-                android:id="@+id/spinner_user_type"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/login_margin_top"
-                android:background="@drawable/spinner_background"
-                android:popupBackground="@color/color_white"
-                android:gravity="center"/>
-
             <Button
                 android:id="@+id/btn_login"
                 android:layout_width="match_parent"
