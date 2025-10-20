@@ -28,5 +28,7 @@ data class OpUserVO(
     var registerNo: Int = 0,                // 등록자 번호
     var registDt: String = "",              // 등록 일시
     var updusrNo: Int = 0,                  // 수정자 번호
-    var updtDt: String = ""                 // 수정 일시
+    var updtDt: String = "",                 // 수정 일시
+    var provider: String = "",               // SNS 유형
+    var providerUserId: String = ""          // SNS ID
 )

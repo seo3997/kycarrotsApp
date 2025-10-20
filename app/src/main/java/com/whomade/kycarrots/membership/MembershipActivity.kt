@@ -17,6 +17,8 @@ import com.whomade.kycarrots.TitleBar
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.loginout.LoginActivity
+import com.whomade.kycarrots.loginout.MainNavigation
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
 
 class MembershipActivity : AppCompatActivity() {
@@ -182,17 +184,20 @@ class MembershipActivity : AppCompatActivity() {
             areaSeCodeD = "",
             referrerId = "",
             userSttusCode = "10",
-            memberCode = selectedCode
+            memberCode = selectedCode,
+            provider = "PWD"
         )
 
         val appService = AppServiceProvider.getService()
         lifecycleScope.launch {
             try {
-                val response = appService.registerUser(user)
-                if (response.result) {
+                var response = appService.registerUser(user)
+                if (response!!.resultCode == 200) {
                     showToast("회원가입 성공!")
-                    startActivity(Intent(this@MembershipActivity, LoginActivity::class.java))
-                    finish()
+                    response.login_pwd=password
+                    MainNavigation.goMain(this@MembershipActivity, response)
+                    //startActivity(Intent(this@MembershipActivity, LoginActivity::class.java))
+                    //finish()
                 } else {
                     showToast("회원가입 실패")
                 }

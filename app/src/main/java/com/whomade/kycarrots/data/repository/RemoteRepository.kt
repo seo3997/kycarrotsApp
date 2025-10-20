@@ -153,7 +153,7 @@ class RemoteRepository(
         return adApi.getChatMessages(roomId)
     }
     // 회원가입
-    suspend fun registerUser(user: OpUserVO): Response<SimpleResultResponse> {
+    suspend fun registerUser(user: OpUserVO): Response<LoginResponse> {
         return adApi.registerUser(user)
     }
 

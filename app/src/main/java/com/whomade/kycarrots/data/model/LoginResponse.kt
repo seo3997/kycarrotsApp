@@ -12,5 +12,6 @@ data class LoginResponse(
     val member_code: String? = null,
     val login_id: String? = null,
     val login_cd: String = "",
-    val login_social_id: String = ""
+    val login_social_id: String = "",
+    var login_pwd: String = ""
 )

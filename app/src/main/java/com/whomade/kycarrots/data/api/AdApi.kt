@@ -132,7 +132,7 @@ interface AdApi {
     ): Response<SimpleResultResponse>
 
     @POST("api/members/register")
-    suspend fun registerUser(@Body user: OpUserVO): Response<SimpleResultResponse>
+    suspend fun registerUser(@Body user: OpUserVO): Response<LoginResponse>
 
     @FormUrlEncoded
     @POST("api/members/userinfo")

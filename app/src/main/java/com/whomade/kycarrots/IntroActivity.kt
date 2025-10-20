@@ -161,7 +161,7 @@ class IntroActivity : AppCompatActivity() {
             return
         }
          */
-        if (sUID.isNotBlank() && sPWD.isNotBlank() && sLoginCd.isNotBlank() && mThisAppVersion.isNotEmpty()) {
+        if (sUID.isNotBlank() &&  sLoginCd.isNotBlank() && mThisAppVersion.isNotEmpty()) {
             val appService = AppServiceProvider.getService()
 
             lifecycleScope.launch {

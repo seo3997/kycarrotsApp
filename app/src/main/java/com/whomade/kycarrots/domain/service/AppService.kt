@@ -180,12 +180,12 @@ class AppService(
     }
 
     // 회원가입
-    suspend fun registerUser(user: OpUserVO): SimpleResultResponse {
+    suspend fun registerUser(user: OpUserVO): LoginResponse? {
         val response = repository.registerUser(user)
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!
         } else {
-            SimpleResultResponse(result = false, message = "서버 응답 오류")
+            null
         }
     }
 

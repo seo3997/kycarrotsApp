@@ -18,6 +18,7 @@ import com.whomade.kycarrots.data.model.LinkSocialRequest
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.loginout.LoginActivity
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
 
 class OnboardingActivity : AppCompatActivity() {
@@ -61,7 +62,7 @@ class OnboardingActivity : AppCompatActivity() {
             findViewById<ImageButton>(R.id.ib_refresh).visibility = View.GONE
             findViewById<ImageButton>(R.id.ib_home).visibility = View.GONE
         }
-        findViewById<TitleBar>(R.id.title_bar).setTitle(getString(R.string.str_membership))
+        findViewById<TitleBar>(R.id.title_bar).setTitle(getString(R.string.str_onboard))
 
         etEmail = findViewById(R.id.et_email)
         etPassword = findViewById(R.id.et_pwd)
@@ -158,6 +159,7 @@ class OnboardingActivity : AppCompatActivity() {
                                 showToast("토큰이 없습니다. (code=200)")
                             }
                              */
+                            MainNavigation.goMain(this@OnboardingActivity, body)
                             showToast("소셜계정 링크 성공!!!")
                             //goMain()
                         }
@@ -260,17 +262,20 @@ class OnboardingActivity : AppCompatActivity() {
             areaSeCodeD = "",
             referrerId = "",
             userSttusCode = "10",
-            memberCode = selectedCode
+            memberCode = selectedCode,
+            provider = provider,
+            providerUserId = providerUserId
         )
 
         val appService = AppServiceProvider.getService()
         lifecycleScope.launch {
             try {
                 val response = appService.registerUser(user)
-                if (response.result) {
+                if (response!!.resultCode == 200) {
                     showToast("회원가입 성공!")
-                    startActivity(Intent(this@OnboardingActivity, LoginActivity::class.java))
-                    finish()
+                    MainNavigation.goMain(this@OnboardingActivity, response)
+                    //startActivity(Intent(this@OnboardingActivity, LoginActivity::class.java))
+                    //finish()
                 } else {
                     showToast("회원가입 실패")
                 }

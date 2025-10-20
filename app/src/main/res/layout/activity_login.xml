@@ -135,7 +135,6 @@
                 android:paddingTop="@dimen/item_margin_left"
                 android:text="카카오 링크해제"
                 android:textColor="@color/color_white"
-                android:visibility="gone"
                 android:textSize="@dimen/input_info_txt_size" />
 
             <Button
