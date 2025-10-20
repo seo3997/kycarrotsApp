@@ -187,11 +187,12 @@ class MembershipActivity : AppCompatActivity() {
             memberCode = selectedCode,
             provider = "PWD"
         )
-
+        showLoading(true)
         val appService = AppServiceProvider.getService()
         lifecycleScope.launch {
             try {
                 var response = appService.registerUser(user)
+                showLoading(false)
                 if (response!!.resultCode == 200) {
                     showToast("회원가입 성공!")
                     response.login_pwd=password
@@ -202,6 +203,7 @@ class MembershipActivity : AppCompatActivity() {
                     showToast("회원가입 실패")
                 }
             } catch (e: Exception) {
+                showLoading(false)
                 Log.e("MembershipActivity", "회원가입 오류", e)
                 showToast("네트워크 오류 발생")
             }
@@ -250,6 +252,7 @@ class MembershipActivity : AppCompatActivity() {
     private fun loadTownList() {
         val cityTowndown = findViewById<MaterialAutoCompleteTextView>(R.id.spinner_town)
         val appService = AppServiceProvider.getService()
+        showLoading(true)
         lifecycleScope.launch {
             try {
                 val codeList = appService.getSCodeList("R010070",selectedCityValue) // "AREA1" = 시/도 그룹 ID
@@ -273,12 +276,17 @@ class MembershipActivity : AppCompatActivity() {
                     selectedTownValue = selectedTownCode
                     Log.d("지역 선택", "선택된 지역: $selectedTownName ($selectedTownCode)")
                 }
-
+                showLoading(false)
             } catch (e: Exception) {
+                showLoading(false)
                 Log.e("MembershipActivity", "지역 코드 조회 실패", e)
                 Toast.makeText(this@MembershipActivity, "지역 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    private fun showLoading(show: Boolean) {
+        findViewById<View>(R.id.ll_progress_circle).visibility =
+            if (show) View.VISIBLE else View.GONE
     }
 
 }
