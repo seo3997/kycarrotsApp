@@ -24,7 +24,7 @@ object Constants {
         }
 
 
-    const val SYSTEM_TYPE = 1  // 또는 2로 설정
+    const val SYSTEM_TYPE = 2  // 1또는 2로 설정 1:직거래,2:중간센터
 
     const val ROLE_PUB = "ROLE_PUB"
     const val ROLE_SELL = "ROLE_SELL"

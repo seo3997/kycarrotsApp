@@ -321,6 +321,9 @@
     <string name="str_setting_app_version">App 버전정보</string>
     <string name="str_phone_number">휴대폰번호</string>
     <string name="str_mobile_en">Mobile</string>
+    <string name="str_mobile_en1">Mobile1</string>
+    <string name="str_mobile_en2">Mobile2</string>
+    <string name="str_mobile_en3">Mobile3</string>
     <string name="str_setting_logout">Logout</string>
 
     <string name="str_company_introduction_msg">누구나 바로 광고 보고\n적립 받는 캐시쿡!</string>

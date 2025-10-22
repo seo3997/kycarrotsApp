@@ -10,14 +10,17 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.google.android.material.textfield.TextInputEditText
 import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.MainTitleBar
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.TitleBar
+import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.data.model.LinkSocialRequest
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.loginout.LoginActivity
+import com.whomade.kycarrots.membership.YmdDateWatcher
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
 
@@ -26,8 +29,10 @@ class OnboardingActivity : AppCompatActivity() {
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var etName: EditText
-    private lateinit var etPhone: EditText
-    private lateinit var etBirth: EditText
+    private lateinit var etPhoneFirst: MaterialAutoCompleteTextView
+    private lateinit var etPhoneMid: EditText
+    private lateinit var etPhoneLast: EditText
+    private lateinit var etBirth: TextInputEditText
     private lateinit var rgSex: RadioGroup
     private lateinit var btnRegister: Button
     private lateinit var btnCheckEmail: Button
@@ -44,11 +49,18 @@ class OnboardingActivity : AppCompatActivity() {
     private var selectedTownName = ""
     private var selectedTownValue = ""
 
-    val roleMap = mapOf(
-        "판매자" to "ROLE_SELL",
-        "센터관리" to "ROLE_PROJ",
-        "구매자" to "ROLE_PUB"
-    )
+    val roleMap = if (Constants.SYSTEM_TYPE == 1) {
+        mapOf(
+            "판매자" to "ROLE_SELL",
+            "구매자" to "ROLE_PUB"
+        )
+    } else {
+        mapOf(
+            "판매자" to "ROLE_SELL",
+            "센터관리" to "ROLE_PROJ",
+            "구매자" to "ROLE_PUB"
+        )
+    }
     private val provider by lazy { intent.getStringExtra("provider") ?: "KAKAO" }
     private val providerUserId by lazy { intent.getStringExtra("providerUserId").orEmpty() }
 
@@ -67,7 +79,6 @@ class OnboardingActivity : AppCompatActivity() {
         etEmail = findViewById(R.id.et_email)
         etPassword = findViewById(R.id.et_pwd)
         etName = findViewById(R.id.et_name)
-        etPhone = findViewById(R.id.et_phone)
         etBirth = findViewById(R.id.et_birth)
         rgSex = findViewById(R.id.rg_sex)
         btnRegister = findViewById(R.id.btn_register)
@@ -78,6 +89,13 @@ class OnboardingActivity : AppCompatActivity() {
         groupMore     = findViewById(R.id.group_more)
         // 초기: 나머지 폼 감춤
         groupMore.visibility = View.GONE
+
+        etPhoneFirst= findViewById<MaterialAutoCompleteTextView>(R.id.et_phone_first)
+        etPhoneFirst.setAdapter(ArrayAdapter.createFromResource(this, R.array.first_phone_num, android.R.layout.simple_list_item_1))
+        if (etPhoneFirst.text.isNullOrBlank()) etPhoneFirst.setText("010", false)
+        etPhoneMid = findViewById(R.id.et_phone_mid)
+        etPhoneLast = findViewById(R.id.et_phone_mid)
+
 
         val roles = roleMap.keys.toList()
         val adapter = ArrayAdapter(this, R.layout.list_txt_item, roles)
@@ -102,6 +120,7 @@ class OnboardingActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
+        etBirth.addTextChangedListener(YmdDateWatcher(etBirth))
 
 
         btnCheckEmail.setOnClickListener { checkEmailDuplicate() }
@@ -207,7 +226,7 @@ class OnboardingActivity : AppCompatActivity() {
         val name = etName.text.toString().trim()
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
-        val phone = etPhone.text.toString().trim()
+        val phone = etPhoneFirst.text.toString().trim()+"-"+ etPhoneMid.text.toString().trim()+"-"+ etPhoneLast.text.toString().trim()
         val birth = etBirth.text.toString().trim()
         val genderId = rgSex.checkedRadioButtonId
         val gender = if (genderId == R.id.rb_man) "1" else if (genderId == R.id.rb_woman) "2" else ""
@@ -314,6 +333,7 @@ class OnboardingActivity : AppCompatActivity() {
                     val selectedCityCode = codeList[position].strIdx
                     selectedCityName = codeList[position].strMsg
                     selectedCityValue = selectedCityCode
+                    resetTownSelection()
                     loadTownList()
                     Log.d("지역 선택", "선택된 지역: $selectedCityName ($selectedCityCode)")
                 }
@@ -323,6 +343,13 @@ class OnboardingActivity : AppCompatActivity() {
                 Toast.makeText(this@OnboardingActivity, "지역 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    private fun resetTownSelection() {
+        val cityTowndown = findViewById<MaterialAutoCompleteTextView>(R.id.spinner_town)
+        selectedTownName = ""
+        selectedTownValue = ""
+        cityTowndown.setText("", false)         // 표시값 비우기
+        cityTowndown.isEnabled = false          // 로딩 전 비활성화
     }
 
     private fun loadTownList() {
@@ -335,6 +362,7 @@ class OnboardingActivity : AppCompatActivity() {
 
                 val adapter = ArrayAdapter(this@OnboardingActivity, R.layout.list_txt_item, cityNames)
                 cityTowndown.setAdapter(adapter)
+                cityTowndown.isEnabled = true   // 여기서 다시 활성화!
 
                 cityTowndown.setOnClickListener {
                     cityTowndown.showDropDown()

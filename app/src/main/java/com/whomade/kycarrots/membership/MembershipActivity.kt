@@ -9,25 +9,34 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.google.android.material.textfield.TextInputEditText
 import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.MainTitleBar
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.TitleBar
+import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.loginout.LoginActivity
 import com.whomade.kycarrots.loginout.MainNavigation
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
 
 class MembershipActivity : AppCompatActivity() {
 
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var etName: EditText
-    private lateinit var etPhone: EditText
-    private lateinit var etBirth: EditText
+
+    private lateinit var etPhoneFirst: MaterialAutoCompleteTextView
+    private lateinit var etPhoneMid: EditText
+    private lateinit var etPhoneLast: EditText
+
+    private lateinit var etBirth: TextInputEditText
     private lateinit var rgSex: RadioGroup
     private lateinit var btnRegister: Button
     private lateinit var btnCheckEmail: Button
@@ -42,12 +51,18 @@ class MembershipActivity : AppCompatActivity() {
     private var selectedTownName = ""
     private var selectedTownValue = ""
 
-    val roleMap = mapOf(
-        "판매자" to "ROLE_SELL",
-        "센터관리" to "ROLE_PROJ",
-        "구매자" to "ROLE_PUB"
-    )
-
+    val roleMap = if (Constants.SYSTEM_TYPE == 1) {
+        mapOf(
+            "판매자" to "ROLE_SELL",
+            "구매자" to "ROLE_PUB"
+        )
+    } else {
+        mapOf(
+            "판매자" to "ROLE_SELL",
+            "센터관리" to "ROLE_PROJ",
+            "구매자" to "ROLE_PUB"
+        )
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_membership)
@@ -62,13 +77,18 @@ class MembershipActivity : AppCompatActivity() {
         etEmail = findViewById(R.id.et_email)
         etPassword = findViewById(R.id.et_pwd)
         etName = findViewById(R.id.et_name)
-        etPhone = findViewById(R.id.et_phone)
         etBirth = findViewById(R.id.et_birth)
         rgSex = findViewById(R.id.rg_sex)
         btnRegister = findViewById(R.id.btn_register)
         btnCheckEmail = findViewById(R.id.btn_check_email)
         spinnerCity = findViewById(R.id.spinner_city)
         spinnerTown = findViewById(R.id.spinner_town)
+
+        etPhoneFirst= findViewById<MaterialAutoCompleteTextView>(R.id.et_phone_first)
+        etPhoneFirst.setAdapter(ArrayAdapter.createFromResource(this, R.array.first_phone_num, android.R.layout.simple_list_item_1))
+        if (etPhoneFirst.text.isNullOrBlank()) etPhoneFirst.setText("010", false)
+        etPhoneMid = findViewById(R.id.et_phone_mid)
+        etPhoneLast = findViewById(R.id.et_phone_mid)
 
         val roles = roleMap.keys.toList()
         val adapter = ArrayAdapter(this, R.layout.list_txt_item, roles)
@@ -93,6 +113,8 @@ class MembershipActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
+
+        etBirth.addTextChangedListener(YmdDateWatcher(etBirth))
 
 
         btnCheckEmail.setOnClickListener { checkEmailDuplicate() }
@@ -129,7 +151,7 @@ class MembershipActivity : AppCompatActivity() {
         val name = etName.text.toString().trim()
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
-        val phone = etPhone.text.toString().trim()
+        val phone = etPhoneFirst.text.toString().trim()+"-"+ etPhoneMid.text.toString().trim()+"-"+ etPhoneLast.text.toString().trim()
         val birth = etBirth.text.toString().trim()
         val genderId = rgSex.checkedRadioButtonId
         val gender = if (genderId == R.id.rb_man) "1" else if (genderId == R.id.rb_woman) "2" else ""
@@ -238,6 +260,7 @@ class MembershipActivity : AppCompatActivity() {
                     val selectedCityCode = codeList[position].strIdx
                     selectedCityName = codeList[position].strMsg
                     selectedCityValue = selectedCityCode
+                    resetTownSelection()
                     loadTownList()
                     Log.d("지역 선택", "선택된 지역: $selectedCityName ($selectedCityCode)")
                 }
@@ -249,10 +272,17 @@ class MembershipActivity : AppCompatActivity() {
         }
     }
 
+    private fun resetTownSelection() {
+        val cityTowndown = findViewById<MaterialAutoCompleteTextView>(R.id.spinner_town)
+        selectedTownName = ""
+        selectedTownValue = ""
+        cityTowndown.setText("", false)         // 표시값 비우기
+        cityTowndown.isEnabled = false          // 로딩 전 비활성화
+    }
     private fun loadTownList() {
         val cityTowndown = findViewById<MaterialAutoCompleteTextView>(R.id.spinner_town)
         val appService = AppServiceProvider.getService()
-        showLoading(true)
+        //showLoading(true)
         lifecycleScope.launch {
             try {
                 val codeList = appService.getSCodeList("R010070",selectedCityValue) // "AREA1" = 시/도 그룹 ID
@@ -260,6 +290,7 @@ class MembershipActivity : AppCompatActivity() {
 
                 val adapter = ArrayAdapter(this@MembershipActivity, R.layout.list_txt_item, cityNames)
                 cityTowndown.setAdapter(adapter)
+                cityTowndown.isEnabled = true   // 여기서 다시 활성화!
 
                 cityTowndown.setOnClickListener {
                     cityTowndown.showDropDown()
@@ -276,9 +307,9 @@ class MembershipActivity : AppCompatActivity() {
                     selectedTownValue = selectedTownCode
                     Log.d("지역 선택", "선택된 지역: $selectedTownName ($selectedTownCode)")
                 }
-                showLoading(false)
+                //showLoading(false)
             } catch (e: Exception) {
-                showLoading(false)
+                //showLoading(false)
                 Log.e("MembershipActivity", "지역 코드 조회 실패", e)
                 Toast.makeText(this@MembershipActivity, "지역 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
             }
