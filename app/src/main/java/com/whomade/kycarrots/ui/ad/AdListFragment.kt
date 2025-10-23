@@ -172,8 +172,10 @@ class AdListFragment : Fragment() {
 
                 if (ads.isEmpty()) {
                     isLastPage = true
-                    emptyTextView.visibility = View.VISIBLE
+                    if(pageNo==1) emptyTextView.visibility = View.VISIBLE
+                    else emptyTextView.visibility = View.GONE
                 } else {
+                    emptyTextView.visibility = View.GONE
                     if (pageNo == 1) adapter.updateList(ads) else adapter.addList(ads)
                     pageNo++
                 }

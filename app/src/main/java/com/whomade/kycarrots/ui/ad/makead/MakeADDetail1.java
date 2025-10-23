@@ -404,12 +404,7 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
 
                 // 세부 항목 초기화
-                arrSubCategory.clear(); // 세부 항목 리스트 초기화
-                dropdownSubCategory.setText(""); // UI에서 선택된 값 초기화
-                dropdownSubCategory.setAdapter(null); // 어댑터 제거 (선택 사항)
-
-                categoryScls = "";
-                categorySclsNm = "";
+                resetDropdownSubCategory();
                 // 리스너에 선택된 카테고리 코드 전달
                 if (categorySelectedListener != null) {
                     categorySelectedListener.onCategorySelected(categoryMidCd);
@@ -417,6 +412,16 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             });
 
         }
+    }
+    private void resetDropdownSubCategory() {
+        arrSubCategory.clear(); // 세부 항목 리스트 초기화
+        dropdownSubCategory.setText("",false); // UI에서 선택된 값 초기화
+        dropdownSubCategory.setAdapter(null); // 어댑터 제거 (선택 사항)
+
+        categoryScls = "";
+        categorySclsNm = "";
+
+        dropdownSubCategory.setEnabled(false);
     }
 
     public void setSubCategoryList(List<TxtListDataInfo> subCodeList) {
@@ -433,6 +438,7 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, R.layout.list_txt_item, subNames);
         dropdownSubCategory.setAdapter(adapter);
+        dropdownSubCategory.setEnabled(true);
 
         dropdownSubCategory.setOnClickListener(v -> dropdownSubCategory.showDropDown());
         dropdownSubCategory.setOnFocusChangeListener((v, hasFocus) -> {
@@ -483,11 +489,7 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
                 areaMidNm = selected.getStrMsg();
 
                 // 세부 항목 초기화 (예: arrDistrictList, dropdownDistrict 등)
-                arrDistrictList.clear(); // 구/군 리스트 초기화
-                dropdownDistrict.setText(""); // 선택 항목 초기화
-                dropdownDistrict.setAdapter(null); // 어댑터 제거 (필요 시)
-                areaScls = "";
-                areaSclsNm = "";
+                resetdropdownDistrict();
 
                 if (citySelectedListener != null) {
                     citySelectedListener.onCitySelected(areaMid);
@@ -498,6 +500,18 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
             });
         }
     }
+
+    private void resetdropdownDistrict() {
+        // 세부 항목 초기화 (예: arrDistrictList, dropdownDistrict 등)
+        arrDistrictList.clear(); // 구/군 리스트 초기화
+        dropdownDistrict.setText(""); // 선택 항목 초기화
+        dropdownDistrict.setAdapter(null); // 어댑터 제거 (필요 시)
+        areaScls = "";
+        areaSclsNm = "";
+
+        dropdownDistrict.setEnabled(false);
+    }
+
     public void setDistrictList(List<TxtListDataInfo> districtList) {
         arrDistrictList = new ArrayList<>(districtList);
         bindDistrictDropdown();
@@ -513,6 +527,7 @@ public class MakeADDetail1 extends LinearLayout implements View.OnClickListener 
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, R.layout.list_txt_item, districtNames);
         dropdownDistrict.setAdapter(adapter);
+        dropdownDistrict.setEnabled(true);
 
         dropdownDistrict.setOnClickListener(v -> dropdownDistrict.showDropDown());
         dropdownDistrict.setOnFocusChangeListener((v, hasFocus) -> {
