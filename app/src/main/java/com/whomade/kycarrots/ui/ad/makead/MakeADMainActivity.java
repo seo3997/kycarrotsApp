@@ -71,6 +71,10 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
     private LinearLayout llRegiImgUnder;
     private LinearLayout llDetailInfoUnder;
 
+    // 필드 추가
+    private boolean pendingOpenChooser = false;
+    private boolean pendingChooserIsImg = false;
+    private String  pendingChooserKind = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -314,9 +318,12 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
         @Override
         public void onDetailImgClick(boolean isImg, String strKind) {
             strImgKind = strKind;
+            ensureCameraThenShowChooser(isImg, strKind);
+            /*
             mSelDlg = new DlgSelImg(MakeADMainActivity.this, isImg, false);
             mSelDlg.setonDismissListener(MakeADMainActivity.this);
             if(mSelDlg!=null && !mSelDlg.isShowing()) mSelDlg.show();
+             */
         }
     };
 
@@ -510,6 +517,19 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (pendingOpenChooser) {
+                    pendingOpenChooser = false;
+                    ensureCameraThenShowChooser(pendingChooserIsImg, pendingChooserKind);
+                } // else: 카메라 직후 실행할 다른 액션이 있으면 거기서
+            } else {
+                Toast.makeText(this, "카메라 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
         if (requestCode == REQUEST_READ_MEDIA_IMAGES) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //pickImageFromGallery();
@@ -654,6 +674,24 @@ public class MakeADMainActivity extends AppCompatActivity implements View.OnClic
 
             llDetailInfoUnder.setVisibility(View.GONE);
             llRegiImgUnder.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void ensureCameraThenShowChooser(boolean isImg, String kind) {
+        strImgKind = kind;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            mSelDlg = new DlgSelImg(this, isImg, false);
+            mSelDlg.setonDismissListener(this);
+            if (!mSelDlg.isShowing()) mSelDlg.show();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_REQUEST_CODE);
+            // 권한 허용 콜백에서 다시 열기
+            pendingOpenChooser = true;
+            pendingChooserIsImg = isImg;
+            pendingChooserKind = kind;
         }
     }
 }
