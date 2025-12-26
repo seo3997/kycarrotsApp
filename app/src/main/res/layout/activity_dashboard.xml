@@ -82,7 +82,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="승인하기"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:layout_marginTop="12dp"
                         android:backgroundTint="#5F567E"
                         android:textColor="#FFFFFF" />
