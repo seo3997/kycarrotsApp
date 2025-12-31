@@ -5,9 +5,11 @@ import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.repository.RemoteRepository
 
 object AppServiceProvider {
-    fun getService(): AppService {
+    val instance: AppService by lazy {
         val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
         val repository = RemoteRepository(adApi)
-        return AppService(repository)
+        AppService(repository)
     }
+
+    fun getService(): AppService = instance
 }
