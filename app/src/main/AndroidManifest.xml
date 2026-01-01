@@ -100,7 +100,6 @@
         <activity
             android:name=".ui.ad.makead.MakeADPreviewActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.dialog.DlgBtnActivity" />
         <activity
             android:name=".loginout.LoginActivity"
             android:screenOrientation="portrait"

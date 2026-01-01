@@ -18,8 +18,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.target.DrawableImageViewTarget
 import com.whomade.kycarrots.R
+import com.whomade.kycarrots.dialog.DlgBtnActivity
 import com.whomade.kycarrots.ui.common.ImageLoader
-import com.whomade.kycarrots.ui.dialog.DlgBtnActivity
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
