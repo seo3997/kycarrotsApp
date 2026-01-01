@@ -22,6 +22,8 @@ import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
+import com.whomade.kycarrots.ui.ad.makead.KtMakeADDetailView
+import com.whomade.kycarrots.ui.ad.makead.KtMakeADMainActivity
 import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
 import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
@@ -145,8 +147,8 @@ class DashboardActivity : BaseDrawerActivity() {
         )
 
     private fun moveToMakeAD() {
-        val intent = Intent(this, MakeADMainActivity::class.java).apply {
-            putExtra(MakeADDetail1.STR_PUT_AD_IDX, "")
+        val intent = Intent(this, KtMakeADMainActivity::class.java).apply {
+            putExtra(KtMakeADDetailView.STR_PUT_AD_IDX, "")
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         startActivity(intent)

@@ -152,6 +152,10 @@
         <activity
             android:name=".loginout.OnboardingActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.ad.makead.KtMakeADMainActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
 
         <service
             android:name=".message.MyFirebaseMessagingService"

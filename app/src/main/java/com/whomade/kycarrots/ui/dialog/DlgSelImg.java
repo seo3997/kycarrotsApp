@@ -319,4 +319,10 @@ public class DlgSelImg extends Dialog implements View.OnTouchListener {
     public void setonDismissListener(OnDismissListener listener){
         mDismiss = listener;
     }
+    // DlgSelImg.java 안에 추가
+    public Uri getImageUri() {
+        return mImageUri;
+    }
+
+
 }

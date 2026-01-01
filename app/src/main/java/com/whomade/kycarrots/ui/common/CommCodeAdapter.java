@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.whomade.kycarrots.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 공통 코드 adapter
@@ -18,10 +19,10 @@ public class CommCodeAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
     private ViewHolder vh = null;
-    private ArrayList<TxtListDataInfo> arrData = new ArrayList<TxtListDataInfo>();
+    private List<TxtListDataInfo> arrData = new ArrayList<>();
     private int mLayout;
 
-    public CommCodeAdapter(Context context, int layout, ArrayList<TxtListDataInfo> arrData){
+    public CommCodeAdapter(Context context, int layout, List<TxtListDataInfo> arrData){
         mContext = context;
         this.arrData.addAll(arrData);
         mLayout = layout;
