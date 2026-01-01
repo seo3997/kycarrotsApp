@@ -98,7 +98,7 @@ class KtMakeADMainActivity : AppCompatActivity(), View.OnClickListener, DialogIn
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.advertiser_make_ad_main_kt_activity)
+        setContentView(R.layout.advertiser_make_ad_main_activity)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -129,6 +129,32 @@ class KtMakeADMainActivity : AppCompatActivity(), View.OnClickListener, DialogIn
 
         // "이전" 버튼은 Activity에서 탭 전환 처리
         makeADImgRegi.findViewById<Button>(R.id.btn_make_ad_img_registration_pre).setOnClickListener(this)
+
+        makeADDetail.setOnCategorySelectedListener(object : KtMakeADDetailView.OnCategorySelectedListener {
+            override fun onCategorySelected(code: String) {
+                lifecycleScope.launch {
+                    try {
+                        val sub = withContext(Dispatchers.IO) { appService.getSCodeList("R010610", code) }
+                        makeADDetail.setSubCategoryList(sub)
+                    } catch (_: Throwable) {
+                        Toast.makeText(this@KtMakeADMainActivity, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        })
+
+        makeADDetail.setOnCitySelectedListener(object : KtMakeADDetailView.OnCitySelectedListener {
+            override fun onCitySelected(code: String) {
+                lifecycleScope.launch {
+                    try {
+                        val district = withContext(Dispatchers.IO) { appService.getSCodeList("R010070", code) }
+                        makeADDetail.setDistrictList(district)
+                    } catch (_: Throwable) {
+                        Toast.makeText(this@KtMakeADMainActivity, "지역 불러오기 실패", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        })
 
         bindCodes()
 
@@ -216,31 +242,6 @@ class KtMakeADMainActivity : AppCompatActivity(), View.OnClickListener, DialogIn
                 makeADDetail.setUnitList(unit)
                 makeADDetail.setCityList(city)
 
-                makeADDetail.setOnCategorySelectedListener(object : KtMakeADDetailView.OnCategorySelectedListener {
-                    override fun onCategorySelected(code: String) {
-                        lifecycleScope.launch {
-                            try {
-                                val sub = withContext(Dispatchers.IO) { appService.getSCodeList("R010610", code) }
-                                makeADDetail.setSubCategoryList(sub)
-                            } catch (_: Throwable) {
-                                Toast.makeText(this@KtMakeADMainActivity, "카테고리 불러오기 실패", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                })
-
-                makeADDetail.setOnCitySelectedListener(object : KtMakeADDetailView.OnCitySelectedListener {
-                    override fun onCitySelected(code: String) {
-                        lifecycleScope.launch {
-                            try {
-                                val district = withContext(Dispatchers.IO) { appService.getSCodeList("R010070", code) }
-                                makeADDetail.setDistrictList(district)
-                            } catch (_: Throwable) {
-                                Toast.makeText(this@KtMakeADMainActivity, "지역 불러오기 실패", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                })
             } catch (_: Throwable) {
                 Toast.makeText(this@KtMakeADMainActivity, "코드 리스트 불러오기 실패", Toast.LENGTH_SHORT).show()
             } finally {

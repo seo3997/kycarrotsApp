@@ -21,10 +21,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-/**
- * XML(advertiser_make_ad_detail.xml) 기준으로 구현한 Custom View
- * - dropdown_* 는 모두 AutoCompleteTextView (Spinner 아님)
- */
 class KtMakeADDetailView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
@@ -68,7 +64,6 @@ class KtMakeADDetailView @JvmOverloads constructor(
     private val cal = Calendar.getInstance()
     private val df = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-    // Views (XML 그대로)
     private val etName: TextInputEditText
     private val etQuantity: TextInputEditText
     private val etAmount: TextInputEditText
@@ -83,14 +78,12 @@ class KtMakeADDetailView @JvmOverloads constructor(
 
     private val btnNext: Button
 
-    // Data lists
     private var unitList: List<TxtListDataInfo> = emptyList()
     private var categoryList: List<TxtListDataInfo> = emptyList()
     private var subCategoryList: List<TxtListDataInfo> = emptyList()
     private var cityList: List<TxtListDataInfo> = emptyList()
     private var districtList: List<TxtListDataInfo> = emptyList()
 
-    // Selected (code + name)
     private var categoryCode: String = ""
     private var categoryName: String = ""
     private var subCategoryCode: String = ""
@@ -104,7 +97,7 @@ class KtMakeADDetailView @JvmOverloads constructor(
     private var unitCode: String = ""
     private var unitName: String = ""
 
-    // modify mode pending codes (리스트 로드 전에 들어올 수 있음)
+    // ✅ 수정 진입 pending
     private var pendingCategoryCode: String = ""
     private var pendingSubCategoryCode: String = ""
     private var pendingCityCode: String = ""
@@ -130,7 +123,6 @@ class KtMakeADDetailView @JvmOverloads constructor(
         btnNext = findViewById(R.id.btn_make_ad_detail_next)
         btnNext.setOnClickListener(this)
 
-        // date picker
         etDesiredShippingDate.isFocusable = false
         etDesiredShippingDate.isClickable = true
         etDesiredShippingDate.setOnClickListener { openDatePicker() }
@@ -153,41 +145,48 @@ class KtMakeADDetailView @JvmOverloads constructor(
     }
 
     // -------------------------
-    // Public setters (MainActivity에서 내려줌)
+    // Public setters
     // -------------------------
     fun setUnitList(codeList: List<TxtListDataInfo>) {
         unitList = codeList
+
         bindAutoComplete(dropdownUnit, unitList) { selected ->
             unitCode = selected.getStrIdx()
             unitName = selected.getStrMsg()
         }
-        // modify pending apply
+
         applySelectionIfPending(dropdownUnit, unitList, pendingUnitCode) {
             unitCode = it.getStrIdx()
             unitName = it.getStrMsg()
         }
+        pendingUnitCode = ""
     }
 
     fun setCategoryList(codeList: List<TxtListDataInfo>) {
         categoryList = codeList
+
         bindAutoComplete(dropdownCategory, categoryList) { selected ->
             categoryCode = selected.getStrIdx()
             categoryName = selected.getStrMsg()
 
-            // 카테고리 바뀌면 세부항목 초기화
-            resetSubCategory()
+            // 사용자가 바꾸면 sub 초기화
+            resetSubCategory(clearPending = true)
 
             categorySelectedListener?.onCategorySelected(categoryCode)
         }
+
+        // ✅ 수정 진입 자동 선택 + sub 로딩 트리거
         applySelectionIfPending(dropdownCategory, categoryList, pendingCategoryCode) {
             categoryCode = it.getStrIdx()
             categoryName = it.getStrMsg()
-            categorySelectedListener?.onCategorySelected(categoryCode)
+            categorySelectedListener?.onCategorySelected(categoryCode) // ✅ 중요
         }
+        pendingCategoryCode = ""
     }
 
     fun setSubCategoryList(subCodeList: List<TxtListDataInfo>) {
         subCategoryList = subCodeList
+
         bindAutoComplete(dropdownSubCategory, subCategoryList) { selected ->
             subCategoryCode = selected.getStrIdx()
             subCategoryName = selected.getStrMsg()
@@ -198,28 +197,34 @@ class KtMakeADDetailView @JvmOverloads constructor(
             subCategoryCode = it.getStrIdx()
             subCategoryName = it.getStrMsg()
         }
+        pendingSubCategoryCode = ""
     }
 
     fun setCityList(codeList: List<TxtListDataInfo>) {
         cityList = codeList
+
         bindAutoComplete(dropdownCity, cityList) { selected ->
             cityCode = selected.getStrIdx()
             cityName = selected.getStrMsg()
 
-            // 도시 바뀌면 시/구 초기화
-            resetDistrict()
+            // 사용자가 바꾸면 district 초기화
+            resetDistrict(clearPending = true)
 
             citySelectedListener?.onCitySelected(cityCode)
         }
+
+        // ✅ 수정 진입 자동 선택 + district 로딩 트리거
         applySelectionIfPending(dropdownCity, cityList, pendingCityCode) {
             cityCode = it.getStrIdx()
             cityName = it.getStrMsg()
-            citySelectedListener?.onCitySelected(cityCode)
+            citySelectedListener?.onCitySelected(cityCode) // ✅ 중요
         }
+        pendingCityCode = ""
     }
 
     fun setDistrictList(list: List<TxtListDataInfo>) {
         districtList = list
+
         bindAutoComplete(dropdownDistrict, districtList) { selected ->
             districtCode = selected.getStrIdx()
             districtName = selected.getStrMsg()
@@ -230,10 +235,13 @@ class KtMakeADDetailView @JvmOverloads constructor(
             districtCode = it.getStrIdx()
             districtName = it.getStrMsg()
         }
+        pendingDistrictCode = ""
     }
 
     /**
-     * 수정 모드 데이터 세팅 (리스트 로드 전/후 모두 안전)
+     * ✅ 수정 모드 데이터 세팅
+     * - 여기서 category/city listener를 “원본처럼” 강제로 호출해서
+     *   sub/district 리스트를 다시 받아오게 한다.
      */
     fun modifyData(data: KtModifyADInfo) {
         etName.setText(data.title.orEmpty())
@@ -248,29 +256,46 @@ class KtMakeADDetailView @JvmOverloads constructor(
         pendingDistrictCode = data.areaScls.orEmpty()
         pendingUnitCode = data.unitCode.orEmpty()
 
-        // 이미 리스트가 로드돼있으면 즉시 반영
-        if (categoryList.isNotEmpty()) {
-            applySelectionIfPending(dropdownCategory, categoryList, pendingCategoryCode) {
-                categoryCode = it.getStrIdx()
-                categoryName = it.getStrMsg()
-                categorySelectedListener?.onCategorySelected(categoryCode)
-            }
-        }
-        if (cityList.isNotEmpty()) {
-            applySelectionIfPending(dropdownCity, cityList, pendingCityCode) {
-                cityCode = it.getStrIdx()
-                cityName = it.getStrMsg()
-                citySelectedListener?.onCitySelected(cityCode)
-            }
-        }
+        // unit
         if (unitList.isNotEmpty()) {
             applySelectionIfPending(dropdownUnit, unitList, pendingUnitCode) {
                 unitCode = it.getStrIdx()
                 unitName = it.getStrMsg()
             }
+            pendingUnitCode = ""
         }
-        // subCategory/district 는 보통 리스너 호출 후(MainActivity에서) 리스트를 내려주므로
-        // setSubCategoryList / setDistrictList 에서 pending 값 반영됨
+
+        // category (리스트가 있으면 선택, 없으면 pending만 유지)
+        if (categoryList.isNotEmpty()) {
+            applySelectionIfPending(dropdownCategory, categoryList, pendingCategoryCode) {
+                categoryCode = it.getStrIdx()
+                categoryName = it.getStrMsg()
+            }
+            pendingCategoryCode = ""
+        } else {
+            // 리스트가 아직이면 코드만 잡아두고
+            categoryCode = pendingCategoryCode
+        }
+
+        // city
+        if (cityList.isNotEmpty()) {
+            applySelectionIfPending(dropdownCity, cityList, pendingCityCode) {
+                cityCode = it.getStrIdx()
+                cityName = it.getStrMsg()
+            }
+            pendingCityCode = ""
+        } else {
+            cityCode = pendingCityCode
+        }
+
+        // ✅✅✅ 핵심: 원본처럼 “서브 리스트 로딩” 트리거
+        if (categoryCode.isNotBlank()) {
+            categorySelectedListener?.onCategorySelected(categoryCode)
+        }
+        if (cityCode.isNotBlank()) {
+            citySelectedListener?.onCitySelected(cityCode)
+        }
+        // sub/district는 리스트가 내려오면 setSubCategoryList/setDistrictList에서 pending으로 자동선택됨
     }
 
     // -------------------------
@@ -281,32 +306,31 @@ class KtMakeADDetailView @JvmOverloads constructor(
             if (!setInfoData()) return
 
             val arr = ArrayList<String>(15).apply {
-                add(etName.text?.toString()?.trim().orEmpty())                 // 0 광고명
-                add(etQuantity.text?.toString()?.trim().orEmpty())             // 1 수량
-                add(unitCode)                                                 // 2 단위 코드
-                add(etAmount.text?.toString()?.trim().orEmpty())               // 3 금액
-                add(etDesiredShippingDate.text?.toString()?.trim().orEmpty())  // 4 출하일
-                add(etDetail.text?.toString()?.trim().orEmpty())               // 5 상세
-                add(categoryCode)                                             // 6 카테고리(mid)
-                add(subCategoryCode)                                          // 7 카테고리(scls)
-                add(cityCode)                                                 // 8 지역(mid)
-                add(districtCode)                                             // 9 지역(scls)
-                add(unitName)                                                 // 10 단위명
-                add(categoryName)                                             // 11 카테고리명(mid)
-                add(subCategoryName)                                          // 12 카테고리명(scls)
-                add(cityName)                                                 // 13 지역명(mid)
-                add(districtName)                                             // 14 지역명(scls)
+                add(etName.text?.toString()?.trim().orEmpty())                 // 0
+                add(etQuantity.text?.toString()?.trim().orEmpty())             // 1
+                add(unitCode)                                                 // 2
+                add(etAmount.text?.toString()?.trim().orEmpty())               // 3
+                add(etDesiredShippingDate.text?.toString()?.trim().orEmpty())  // 4
+                add(etDetail.text?.toString()?.trim().orEmpty())               // 5
+                add(categoryCode)                                             // 6
+                add(subCategoryCode)                                          // 7
+                add(cityCode)                                                 // 8
+                add(districtCode)                                             // 9
+                add(unitName)                                                 // 10
+                add(categoryName)                                             // 11
+                add(subCategoryName)                                          // 12
+                add(cityName)                                                 // 13
+                add(districtName)                                             // 14
             }
             mGetInfoData?.onGetInfoData(arr, categoryCode)
         }
     }
-    private fun setInfoData(): Boolean {
-        var strMsg = ""
 
+    private fun setInfoData(): Boolean {
         val strInputAmount = etAmount.text?.toString().orEmpty()
         val strInputQuantity = etQuantity.text?.toString().orEmpty()
 
-        strMsg = when {
+        val msg = when {
             etName.text?.toString().orEmpty().isBlank() ->
                 resources.getString(R.string.str_make_ad_name_err)
 
@@ -340,16 +364,16 @@ class KtMakeADDetailView @JvmOverloads constructor(
             else -> ""
         }
 
-        if (strMsg.isNotBlank()) {
+        if (msg.isNotBlank()) {
             context.startActivity(Intent(context, DlgBtnActivity::class.java).apply {
-                putExtra("BtnDlgMsg", strMsg)
+                putExtra("BtnDlgMsg", msg)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             })
             return false
         }
-
         return true
     }
+
     // -------------------------
     // Internals
     // -------------------------
@@ -373,7 +397,6 @@ class KtMakeADDetailView @JvmOverloads constructor(
     }
 
     private fun bindDropdownBehaviors() {
-        // 클릭하면 드롭다운 열리게 (Material dropdown 느낌)
         listOf(dropdownUnit, dropdownCategory, dropdownSubCategory, dropdownCity, dropdownDistrict).forEach { v ->
             v.setOnClickListener { v.showDropDown() }
             v.setOnFocusChangeListener { _, hasFocus -> if (hasFocus) v.showDropDown() }
@@ -384,7 +407,7 @@ class KtMakeADDetailView @JvmOverloads constructor(
     private fun bindAutoComplete(
         view: AutoCompleteTextView,
         list: List<TxtListDataInfo>,
-        onSelected: (TxtListDataInfo) -> Unit
+        onUserSelected: (TxtListDataInfo) -> Unit
     ) {
         val names = list.map { it.getStrMsg() }
         val adapter = ArrayAdapter(context, R.layout.list_txt_item, names)
@@ -392,59 +415,47 @@ class KtMakeADDetailView @JvmOverloads constructor(
 
         view.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             val selected = list.getOrNull(position) ?: return@OnItemClickListener
-            // 표시 텍스트는 선택된 값으로 고정
             view.setText(selected.getStrMsg(), false)
-            onSelected(selected)
+            onUserSelected(selected)
         }
     }
 
     private fun applySelectionIfPending(
-        view: AutoCompleteTextView,
+        dropdown: AutoCompleteTextView,
         list: List<TxtListDataInfo>,
-        pendingCode: String,
+        pendingCode: String?,
         onSelected: (TxtListDataInfo) -> Unit
     ) {
-        if (pendingCode.isBlank() || list.isEmpty()) return
-        val found = list.firstOrNull { it.getStrIdx() == pendingCode } ?: return
-        view.setText(found.getStrMsg(), false)
-        onSelected(found)
+        if (pendingCode.isNullOrBlank()) return
+        val matched = list.firstOrNull { it.getStrIdx() == pendingCode } ?: return
+        dropdown.setText(matched.getStrMsg(), false)
+        onSelected(matched)
     }
 
-    private fun resetSubCategory() {
+    private fun resetSubCategory(clearPending: Boolean) {
         subCategoryList = emptyList()
         subCategoryCode = ""
         subCategoryName = ""
-        pendingSubCategoryCode = ""
+        if (clearPending) pendingSubCategoryCode = ""
 
         dropdownSubCategory.setText("", false)
         dropdownSubCategory.setAdapter(null)
         disableSubCategory()
     }
 
-    private fun resetDistrict() {
+    private fun resetDistrict(clearPending: Boolean) {
         districtList = emptyList()
         districtCode = ""
         districtName = ""
-        pendingDistrictCode = ""
+        if (clearPending) pendingDistrictCode = ""
 
         dropdownDistrict.setText("", false)
         dropdownDistrict.setAdapter(null)
         disableDistrict()
     }
 
-    private fun disableSubCategory() {
-        dropdownSubCategory.isEnabled = false
-    }
-
-    private fun enableSubCategory() {
-        dropdownSubCategory.isEnabled = true
-    }
-
-    private fun disableDistrict() {
-        dropdownDistrict.isEnabled = false
-    }
-
-    private fun enableDistrict() {
-        dropdownDistrict.isEnabled = true
-    }
+    private fun disableSubCategory() { dropdownSubCategory.isEnabled = false }
+    private fun enableSubCategory() { dropdownSubCategory.isEnabled = true }
+    private fun disableDistrict() { dropdownDistrict.isEnabled = false }
+    private fun enableDistrict() { dropdownDistrict.isEnabled = true }
 }

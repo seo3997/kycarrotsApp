@@ -19,17 +19,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.common.Constants.SYSTEM_TYPE
-import com.whomade.kycarrots.common.RetrofitProvider
-import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.OpUserVO
-import com.whomade.kycarrots.data.repository.RemoteRepository
-import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
 import com.whomade.kycarrots.ui.ad.AdListFragment
-import com.whomade.kycarrots.ui.ad.Refreshable
-import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
-import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
+import com.whomade.kycarrots.ui.ad.makead.KtMakeADMainActivity
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
 import com.whomade.kycarrots.ui.dialog.BottomDto
@@ -161,7 +155,7 @@ class MainActivity : BaseDrawerActivity() {
         }
     }
     private fun moveToMakeAD() {
-        registerLauncher.launch(Intent(this, MakeADMainActivity::class.java))
+        registerLauncher.launch(Intent(this, KtMakeADMainActivity::class.java))
     }
 
     private fun showProgressBar() {

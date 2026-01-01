@@ -52,8 +52,6 @@ import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.domain.service.AppServiceProvider
-import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
-import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
@@ -61,6 +59,8 @@ import kotlinx.coroutines.launch
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.InterestRequest
 import com.whomade.kycarrots.ui.ad.ImageViewerActivity
+import com.whomade.kycarrots.ui.ad.makead.KtMakeADDetailView
+import com.whomade.kycarrots.ui.ad.makead.KtMakeADMainActivity
 import com.whomade.kycarrots.ui.dialog.SelectOption
 import com.whomade.kycarrots.ui.dialog.SelectOptionDialogFragment
 
@@ -125,8 +125,8 @@ class AdDetailActivity : AppCompatActivity() {
         val isSeller = (memberCode == Constants.ROLE_SELL)
         btnEditProduct.visibility = if (isSeller) View.VISIBLE else View.GONE
         btnEditProduct.setOnClickListener {
-            val intent = Intent(this, MakeADMainActivity::class.java)
-            intent.putExtra(MakeADDetail1.STR_PUT_AD_IDX, productIdStr) // 현재 ID 전달
+            val intent = Intent(this, KtMakeADMainActivity::class.java)
+            intent.putExtra(KtMakeADDetailView.STR_PUT_AD_IDX, productIdStr) // 현재 ID 전달
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
         }

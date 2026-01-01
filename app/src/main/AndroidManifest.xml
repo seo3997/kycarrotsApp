@@ -94,9 +94,6 @@
             android:configChanges="screenSize|smallestScreenSize|orientation"
             android:theme="@style/AppTheme.UCrop" />
         <activity
-            android:name=".ui.ad.makead.MakeADMainActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".DashboardActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

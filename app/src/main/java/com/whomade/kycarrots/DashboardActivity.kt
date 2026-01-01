@@ -24,8 +24,6 @@ import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
 import com.whomade.kycarrots.ui.ad.makead.KtMakeADDetailView
 import com.whomade.kycarrots.ui.ad.makead.KtMakeADMainActivity
-import com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
-import com.whomade.kycarrots.ui.ad.makead.MakeADMainActivity
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
 import com.whomade.kycarrots.ui.common.TokenUtil

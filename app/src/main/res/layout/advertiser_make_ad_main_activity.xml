@@ -104,14 +104,14 @@
             android:layout_below="@id/ll_make_ad_title"
             android:orientation="vertical">
 
-            <com.whomade.kycarrots.ui.ad.makead.MakeADDetail1
+            <com.whomade.kycarrots.ui.ad.makead.KtMakeADDetailView
                 android:id="@+id/make_ad_detail"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="40dp"
                 android:visibility="visible" />
 
-            <com.whomade.kycarrots.ui.ad.makead.MakeADImgRegi2
+            <com.whomade.kycarrots.ui.ad.makead.KtMakeADImgRegiView
                 android:id="@+id/make_ad_img_regi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
