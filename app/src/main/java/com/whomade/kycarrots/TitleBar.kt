@@ -1,4 +1,4 @@
-package com.whomade.kycarrots.ui.common
+package com.whomade.kycarrots
 
 import android.app.Activity
 import android.content.Context
@@ -6,14 +6,11 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.whomade.kycarrots.R
 
-class KtTitleBar @JvmOverloads constructor(
+class TitleBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -36,6 +33,9 @@ class KtTitleBar @JvmOverloads constructor(
 
         // 기본: 뒤로가기
         llBack.setOnClickListener {
+            (context as? Activity)?.onBackPressed()
+        }
+        btnBack.setOnClickListener {
             (context as? Activity)?.onBackPressed()
         }
     }

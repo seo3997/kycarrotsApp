@@ -1,6 +1,5 @@
 package com.whomade.kycarrots.loginout
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,9 +18,7 @@ import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.data.model.LinkSocialRequest
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.domain.service.AppServiceProvider
-import com.whomade.kycarrots.loginout.LoginActivity
 import com.whomade.kycarrots.membership.YmdDateWatcher
-import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
 
 class OnboardingActivity : AppCompatActivity() {

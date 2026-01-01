@@ -1,6 +1,5 @@
 package com.whomade.kycarrots.membership
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,7 +8,6 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.whomade.kycarrots.CheckLoginService
@@ -19,12 +17,8 @@ import com.whomade.kycarrots.TitleBar
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.domain.service.AppServiceProvider
-import com.whomade.kycarrots.loginout.LoginActivity
 import com.whomade.kycarrots.loginout.MainNavigation
-import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.ZoneId
 
 class MembershipActivity : AppCompatActivity() {
 

@@ -17,7 +17,6 @@ import com.whomade.kycarrots.MainTitleBar
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.TitleBar
 
-
 class FindEmailPwdActivity : FragmentActivity(), View.OnClickListener {
 
     private lateinit var txtFindEmail: TextView

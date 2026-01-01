@@ -11,7 +11,7 @@ import android.widget.LinearLayout
 /**
  * 최상단 title bar (MainTitleBar Kotlin 버전)
  */
-class KtMainTitleBar @JvmOverloads constructor(
+class MainTitleBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
