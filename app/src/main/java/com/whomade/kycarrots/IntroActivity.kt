@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat
 import android.Manifest
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.messaging.FirebaseMessaging
-import com.whomade.kycarrots.dialog.DlgBtnActivity
+import com.whomade.kycarrots.ui.dialog.DlgBtnActivity
 import com.whomade.kycarrots.loginout.LoginActivity
 import com.whomade.kycarrots.loginout.LoginInfo
 import com.whomade.kycarrots.network.NetworkCheck

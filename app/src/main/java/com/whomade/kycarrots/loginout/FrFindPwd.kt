@@ -12,7 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.StaticDataInfo
 import com.whomade.kycarrots.common.FindPassword
-import com.whomade.kycarrots.dialog.DlgBtnActivity
+import com.whomade.kycarrots.ui.dialog.DlgBtnActivity
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern

@@ -15,7 +15,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.whomade.kycarrots.R
-import com.whomade.kycarrots.dialog.DlgBtnActivity
+import com.whomade.kycarrots.ui.dialog.DlgBtnActivity
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import java.text.SimpleDateFormat
 import java.util.Calendar

@@ -15,7 +15,7 @@ import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.whomade.kycarrots.R
-import com.whomade.kycarrots.dialog.RadioListAdapter
+import com.whomade.kycarrots.ui.dialog.RadioListAdapter
 import com.whomade.kycarrots.loginout.AuthManager
 
 class FrSetting : Fragment() {

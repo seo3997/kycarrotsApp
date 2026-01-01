@@ -1,10 +1,12 @@
-package com.whomade.kycarrots.dialog
+package com.whomade.kycarrots.ui.dialog
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.BaseAdapter
+import android.widget.RadioButton
+import android.widget.TextView
 import com.whomade.kycarrots.R
 
 class RadioListAdapter(

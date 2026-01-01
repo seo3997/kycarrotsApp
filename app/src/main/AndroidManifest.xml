@@ -114,7 +114,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".dialog.DlgBtnActivity"
+            android:name=".ui.dialog.DlgBtnActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog" />
         <activity
@@ -124,7 +124,7 @@
             android:name=".membership.TermsAgreeActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".dialog.DlgFirstPhoneNumActivity"
+            android:name=".ui.dialog.DlgFirstPhoneNumActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".setting.SettingActivity"

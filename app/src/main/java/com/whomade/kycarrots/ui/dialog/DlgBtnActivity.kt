@@ -1,4 +1,4 @@
-package com.whomade.kycarrots.dialog
+package com.whomade.kycarrots.ui.dialog
 
 import android.app.Activity
 import android.content.Intent
@@ -15,7 +15,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.R
-
 
 class DlgBtnActivity : Activity(), View.OnTouchListener {
 
@@ -35,7 +34,7 @@ class DlgBtnActivity : Activity(), View.OnTouchListener {
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setContentView(R.layout.dlg_btn_layout)
 
-        CheckLoginService.mActivityList.add(this)
+        CheckLoginService.Companion.mActivityList.add(this)
 
         // 다이얼로그 전체화면 설정
         val params = window.attributes

@@ -22,7 +22,7 @@ import com.whomade.kycarrots.MainTitleBar
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.TitleBar
 import com.whomade.kycarrots.common.Constants
-import com.whomade.kycarrots.dialog.DlgBtnActivity
+import com.whomade.kycarrots.ui.dialog.DlgBtnActivity
 
 class TermsAgreeActivity : Activity(), View.OnClickListener {
 

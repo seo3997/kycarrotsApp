@@ -1,4 +1,4 @@
-package com.whomade.kycarrots.dialog
+package com.whomade.kycarrots.ui.dialog
 
 import android.app.Activity
 import android.content.Intent
@@ -8,7 +8,9 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.Window
 import android.view.WindowManager
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import android.widget.TextView
 import com.whomade.kycarrots.CheckLoginService
 import com.whomade.kycarrots.R
 
@@ -30,7 +32,7 @@ class DlgFirstPhoneNumActivity : Activity() {
         window.attributes = params
 
         setContentView(R.layout.dlg_txt_list)
-        CheckLoginService.mActivityList.add(this)
+        CheckLoginService.Companion.mActivityList.add(this)
 
         findViewById<TextView>(R.id.txt_dlg_title).text = getString(R.string.str_phone_number)
 
