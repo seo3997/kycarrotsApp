@@ -1,5 +1,6 @@
 package com.whomade.kycarrots.domain.service
 
+import android.util.Log
 import com.google.android.gms.common.api.Response
 import com.whomade.kycarrots.data.model.AdItem
 import com.whomade.kycarrots.data.model.AdListRequest
@@ -55,7 +56,8 @@ class AppService(
         images: List<File>
     ): Boolean {
         val response = repository.registerAdvertise(product, imageMetas, images)
-        return response.isSuccessful
+        if (!response.isSuccessful) return false
+        return response.body()?.result == true
     }
 
     suspend fun updateAdvertise(
@@ -64,7 +66,8 @@ class AppService(
         images: List<File>
     ): Boolean {
         val response = repository.updateAdvertise(product, imageMetas, images)
-        return response.isSuccessful
+        if (!response.isSuccessful) return false
+        return response.body()?.result == true
     }
 
     // 코드 리스트 조회
@@ -208,8 +211,23 @@ class AppService(
     }
 
     suspend fun registerPushToken(pushTokenVo: PushTokenVo): Boolean {
-        val response = repository.registerPushToken(pushTokenVo)
-        return response.isSuccessful
+        return try {
+            val response = repository.registerPushToken(pushTokenVo)
+
+            if (!response.isSuccessful) {
+                false
+            } else {
+                response.body()?.let {
+                    if (!it.result) {
+                        Log.e("PushToken", "save fail: ${it.message}")
+                    }
+                    it.result
+                } ?: false
+            }
+        } catch (e: Exception) {
+            Log.e("PushToken", "error", e)
+            false
+        }
     }
 
     suspend fun updateProductStatus(token: String, product: ProductItem): Boolean {

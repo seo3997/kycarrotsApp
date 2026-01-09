@@ -53,7 +53,7 @@ class RemoteRepository(
         product: ProductVo,
         imageMetas: List<ProductImageVo>,
         images: List<File>
-    ): Response<ResponseBody> {
+    ): Response<SimpleResultResponse> {
         val gson = Gson()
 
         // 1. JSON 문자열 → RequestBody로 변환
@@ -77,7 +77,7 @@ class RemoteRepository(
         product: ProductVo,
         imageMetas: List<ProductImageVo>,
         images: List<File>
-    ): Response<ResponseBody> {
+    ): Response<SimpleResultResponse> {
         val gson = Gson()
 
         val productJson = gson.toJson(product)
@@ -174,7 +174,7 @@ class RemoteRepository(
         return adApi.getRecentProducts(token)
     }
 
-    suspend fun registerPushToken(pushTokenVo: PushTokenVo): Response<Void> {
+    suspend fun registerPushToken(pushTokenVo: PushTokenVo): Response<SimpleResult> {
         return adApi.registerPushToken(pushTokenVo)
     }
 

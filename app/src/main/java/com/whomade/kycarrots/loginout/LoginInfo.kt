@@ -31,9 +31,7 @@ class LoginInfo(
                 context.startService(intent)
             }
 
-            val regId = context.getSharedPreferences("SaveRegId", Context.MODE_PRIVATE)
-                .getString("setRegId", "1") ?: "1"
-
+            val regId = ""
             val response = appService.login(email, password,loginCd, regId, appVersion,providerUserId)
             if (response != null && response.resultCode == StaticDataInfo.RESULT_CODE_200) {
                 saveLoginInfo(response)

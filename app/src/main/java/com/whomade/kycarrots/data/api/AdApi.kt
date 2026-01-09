@@ -68,7 +68,7 @@ interface AdApi {
         @Part("product") product: RequestBody,
         @Part("imageMetas") imageMetas: RequestBody,
         @Part images: List<MultipartBody.Part>
-    ): Response<ResponseBody>
+    ): Response<SimpleResultResponse>
 
     @Multipart
     @POST("api/product/update")
@@ -76,7 +76,7 @@ interface AdApi {
         @Part("product") product: RequestBody,
         @Part("imageMetas") imageMetas: RequestBody,
         @Part images: List<MultipartBody.Part>
-    ): Response<ResponseBody>
+    ): Response<SimpleResultResponse>
 
     @GET("api/product/detail/{productId}")
     suspend fun getProductDetail(@Path("productId") productId: Long,
@@ -153,7 +153,7 @@ interface AdApi {
     @POST("api/members/push/savetoken")
     suspend fun registerPushToken(
         @Body request: PushTokenVo
-    ): Response<Void>
+    ): Response<SimpleResult>
 
     @POST("api/product/status/update")
     suspend fun updateProductStatus(

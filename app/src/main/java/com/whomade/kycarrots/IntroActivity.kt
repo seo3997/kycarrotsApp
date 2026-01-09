@@ -119,30 +119,19 @@ class IntroActivity : AppCompatActivity() {
                 isVersionMatch = false
             }
 
-            checkMarketVersion()
+            runAutoLoginCheck()
         }
 
         checkAndRequestNotificationPermission()
     }
 
-    private fun checkMarketVersion() {
-        checkRegId()
-    }
-
-    private fun checkRegId() {
-        val prefs = getSharedPreferences("SaveRegId", MODE_PRIVATE)
-        val regId = prefs.getString("setRegId", "")
-        Log.d("FCM", "checkRegId r**************egId: $regId")  // <- 로그로 출력!
-
-        if (regId.isNullOrEmpty() || !isVersionMatch) {
-            registerToken()
-        } else {
-            mRunnable = Runnable {
-                autoLoginCheck()
-            }
-            mHandler.postDelayed(mRunnable!!, 1000)
+    private fun runAutoLoginCheck() {
+        mRunnable = Runnable {
+            autoLoginCheck()
         }
+        mHandler.postDelayed(mRunnable!!, 1000)
     }
+
 
     private fun autoLoginCheck() {
         mHandler.removeCallbacks(mRunnable ?: return)
@@ -167,11 +156,7 @@ class IntroActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 val resultCode = LoginInfo(this@IntroActivity, sUID, sPWD, sLoginCd, mThisAppVersion,sProviderUserId, appService).login()
                 if (resultCode == StaticDataInfo.RESULT_CODE_200) {
-                    val regPrefs = getSharedPreferences("SaveRegId", MODE_PRIVATE)
-                    val token = regPrefs.getString("setRegId", "") ?: ""
-                    if (token.isNotBlank()) {
-                        PushTokenUtil.sendTokenToServer(this@IntroActivity, token)
-                    }
+                    PushTokenUtil.ensureTokenRegistered(this@IntroActivity)
                     nextPage(true, LoginInfoUtil.getMemberCode(this@IntroActivity))
                 } else {
                     when (resultCode) {
@@ -322,27 +307,6 @@ class IntroActivity : AppCompatActivity() {
         }, 1000)
     }
 
-    private fun registerToken() {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val token = task.result
-                Log.d("FCM", "토큰: $token")  // <- 로그로 출력!
-                // 1. 토큰을 서버로 전송 (원한다면)
-                // 2. 로컬에 저장
-                //PushTokenUtil.sendTokenToServer(this, token)
-                val prefs = getSharedPreferences("SaveRegId", MODE_PRIVATE)
-                prefs.edit().putString("setRegId", token).apply()
-                // 3. 자동 로그인 체크
-                mRunnable = Runnable {
-                    autoLoginCheck()
-                }
-                mHandler.postDelayed(mRunnable!!, 1000)
-            } else {
-                // 토큰 발급 실패 시 재시도 또는 에러 처리
-                // 예: 다시 registerToken() 호출 (주의: 무한루프 주의)
-            }
-        }
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
