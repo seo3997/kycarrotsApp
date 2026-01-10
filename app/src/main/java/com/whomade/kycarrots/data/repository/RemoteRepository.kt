@@ -178,7 +178,7 @@ class RemoteRepository(
         return adApi.registerPushToken(pushTokenVo)
     }
 
-    suspend fun updateProductStatus(token: String, product: ProductItem): Response<ResponseBody> {
+    suspend fun updateProductStatus(token: String, product: ProductItem): Response<SimpleResultResponse> {
         return adApi.updateProductStatus(token, product)
     }
     suspend fun toggleInterest(req: InterestRequest): Response<Boolean> {

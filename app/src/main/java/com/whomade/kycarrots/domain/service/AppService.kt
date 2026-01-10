@@ -231,10 +231,18 @@ class AppService(
     }
 
     suspend fun updateProductStatus(token: String, product: ProductItem): Boolean {
-        val response = repository.updateProductStatus(token, product)
-        return response.isSuccessful
-    }
+        return try {
+            val response = repository.updateProductStatus(token, product)
 
+            if (!response.isSuccessful) {
+                false
+            } else {
+                response.body()?.result ?: false
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
     suspend fun toggleInterest(req: InterestRequest): Boolean {
         val response = repository.toggleInterest(req)
         return response.isSuccessful

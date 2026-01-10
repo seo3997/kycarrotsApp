@@ -159,7 +159,7 @@ interface AdApi {
     suspend fun updateProductStatus(
         @Query("token") token: String,
         @Body product: ProductItem
-    ): Response<ResponseBody>
+    ): Response<SimpleResultResponse>
 
     @POST("api/interests/toggle")
     suspend fun toggle(@Body req: InterestRequest): Response<Boolean>
