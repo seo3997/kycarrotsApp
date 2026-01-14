@@ -31,6 +31,7 @@ import com.whomade.kycarrots.chatting.ChatActivity
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.message.PushTokenUtil
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.printKakaoKeyHash
 
 
 class IntroActivity : AppCompatActivity() {
@@ -86,7 +87,7 @@ class IntroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_intro)
-
+        //printKakaoKeyHash()
         val keyHash = Utility.getKeyHash(this)   // this = Activity/Context
         Log.d("KAKAO", "keyHash=$keyHash")
 

@@ -119,33 +119,47 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     }
     private fun startKakaoLogin() {
 
+        val available = UserApiClient.instance.isKakaoTalkLoginAvailable(this)
+        Log.d("KAKAO", "isKakaoTalkLoginAvailable=$available")
+
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-            showLoading(true)
+            Log.d(
+                "KAKAO",
+                "callback token=${token != null}, " +
+                        "errorClass=${error?.javaClass?.simpleName}, " +
+                        "errorMsg=${error?.message}"
+            )
+
+            val clientError = error as? ClientError
+            Log.d("KAKAO", "ClientError reason=${clientError?.reason}")
+
+            showLoading(false)
+
             when {
                 error != null -> {
-                    // 카카오톡 취소 시 계정 로그인으로 폴백
-                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                        // 사용자가 취소한 경우
-                        Toast.makeText(this,"로그인이 취소되었습니다.",Toast.LENGTH_SHORT).show()
-
+                    if (clientError?.reason == ClientErrorCause.Cancelled) {
+                        Toast.makeText(this, "로그인이 취소되었습니다.", Toast.LENGTH_SHORT).show()
                     } else {
-                        // 기타 에러면 계정 로그인으로 폴백
+                        Log.e("KAKAO", "loginWithKakaoTalk FAILED → fallback to account login")
                         loginWithKakaoAccount()
                     }
                 }
                 token != null -> {
-                    // 로그인 성공 → 사용자 정보 조회
+                    Log.d("KAKAO", "loginWithKakaoTalk SUCCESS")
                     fetchKakaoUserAndGo(token)
                 }
             }
         }
 
-        if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+        if (available) {
+            Log.d("KAKAO", "try loginWithKakaoTalk")
             UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
         } else {
+            Log.d("KAKAO", "loginWithKakaoAccount (not available)")
             loginWithKakaoAccount()
         }
     }
+
     private fun loginWithKakaoAccount() {
         UserApiClient.instance.loginWithKakaoAccount(this) { token, error ->
             if (error != null) {

@@ -161,5 +161,7 @@
             </intent-filter>
         </service>
     </application>
-
+    <queries>
+        <package android:name="com.kakao.talk" />
+    </queries>
 </manifest>
