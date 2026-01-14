@@ -1,9 +1,12 @@
 package com.whomade.kycarrots.ui.buy
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -15,10 +18,15 @@ import androidx.lifecycle.lifecycleScope
 import com.whomade.kycarrots.BaseDrawerActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
+import com.whomade.kycarrots.ui.common.NotificationPermissionUtil
 
 class ItemSelectionActivity : BaseDrawerActivity() {
 
     private var badge: BadgeDrawable? = null
+    private val notiPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            Log.d("NOTI", "POST_NOTIFICATIONS granted=$granted")
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +85,10 @@ class ItemSelectionActivity : BaseDrawerActivity() {
     override fun onResume() {
         super.onResume()
         NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
+        if (NotificationPermissionUtil.shouldRequest(this)) {
+            notiPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

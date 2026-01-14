@@ -122,7 +122,6 @@ class IntroActivity : AppCompatActivity() {
             runAutoLoginCheck()
         }
 
-        checkAndRequestNotificationPermission()
     }
 
     private fun runAutoLoginCheck() {
@@ -322,23 +321,5 @@ class IntroActivity : AppCompatActivity() {
         mLoadingAnimation.stop()
     }
 
-    private fun checkAndRequestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            when {
-                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                        == PackageManager.PERMISSION_GRANTED -> {
-                    // 이미 권한 허용됨
-                }
-                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                    // 사용자가 이전에 권한을 거부한 경우 설명 필요
-                    // Dialog 등으로 설명 후 다시 요청 가능
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-                else -> {
-                    // 권한 요청
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            }
-        }
-    }
+
 }

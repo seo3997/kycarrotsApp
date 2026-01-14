@@ -1,7 +1,9 @@
 package com.whomade.kycarrots
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -9,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +29,7 @@ import com.whomade.kycarrots.ui.ad.makead.KtMakeADDetailView
 import com.whomade.kycarrots.ui.ad.makead.KtMakeADMainActivity
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
+import com.whomade.kycarrots.ui.common.NotificationPermissionUtil
 import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.dialog.BottomDto
 import com.whomade.kycarrots.ui.dialog.BottomDtoPickerSheet
@@ -36,6 +40,11 @@ class DashboardActivity : BaseDrawerActivity() {
     private val repository = RemoteRepository(adApi)
     private val appService = AppService(repository)
     private var badge: BadgeDrawable? = null
+
+    private val notiPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            Log.d("NOTI", "POST_NOTIFICATIONS granted=$granted")
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -280,6 +289,10 @@ class DashboardActivity : BaseDrawerActivity() {
         initDashboard()
         // 돌아왔을 때 뱃지 다시 갱신
         NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
+         if (NotificationPermissionUtil.shouldRequest(this)) {
+            notiPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
