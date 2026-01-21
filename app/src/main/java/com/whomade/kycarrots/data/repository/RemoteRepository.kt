@@ -27,6 +27,7 @@ import com.whomade.kycarrots.data.model.SimpleResult
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.data.model.SocialAuthRequest
 import com.whomade.kycarrots.data.model.SocialAuthResponse
+import com.whomade.kycarrots.data.model.UnlinkSocialRequest
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -241,4 +242,7 @@ class RemoteRepository(
         return adApi.linkSocial(req)
     }
 
+    suspend fun unlinkSocial(req: UnlinkSocialRequest): Response<SimpleResultResponse> {
+        return adApi.unlinkSocial(req)
+    }
 }

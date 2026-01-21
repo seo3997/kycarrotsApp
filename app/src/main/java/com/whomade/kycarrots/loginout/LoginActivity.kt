@@ -20,9 +20,13 @@ import com.whomade.kycarrots.StaticDataInfo
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.SocialAuthRequest
+import com.whomade.kycarrots.data.model.UnlinkSocialRequest
 import com.whomade.kycarrots.membership.TermsAgreeActivity
 import com.whomade.kycarrots.domain.service.AppServiceProvider
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusChangeListener {
@@ -98,13 +102,15 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                 null
             }
             R.id.btn_kakaounlink -> {
-                UserApiClient.instance.unlink { error ->
-                    if (error != null) Log.e("KAKAO", "unlink 실패", error)
-                    else {
-                        // 옵션: 카카오 로그아웃도
-                        UserApiClient.instance.logout { /* ignore */ }
-                        Toast.makeText(this, "카카오 연결 해제 완료. 다음 로그인 시 재동의 필요", Toast.LENGTH_SHORT).show()
+                UserApiClient.instance.me { user, error ->
+                    if (error != null || user == null) {
+                        Log.e("KAKAO", "me() 실패", error)
+                        Toast.makeText(this, "카카오 사용자 정보 조회 실패", Toast.LENGTH_SHORT).show()
+                        return@me
                     }
+
+                    val providerUserId = user.id.toString()
+                    unlinkKakaoAndServer(providerUserId)
                 }
                 null
             }
@@ -115,6 +121,66 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         intent?.let {
             it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(it)
+        }
+    }
+    private fun unlinkKakaoAndServer(providerUserId: String) {
+
+        if (providerUserId.isNullOrBlank()) {
+            Toast.makeText(this, "소셜 사용자 ID가 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // 1) 카카오 SDK unlink
+        UserApiClient.instance.unlink { error ->
+            if (error != null) {
+                Log.e("KAKAO", "unlink 실패", error)
+                runOnUiThread {
+                    Toast.makeText(this, "카카오 연결 해제 실패", Toast.LENGTH_SHORT).show()
+                }
+                return@unlink
+            }
+
+            // 2) (옵션) 카카오 로그아웃
+            UserApiClient.instance.logout { /* ignore */ }
+
+            // 3) 서버 tb_social_account 삭제
+            lifecycleScope.launch {
+                try {
+                    val appService = AppServiceProvider.getService()
+                    val res = appService.unlinkSocial(
+                        UnlinkSocialRequest(
+                            provider = "KAKAO",
+                            providerUserId = providerUserId
+                        )
+                    )
+
+                    withContext(Dispatchers.Main) {
+                        if (res?.result == true) {
+                            Toast.makeText(
+                                this@LoginActivity,
+                                "카카오 연결 해제 완료 (서버 링크 삭제)",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this@LoginActivity,
+                                "카카오 연결 해제는 되었으나 서버 링크 삭제 실패: ${res?.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("KAKAO", "server unlink error", e)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "서버 unlink 오류 발생",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
         }
     }
     private fun startKakaoLogin() {

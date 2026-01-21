@@ -24,6 +24,7 @@ import com.whomade.kycarrots.data.model.SimpleResult
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.data.model.SocialAuthRequest
 import com.whomade.kycarrots.data.model.SocialAuthResponse
+import com.whomade.kycarrots.data.model.UnlinkSocialRequest
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -220,4 +221,9 @@ interface AdApi {
 
     @POST("api/members/link")
     suspend fun linkSocial(@Body req: LinkSocialRequest): Response<LoginResponse>
+
+    @POST("api/members/unlink")
+    suspend fun unlinkSocial(
+        @Body req: UnlinkSocialRequest
+    ): Response<SimpleResultResponse>
 }

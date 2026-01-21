@@ -25,6 +25,7 @@ import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.data.model.SocialAuthRequest
 import com.whomade.kycarrots.data.model.SocialAuthResponse
+import com.whomade.kycarrots.data.model.UnlinkSocialRequest
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.loginout.SocialProvider
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
@@ -352,6 +353,11 @@ class AppService(
     }
     suspend fun linkSocial(req: LinkSocialRequest): LoginResponse? {
         val resp = repository.linkSocial(req) // 옵션 B면 authApi.authSocial("KAKAO", req)
+        return if (resp.isSuccessful) resp.body() else null
+    }
+    // AppService.kt
+    suspend fun unlinkSocial(req: UnlinkSocialRequest): SimpleResultResponse? {
+        val resp = repository.unlinkSocial(req)
         return if (resp.isSuccessful) resp.body() else null
     }
 
