@@ -321,6 +321,19 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_discuss"
         app:backgroundTint="?attr/colorSecondary" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_buy"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom"
+        android:insetBottom="0dp"
+        android:insetTop="0dp"
+        android:text="구매하기"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="0dp"
+        app:backgroundTint="?attr/colorPrimary" />
+
     <LinearLayout
         android:id="@+id/ll_progress_circle"
         android:layout_width="match_parent"

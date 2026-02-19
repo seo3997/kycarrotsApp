@@ -16,6 +16,10 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
 import com.whomade.kycarrots.data.model.OpUserVO
+import com.whomade.kycarrots.data.model.OrderCreateRequest
+import com.whomade.kycarrots.data.model.OrderCreateResponse
+import com.whomade.kycarrots.data.model.PaymentConfirmRequest
+import com.whomade.kycarrots.data.model.PaymentConfirmResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductItem
@@ -361,4 +365,13 @@ class AppService(
         return if (resp.isSuccessful) resp.body() else null
     }
 
+    suspend fun createOrder(req: OrderCreateRequest): OrderCreateResponse? {
+        val resp = repository.createOrder(req)
+        return if (resp.isSuccessful) resp.body() else null
+    }
+
+    suspend fun confirmPayment(req: PaymentConfirmRequest): PaymentConfirmResponse? {
+        val resp = repository.confirmPayment(req)
+        return if (resp.isSuccessful) resp.body() else null
+    }
 }

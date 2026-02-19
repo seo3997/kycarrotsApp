@@ -43,7 +43,6 @@
     <application xmlns:tools="http://schemas.android.com/tools"
         android:name=".KycarrotsApp"
         android:allowBackup="false"
-        android:extractNativeLibs="true"
         android:fullBackupContent="false"
         android:icon="@mipmap/android_icon"
         android:label="@string/app_name"
@@ -152,6 +151,18 @@
             android:name=".ui.ad.makead.KtMakeADMainActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
+        <activity
+            android:name=".OrderActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".AddressSearchActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".PaymentWebViewActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
 
         <service
             android:name=".message.MyFirebaseMessagingService"
@@ -163,5 +174,13 @@
     </application>
     <queries>
         <package android:name="com.kakao.talk" />
+        <package android:name="viva.republica.toss" />
+        <package android:name="com.nhnent.payapp" />
+        <package android:name="com.lottelpay.lpay" />
+        <package android:name="com.samsung.android.spay" />
+        <package android:name="com.kbstar.kbbank" />
+        <package android:name="com.kbcard.kbanswcard" />
+        <package android:name="com.shinhan.smartcare" />
+        <package android:name="shunhan.pay" />
     </queries>
 </manifest>

@@ -15,6 +15,10 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
 import com.whomade.kycarrots.data.model.OpUserVO
+import com.whomade.kycarrots.data.model.OrderCreateRequest
+import com.whomade.kycarrots.data.model.OrderCreateResponse
+import com.whomade.kycarrots.data.model.PaymentConfirmRequest
+import com.whomade.kycarrots.data.model.PaymentConfirmResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
@@ -226,4 +230,10 @@ interface AdApi {
     suspend fun unlinkSocial(
         @Body req: UnlinkSocialRequest
     ): Response<SimpleResultResponse>
+
+    @POST("api/payment/order/create")
+    suspend fun createOrder(@Body req: OrderCreateRequest): Response<OrderCreateResponse>
+
+    @POST("api/payment/confirm")
+    suspend fun confirmPayment(@Body req: PaymentConfirmRequest): Response<PaymentConfirmResponse>
 }

@@ -79,6 +79,8 @@ class AdDetailActivity : AppCompatActivity() {
     private var statusChanged = false
     private var newStatus: String? = null
     private var selectedBuyerForCompletion: ChatBuyerDto? = null
+    private lateinit var btnBuy: View
+    private var currentProductDetail: ProductDetailResponse? = null
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,6 +133,21 @@ class AdDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        btnBuy = findViewById(R.id.btn_buy)
+        val isBuyer = (memberCode == Constants.ROLE_PUB)
+        btnBuy.visibility = if (isBuyer) View.VISIBLE else View.GONE
+        btnBuy.setOnClickListener {
+            val detail = currentProductDetail ?: return@setOnClickListener
+            val intent = Intent(this, OrderActivity::class.java).apply {
+                putExtra("productId", detail.product.productId!!.toLong())
+                putExtra("productName", detail.product.title)
+                putExtra("unitPrice", detail.product.price?.toDoubleOrNull()?.toInt() ?: 0)
+                putExtra("selectedOption", detail.product.unitCodeNm) // Sample option
+                putExtra("quantity", 1)
+            }
+            startActivity(intent)
+        }
+
 
         supportFragmentManager.setFragmentResultListener(
             SelectOptionDialogFragment.RESULT_KEY,
@@ -171,6 +188,7 @@ class AdDetailActivity : AppCompatActivity() {
 
 
     private fun showProductDetail(detail: ProductDetailResponse) {
+        currentProductDetail = detail
         val collapsingToolbar: CollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar)
         collapsingToolbar.title = detail.product.title
 

@@ -17,6 +17,10 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
 import com.whomade.kycarrots.data.model.OpUserVO
+import com.whomade.kycarrots.data.model.OrderCreateRequest
+import com.whomade.kycarrots.data.model.OrderCreateResponse
+import com.whomade.kycarrots.data.model.PaymentConfirmRequest
+import com.whomade.kycarrots.data.model.PaymentConfirmResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductItem
@@ -244,5 +248,13 @@ class RemoteRepository(
 
     suspend fun unlinkSocial(req: UnlinkSocialRequest): Response<SimpleResultResponse> {
         return adApi.unlinkSocial(req)
+    }
+
+    suspend fun createOrder(req: OrderCreateRequest): Response<OrderCreateResponse> {
+        return adApi.createOrder(req)
+    }
+
+    suspend fun confirmPayment(req: PaymentConfirmRequest): Response<PaymentConfirmResponse> {
+        return adApi.confirmPayment(req)
     }
 }
