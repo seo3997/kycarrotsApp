@@ -29,6 +29,7 @@ class OrderActivity : AppCompatActivity() {
     private var unitPrice: Int = 0
     private var selectedOption: String = ""
     private var quantity: Int = 1
+    private var expectedAmount: Int = 0
 
 
     private val addressSearchLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -47,6 +48,12 @@ class OrderActivity : AppCompatActivity() {
                 val paymentKey = result.data?.getStringExtra("paymentKey") ?: ""
                 val orderId = result.data?.getStringExtra("orderId") ?: ""
                 val amount = result.data?.getIntExtra("amount", 0) ?: 0
+                
+                if (amount != expectedAmount) {
+                    showToast("결제 금액이 일치하지 않습니다. ($expectedAmount vs $amount)")
+                    return@registerForActivityResult
+                }
+                
                 confirmPayment(paymentKey, orderId, amount)
             } else {
                 val message = result.data?.getStringExtra("message") ?: "결제에 실패했습니다."
@@ -150,8 +157,8 @@ class OrderActivity : AppCompatActivity() {
                 val response = api.createOrder(request)
 
                 if (response.isSuccessful && response.body()?.success == true) {
-                    val orderNo = response.body()?.orderNo ?: ""
-                    requestPayment(orderNo, productName)
+                    val body = response.body()!!
+                    requestPayment(body.orderNo, body.orderName, body.amount)
                 } else {
                     showToast("주문 생성 실패: ${response.body()?.message}")
                 }
@@ -163,8 +170,8 @@ class OrderActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestPayment(orderNo: String, orderName: String) {
-        val amount = (unitPrice * quantity) + 3000
+    private fun requestPayment(orderNo: String, orderName: String, amount: Int) {
+        this.expectedAmount = amount
         val intent = Intent(this, PaymentWebViewActivity::class.java).apply {
             putExtra("orderNo", orderNo)
             putExtra("amount", amount)

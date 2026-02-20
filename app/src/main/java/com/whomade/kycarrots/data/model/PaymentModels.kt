@@ -27,6 +27,8 @@ data class OrderCreateResponse(
     @SerializedName("success") val success: Boolean,
     @SerializedName("orderId") val orderId: Long,
     @SerializedName("orderNo") val orderNo: String,
+    @SerializedName("amount") val amount: Int,
+    @SerializedName("orderName") val orderName: String,
     @SerializedName("message") val message: String? = null
 )
 
