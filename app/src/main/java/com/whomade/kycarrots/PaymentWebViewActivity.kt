@@ -24,7 +24,17 @@ class PaymentWebViewActivity : AppCompatActivity() {
         val productName = intent.getStringExtra("productName") ?: ""
         val clientKey = "test_ck_D5mOwv178087NjM6L17P3M9ENRq9"
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "결제하기"
+
         setupWebView(clientKey, orderNo, amount, productName)
+        WebView.setWebContentsDebuggingEnabled(true)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     private fun setupWebView(clientKey: String, orderNo: String, amount: Int, productName: String) {
@@ -32,6 +42,15 @@ class PaymentWebViewActivity : AppCompatActivity() {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.javaScriptCanOpenWindowsAutomatically = true
+            settings.loadWithOverviewMode = true
+            settings.useWideViewPort = true
+
+            webChromeClient = object : android.webkit.WebChromeClient() {
+                override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
+                    android.util.Log.d("PaymentWebView", "${consoleMessage?.message()} -- From line ${consoleMessage?.lineNumber()} of ${consoleMessage?.sourceId()}")
+                    return true
+                }
+            }
 
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
@@ -95,17 +114,23 @@ class PaymentWebViewActivity : AppCompatActivity() {
                 <head>
                     <meta charset="utf-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <script src="https://js.tosspayments.com/v1/payment"></script>
+                    <script src="https://js.tosspayments.com/v1"></script>
                 </head>
                 <body>
                     <script>
-                        var tossPayments = TossPayments("$clientKey");
-                        tossPayments.requestPayment('CARD', {
-                            amount: $amount,
-                            orderId: '$orderNo',
-                            orderName: '$productName',
-                            successUrl: '$successUrl',
-                            failUrl: '$failUrl',
+                        document.addEventListener("DOMContentLoaded", function() {
+                            try {
+                                var tossPayments = TossPayments("$clientKey");
+                                tossPayments.requestPayment('CARD', {
+                                    amount: $amount,
+                                    orderId: '$orderNo',
+                                    orderName: '$productName',
+                                    successUrl: '$successUrl',
+                                    failUrl: '$failUrl',
+                                });
+                            } catch (e) {
+                                console.error("TossPayments error:", e);
+                            }
                         });
                     </script>
                 </body>
