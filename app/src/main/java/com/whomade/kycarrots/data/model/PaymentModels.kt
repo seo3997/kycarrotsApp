@@ -1,31 +1,33 @@
 package com.whomade.kycarrots.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class OrderCreateRequest(
-    val userNo: Long,
-    val totalItemAmount: Int,
-    val deliveryFee: Int,
-    val discountAmount: Int,
-    val totalPayAmount: Int,
-    val receiverName: String,
-    val receiverPhone: String,
-    val zipCode: String,
-    val address1: String,
-    val address2: String,
-    val orderMemo: String,
-    val items: List<OrderItemRequest>
+    @SerializedName("userNo") val userNo: Long,
+    @SerializedName("totalItemAmount") val totalItemAmount: Int,
+    @SerializedName("deliveryFee") val deliveryFee: Int,
+    @SerializedName("discountAmount") val discountAmount: Int,
+    @SerializedName("totalPayAmount") val totalPayAmount: Int,
+    @SerializedName("receiverName") val receiverName: String,
+    @SerializedName("receiverPhone") val receiverPhone: String,
+    @SerializedName("zipCode") val zipCode: String,
+    @SerializedName("address1") val address1: String,
+    @SerializedName("address2") val address2: String,
+    @SerializedName("orderMemo") val orderMemo: String,
+    @SerializedName("items") val items: List<OrderItemRequest>
 )
 
 data class OrderItemRequest(
-    val productId: Long,
-    val quantity: Int,
-    val optionName: String?
+    @SerializedName("productId") val productId: Long,
+    @SerializedName("quantity") val quantity: Int,
+    @SerializedName("optionName") val optionName: String?
 )
 
 data class OrderCreateResponse(
-    val success: Boolean,
-    val orderId: Long,
-    val orderNo: String,
-    val message: String? = null
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("orderId") val orderId: Long,
+    @SerializedName("orderNo") val orderNo: String,
+    @SerializedName("message") val message: String? = null
 )
 
 data class PaymentConfirmRequest(

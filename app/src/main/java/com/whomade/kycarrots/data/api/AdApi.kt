@@ -231,9 +231,9 @@ interface AdApi {
         @Body req: UnlinkSocialRequest
     ): Response<SimpleResultResponse>
 
-    @POST("api/payment/order/create")
+    @POST("/api/payment/order/create")
     suspend fun createOrder(@Body req: OrderCreateRequest): Response<OrderCreateResponse>
 
-    @POST("api/payment/confirm")
+    @POST("/api/payment/confirm")
     suspend fun confirmPayment(@Body req: PaymentConfirmRequest): Response<PaymentConfirmResponse>
 }
