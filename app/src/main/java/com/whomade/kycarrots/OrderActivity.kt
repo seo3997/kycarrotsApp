@@ -104,6 +104,56 @@ class OrderActivity : AppCompatActivity() {
                 showPaymentConfirmDialog()
             }
         }
+
+        setupPhoneNumberFormatting()
+    }
+
+    private fun setupPhoneNumberFormatting() {
+        binding.etReceiverPhone.addTextChangedListener(object : android.text.TextWatcher {
+            private var isFormatting: Boolean = false
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (isFormatting || s == null) return
+                isFormatting = true
+
+                val input = s.toString().replace("-", "")
+                val formatted = formatPhoneNumber(input)
+
+                s.replace(0, s.length, formatted)
+                isFormatting = false
+            }
+
+            private fun formatPhoneNumber(input: String): String {
+                val len = input.length
+                return when {
+                    len <= 3 -> input
+                    len <= 7 -> {
+                        if (input.startsWith("02") && len > 2) {
+                            "${input.substring(0, 2)}-${input.substring(2)}"
+                        } else if (len > 3) {
+                            "${input.substring(0, 3)}-${input.substring(3)}"
+                        } else {
+                            input
+                        }
+                    }
+                    len <= 10 -> {
+                        if (input.startsWith("02")) {
+                            val mid = if (len == 10) 6 else 5
+                            "${input.substring(0, 2)}-${input.substring(2, mid)}-${input.substring(mid)}"
+                        } else {
+                            "${input.substring(0, 3)}-${input.substring(3, 6)}-${input.substring(6)}"
+                        }
+                    }
+                    else -> {
+                        val end = if (len > 11) 11 else len
+                        "${input.substring(0, 3)}-${input.substring(3, 7)}-${input.substring(7, end)}"
+                    }
+                }
+            }
+        })
     }
 
     private fun showPaymentConfirmDialog() {
