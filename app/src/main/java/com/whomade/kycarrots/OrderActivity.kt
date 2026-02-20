@@ -101,9 +101,21 @@ class OrderActivity : AppCompatActivity() {
 
         binding.btnPay.setOnClickListener {
             if (validateInputs()) {
-                createOrder()
+                showPaymentConfirmDialog()
             }
         }
+    }
+
+    private fun showPaymentConfirmDialog() {
+        val totalAmount = (unitPrice * quantity) + 3000
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("결제 확인")
+            .setMessage("${productName}을(를) ${formatCurrency(totalAmount)}에 결제하시겠습니까?")
+            .setPositiveButton("결제하기") { _, _ ->
+                createOrder()
+            }
+            .setNegativeButton("취소", null)
+            .show()
     }
 
 
