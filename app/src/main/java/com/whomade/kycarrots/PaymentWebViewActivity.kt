@@ -21,8 +21,14 @@ class PaymentWebViewActivity : AppCompatActivity() {
 
         val orderNo = intent.getStringExtra("orderNo") ?: ""
         val amount = intent.getIntExtra("amount", 0)
-        val productName = intent.getStringExtra("productName") ?: ""
-        val clientKey = "test_ck_D5mOwv178087NjM6L17P3M9ENRq9"
+        var productName = intent.getStringExtra("productName") ?: ""
+        val clientKey = "test_ck_yL0qZ4G1VOdympo01WQYroWb2MQY"
+
+        android.util.Log.d("PaymentWebView", "orderNo: $orderNo, amount: $amount, productName: $productName")
+
+        if (productName.isEmpty()) {
+            productName = "상품 결제" // Fallback if server provides empty name
+        }
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -123,8 +129,8 @@ class PaymentWebViewActivity : AppCompatActivity() {
                                 var tossPayments = TossPayments("$clientKey");
                                 tossPayments.requestPayment('CARD', {
                                     amount: $amount,
-                                    orderId: '$orderNo',
-                                    orderName: '$productName',
+                                    orderId: '${orderNo.replace("'", "\\'")}',
+                                    orderName: '${productName.replace("'", "\\'")}',
                                     successUrl: '$successUrl',
                                     failUrl: '$failUrl',
                                 });
