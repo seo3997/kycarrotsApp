@@ -16,7 +16,6 @@ import com.whomade.kycarrots.data.model.OrderItemRequest
 import com.whomade.kycarrots.data.model.PaymentConfirmRequest
 import com.whomade.kycarrots.databinding.ActivityOrderBinding
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
-import com.whomade.kycarrots.webview.WebViewActivity
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -35,9 +34,9 @@ class OrderActivity : AppCompatActivity() {
     private val addressSearchLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             val address = result.data?.getStringExtra("address") ?: ""
-            val zonecode = result.data?.getStringExtra("zonecode") ?: ""
+            val zipCode = result.data?.getStringExtra("zipCode") ?: ""
             binding.etAddress1.setText(address)
-            binding.etZipCode.setText(zonecode)
+            binding.etZipCode.setText(zipCode)
         }
     }
 
@@ -89,12 +88,7 @@ class OrderActivity : AppCompatActivity() {
 
     private fun initViews() {
         binding.btnSearchAddress.setOnClickListener {
-            // 카카오 주소 검색 웹뷰 호출 (예시)
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                putExtra("url", "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js") // 실제 구현 시 주소검색 HTML 필요
-                putExtra("title", "주소 검색")
-                putExtra("isPostcode", true)
-            }
+            val intent = Intent(this, AddressSearchActivity::class.java)
             addressSearchLauncher.launch(intent)
         }
 
