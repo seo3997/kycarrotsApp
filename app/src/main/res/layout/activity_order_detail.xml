@@ -310,6 +310,20 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_cancel_order"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:text="결제 취소"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:backgroundTint="#FF4444"
+                    app:cornerRadius="8dp" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

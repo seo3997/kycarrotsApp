@@ -16,12 +16,19 @@ import com.whomade.kycarrots.domain.service.AppService
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import com.whomade.kycarrots.data.model.OrderCancelRequest
+import androidx.appcompat.app.AlertDialog
 
 class OrderDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOrderDetailBinding
     private lateinit var appService: AppService
     private val decimalFormat = DecimalFormat("#,###")
+    private var currentOrder: com.whomade.kycarrots.data.model.OrderInfo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +44,10 @@ class OrderDetailActivity : AppCompatActivity() {
         setupToolbar()
         setupService()
         loadOrderDetail(orderNo)
+
+        binding.btnCancelOrder.setOnClickListener {
+            showCancelConfirmDialog()
+        }
     }
 
     private fun setupToolbar() {
@@ -71,6 +82,7 @@ class OrderDetailActivity : AppCompatActivity() {
 
     private fun displayOrderDetail(data: OrderDetailResponse) {
         val order = data.order
+        currentOrder = order
         binding.tvOrderStatus.text = getOrderStatusText(order.orderStatus)
         binding.tvOrderNo.text = "주문번호: ${order.orderNo}"
         binding.tvOrderDate.text = "주문일시: ${order.orderedAt}"
@@ -100,6 +112,36 @@ class OrderDetailActivity : AppCompatActivity() {
                 .error(R.drawable.ic_placeholder_default)
                 .into(binding.ivProduct)
         }
+
+        checkCancelEligibility(order)
+    }
+
+    private fun checkCancelEligibility(order: com.whomade.kycarrots.data.model.OrderInfo) {
+        if (order.orderStatus == "PAID") {
+            val paidAt = order.paidAt
+            if (paidAt != null) {
+                try {
+                    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                    val paidDate = sdf.parse(paidAt)
+                    if (paidDate != null) {
+                        val oneWeekAgo = Calendar.getInstance()
+                        oneWeekAgo.add(Calendar.DAY_OF_YEAR, -7)
+
+                        if (paidDate.after(oneWeekAgo.time)) {
+                            binding.btnCancelOrder.visibility = View.VISIBLE
+                        } else {
+                            binding.btnCancelOrder.visibility = View.GONE
+                        }
+                    }
+                } catch (e: Exception) {
+                    binding.btnCancelOrder.visibility = View.GONE
+                }
+            } else {
+                binding.btnCancelOrder.visibility = View.GONE
+            }
+        } else {
+            binding.btnCancelOrder.visibility = View.GONE
+        }
     }
 
     private fun getOrderStatusText(status: String): String {
@@ -109,6 +151,43 @@ class OrderDetailActivity : AppCompatActivity() {
             "SHIPPING" -> "배송중"
             "DELIVERED" -> "배송완료"
             else -> status
+        }
+    }
+
+    private fun showCancelConfirmDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("결제 취소")
+            .setMessage("정말로 결제를 취소하시겠습니까?")
+            .setPositiveButton("확인") { _, _ ->
+                cancelOrder()
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun cancelOrder() {
+        val order = currentOrder ?: return
+        val request = OrderCancelRequest(
+            orderNo = order.orderNo,
+            cancelReason = "사용자 요청 취소",
+            userNo = order.userNo
+        )
+
+        binding.progressBarLayout.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            try {
+                val success = appService.cancelOrder(request)
+                if (success) {
+                    Toast.makeText(this@OrderDetailActivity, "결제가 취소되었습니다.", Toast.LENGTH_SHORT).show()
+                    loadOrderDetail(order.orderNo) // Refresh
+                } else {
+                    Toast.makeText(this@OrderDetailActivity, "결제 취소에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@OrderDetailActivity, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                binding.progressBarLayout.visibility = View.GONE
+            }
         }
     }
 }
