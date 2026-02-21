@@ -30,6 +30,7 @@ class OrderActivity : AppCompatActivity() {
     private var selectedOption: String = ""
     private var quantity: Int = 1
     private var expectedAmount: Int = 0
+    private var deliveryFee: Int = 0 // Changed from hardcoded value to member variable
 
 
     private val addressSearchLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -85,7 +86,8 @@ class OrderActivity : AppCompatActivity() {
         binding.tvProductOption.text = "옵션: $selectedOption / 수량: ${quantity}개"
 
         val totalItemAmount = unitPrice * quantity
-        val deliveryFee = 3000 // 기본 배송비 예시
+        // TODO: Later update this to fetch from product detail or server
+        deliveryFee = 0 
         val totalPayAmount = totalItemAmount + deliveryFee
 
         binding.tvTotalItemAmount.text = formatCurrency(totalItemAmount)
@@ -157,7 +159,7 @@ class OrderActivity : AppCompatActivity() {
     }
 
     private fun showPaymentConfirmDialog() {
-        val totalAmount = (unitPrice * quantity) + 3000
+        val totalAmount = (unitPrice * quantity) + deliveryFee
         androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("결제 확인")
             .setMessage("${productName}을(를) ${formatCurrency(totalAmount)}에 결제하시겠습니까?")
@@ -188,7 +190,6 @@ class OrderActivity : AppCompatActivity() {
     private fun createOrder() {
         val userNo = LoginInfoUtil.getUserNo(this).toLongOrNull() ?: 0L
         val totalItemAmount = unitPrice * quantity
-        val deliveryFee = 3000
         val totalPayAmount = totalItemAmount + deliveryFee
 
         val request = OrderCreateRequest(
