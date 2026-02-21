@@ -20,6 +20,7 @@ import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.data.model.OrderCancelRequest
 import com.whomade.kycarrots.data.model.OrderCreateRequest
 import com.whomade.kycarrots.data.model.OrderCreateResponse
+import com.whomade.kycarrots.data.model.OrderDetailResponse
 import com.whomade.kycarrots.data.model.PaymentConfirmRequest
 import com.whomade.kycarrots.data.model.PaymentConfirmResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
@@ -265,6 +266,10 @@ class RemoteRepository(
 
     suspend fun cancelOrder(req: OrderCancelRequest): Response<SimpleResult> {
         return adApi.cancelOrder(req)
+    }
+
+    suspend fun fetchOrderDetail(orderNo: String): Response<OrderDetailResponse> {
+        return adApi.getOrderDetail(orderNo)
     }
 }
 

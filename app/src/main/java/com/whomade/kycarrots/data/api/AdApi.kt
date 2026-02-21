@@ -15,6 +15,7 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
 import com.whomade.kycarrots.data.model.OpUserVO
+import com.whomade.kycarrots.data.model.OrderDetailResponse
 import com.whomade.kycarrots.data.model.OrderCancelRequest
 import com.whomade.kycarrots.data.model.OrderCreateRequest
 import com.whomade.kycarrots.data.model.OrderCreateResponse
@@ -247,5 +248,8 @@ interface AdApi {
 
     @POST("/api/orders/cancel")
     suspend fun cancelOrder(@Body req: OrderCancelRequest): Response<SimpleResult>
+
+    @GET("/api/orders/{orderNo}")
+    suspend fun getOrderDetail(@Path("orderNo") orderNo: String): Response<OrderDetailResponse>
 }
 

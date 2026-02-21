@@ -36,6 +36,7 @@ import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.ResponseBody
 import java.io.File
 import com.whomade.kycarrots.data.model.OrderCancelRequest
+import com.whomade.kycarrots.data.model.OrderDetailResponse
 
 
 class AppService(
@@ -394,6 +395,16 @@ class AppService(
         } catch (e: Exception) {
             Log.e("AppService", "cancelOrder error", e)
             false
+        }
+    }
+
+    suspend fun getOrderDetail(orderNo: String): OrderDetailResponse? {
+        return try {
+            val resp = repository.fetchOrderDetail(orderNo)
+            if (resp.isSuccessful) resp.body() else null
+        } catch (e: Exception) {
+            Log.e("AppService", "getOrderDetail error", e)
+            null
         }
     }
 }

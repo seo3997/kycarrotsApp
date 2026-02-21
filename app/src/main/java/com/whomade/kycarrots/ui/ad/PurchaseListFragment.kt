@@ -1,5 +1,7 @@
 package com.whomade.kycarrots.ui.ad
 
+import android.content.Intent
+import com.whomade.kycarrots.OrderDetailActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -56,7 +58,16 @@ class PurchaseListFragment : Fragment() {
         recyclerView.adapter = adapter
 
         adapter.setOnItemClickListener { item, view ->
-            // 필요 시 상세 화면 이동 등 처리
+            if (!item.orderNo.isNullOrEmpty()) {
+                val intent = Intent(requireContext(), OrderDetailActivity::class.java).apply {
+                    putExtra("orderNo", item.orderNo)
+                }
+                startActivity(intent)
+            } else {
+                // If there's no orderNo, maybe it's a regular product?
+                // But this is PurchaseList, so it should have orderNo.
+                // Fallback to product detail if needed.
+            }
         }
         
         progressBarLayout = view.findViewById(R.id.ll_progress_circle)
