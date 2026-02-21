@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.whomade.kycarrots.databinding.ActivityOrderSuccessBinding
+import com.whomade.kycarrots.ui.buy.ItemSelectionActivity
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -25,7 +26,7 @@ class OrderSuccessActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         binding.btnGoHome.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, ItemSelectionActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
             finish()
