@@ -7,9 +7,9 @@ data class AdItem(
     val productId: String,
     @SerializedName(value = "title", alternate = ["TITLE"])
     val title: String,
-    @SerializedName(value = "description", alternate = ["PRODUCT_NAME"])
+    @SerializedName(value = "description", alternate = ["DESCRIPTION"])
     val description: String,
-    @SerializedName(value = "price", alternate = ["TOTAL_PAY_AMOUNT"])
+    @SerializedName(value = "price", alternate = ["PRICE"])
     val price: String,
     @SerializedName(value = "imageUrl", alternate = ["IMAGE_URL"])
     val imageUrl: String,
