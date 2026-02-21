@@ -146,10 +146,15 @@ class OrderDetailActivity : AppCompatActivity() {
 
     private fun getOrderStatusText(status: String): String {
         return when (status) {
+            "READY" -> "결제대기"
+            "FAILED" -> "결제실패"
             "PAID" -> "결제완료"
-            "CANCELLED" -> "주문취소"
+            "CANCEL" -> "주문취소"
+            "PREPARING" -> "배송준비중"
             "SHIPPING" -> "배송중"
             "DELIVERED" -> "배송완료"
+            "RETURN_REQUESTED" -> "반품요청"
+            "EXCHANGED" -> "교환완료"
             else -> status
         }
     }
