@@ -35,6 +35,8 @@ import com.whomade.kycarrots.loginout.SocialProvider
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.ResponseBody
 import java.io.File
+import com.whomade.kycarrots.data.model.OrderCancelRequest
+
 
 class AppService(
     private val repository: RemoteRepository
@@ -374,4 +376,25 @@ class AppService(
         val resp = repository.confirmPayment(req)
         return if (resp.isSuccessful) resp.body() else null
     }
+
+    suspend fun getOrderHistory(buyerNo: Long, page: Int, size: Int): List<AdItem> {
+        return try {
+            val resp = repository.fetchOrderHistory(buyerNo, page, size)
+            if (resp.isSuccessful) resp.body()?.items.orEmpty() else emptyList()
+        } catch (e: Exception) {
+            Log.e("AppService", "getOrderHistory error", e)
+            emptyList()
+        }
+    }
+
+    suspend fun cancelOrder(req: OrderCancelRequest): Boolean {
+        return try {
+            val resp = repository.cancelOrder(req)
+            resp.isSuccessful && resp.body()?.result == true
+        } catch (e: Exception) {
+            Log.e("AppService", "cancelOrder error", e)
+            false
+        }
+    }
 }
+

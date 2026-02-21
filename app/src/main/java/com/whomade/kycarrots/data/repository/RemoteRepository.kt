@@ -17,6 +17,7 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
 import com.whomade.kycarrots.data.model.OpUserVO
+import com.whomade.kycarrots.data.model.OrderCancelRequest
 import com.whomade.kycarrots.data.model.OrderCreateRequest
 import com.whomade.kycarrots.data.model.OrderCreateResponse
 import com.whomade.kycarrots.data.model.PaymentConfirmRequest
@@ -257,4 +258,13 @@ class RemoteRepository(
     suspend fun confirmPayment(req: PaymentConfirmRequest): Response<PaymentConfirmResponse> {
         return adApi.confirmPayment(req)
     }
+
+    suspend fun fetchOrderHistory(buyerNo: Long, page: Int, size: Int): Response<AdResponse> {
+        return adApi.getOrderHistory(buyerNo, page, size)
+    }
+
+    suspend fun cancelOrder(req: OrderCancelRequest): Response<SimpleResult> {
+        return adApi.cancelOrder(req)
+    }
 }
+

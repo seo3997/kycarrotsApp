@@ -15,6 +15,7 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.data.model.OnboardingRequest
 import com.whomade.kycarrots.data.model.OnboardingResponse
 import com.whomade.kycarrots.data.model.OpUserVO
+import com.whomade.kycarrots.data.model.OrderCancelRequest
 import com.whomade.kycarrots.data.model.OrderCreateRequest
 import com.whomade.kycarrots.data.model.OrderCreateResponse
 import com.whomade.kycarrots.data.model.PaymentConfirmRequest
@@ -236,4 +237,15 @@ interface AdApi {
 
     @POST("/api/payment/confirm")
     suspend fun confirmPayment(@Body req: PaymentConfirmRequest): Response<PaymentConfirmResponse>
+
+    @GET("/api/orders/buyer/{buyerNo}")
+    suspend fun getOrderHistory(
+        @Path("buyerNo") buyerNo: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): Response<AdResponse>
+
+    @POST("/api/orders/cancel")
+    suspend fun cancelOrder(@Body req: OrderCancelRequest): Response<SimpleResult>
 }
+
