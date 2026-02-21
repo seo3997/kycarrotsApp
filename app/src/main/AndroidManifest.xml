@@ -163,6 +163,10 @@
             android:name=".PaymentWebViewActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
+        <activity
+            android:name=".OrderSuccessActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
 
         <service
             android:name=".message.MyFirebaseMessagingService"

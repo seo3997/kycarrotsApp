@@ -34,8 +34,9 @@ data class OrderCreateResponse(
 
 data class PaymentConfirmRequest(
     val paymentKey: String,
-    val orderId: String, // This is orderNo in server's DataMap usually, or orderId? payment.md says orderId but value is ORDER-...
-    val amount: Int
+    val orderId: String, 
+    val amount: Int,
+    val userNo: Long? = null
 )
 
 data class PaymentConfirmResponse(

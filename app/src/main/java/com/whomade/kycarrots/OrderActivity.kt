@@ -13,7 +13,6 @@ import com.whomade.kycarrots.common.RetrofitProvider
 import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.model.OrderCreateRequest
 import com.whomade.kycarrots.data.model.OrderItemRequest
-import com.whomade.kycarrots.data.model.PaymentConfirmRequest
 import com.whomade.kycarrots.databinding.ActivityOrderBinding
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
@@ -46,16 +45,15 @@ class OrderActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val status = result.data?.getStringExtra("status")
             if (status == "SUCCESS") {
-                val paymentKey = result.data?.getStringExtra("paymentKey") ?: ""
                 val orderId = result.data?.getStringExtra("orderId") ?: ""
                 val amount = result.data?.getIntExtra("amount", 0) ?: 0
                 
-                if (amount != expectedAmount) {
-                    showToast("결제 금액이 일치하지 않습니다. ($expectedAmount vs $amount)")
-                    return@registerForActivityResult
+                val intent = Intent(this, OrderSuccessActivity::class.java).apply {
+                    putExtra("orderNo", orderId)
+                    putExtra("amount", amount)
                 }
-                
-                confirmPayment(paymentKey, orderId, amount)
+                startActivity(intent)
+                finish()
             } else {
                 val message = result.data?.getStringExtra("message") ?: "결제에 실패했습니다."
                 showToast(message)
@@ -241,32 +239,6 @@ class OrderActivity : AppCompatActivity() {
             putExtra("productName", orderName)
         }
         paymentLauncher.launch(intent)
-    }
-
-    private fun confirmPayment(paymentKey: String, orderId: String, amount: Int) {
-        binding.progressBar.visibility = View.VISIBLE
-        lifecycleScope.launch {
-            try {
-                val api = RetrofitProvider.retrofit.create(AdApi::class.java)
-                val request = PaymentConfirmRequest(
-                    paymentKey = paymentKey,
-                    orderId = orderId,
-                    amount = amount
-                )
-                val response = api.confirmPayment(request)
-
-                if (response.isSuccessful && response.body()?.success == true) {
-                    showToast("결제가 완료되었습니다.")
-                    finish()
-                } else {
-                    showToast("결제 승인 실패: ${response.body()?.message}")
-                }
-            } catch (e: Exception) {
-                showToast("결제 승인 중 오류: ${e.message}")
-            } finally {
-                binding.progressBar.visibility = View.GONE
-            }
-        }
     }
 
     private fun formatCurrency(amount: Int): String {
