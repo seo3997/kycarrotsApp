@@ -9,13 +9,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.model.AdItem
+import java.text.DecimalFormat
 
 class AdAdapter(private val items: List<AdItem>) :
     RecyclerView.Adapter<AdAdapter.AdViewHolder>() {
 
+    private val decimalFormat = DecimalFormat("#,###원")
+
     inner class AdViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.titleText)
         val brief: TextView = view.findViewById(R.id.briefText)
+        val price: TextView = view.findViewById(R.id.priceText)
         val image: ImageView = view.findViewById(R.id.imageView)
     }
 
@@ -29,6 +33,14 @@ class AdAdapter(private val items: List<AdItem>) :
         val item = items[position]
         holder.title.text = item.title
         holder.brief.text = item.description
+        
+        try {
+            val priceVal = item.price.toDouble().toLong()
+            holder.price.text = decimalFormat.format(priceVal)
+        } catch (e: Exception) {
+            holder.price.text = item.price
+        }
+
         Glide.with(holder.image.context).load(item.imageUrl).into(holder.image)
     }
 

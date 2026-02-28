@@ -14,12 +14,14 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.whomade.kycarrots.AdDetailActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.model.AdItem
+import java.text.DecimalFormat
 
 class AdActivityAdapter(
     private val activity: Activity
 ) : RecyclerView.Adapter<AdActivityAdapter.ViewHolder>() {
 
     private val items: MutableList<AdItem> = mutableListOf()
+    private val decimalFormat = DecimalFormat("#,###원")
 
     fun updateList(newList: List<AdItem>) {
         items.clear()
@@ -30,6 +32,7 @@ class AdActivityAdapter(
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView  = view.findViewById(R.id.titleText)
         val brief: TextView  = view.findViewById(R.id.briefText)
+        val price: TextView  = view.findViewById(R.id.priceText)
         val image: ImageView = view.findViewById(R.id.imageView)
 
         init {
@@ -63,6 +66,13 @@ class AdActivityAdapter(
         val item = items[position]
         holder.title.text = item.title
         holder.brief.text = item.description
+
+        try {
+            val priceVal = item.price.toDouble().toLong()
+            holder.price.text = decimalFormat.format(priceVal)
+        } catch (e: Exception) {
+            holder.price.text = item.price
+        }
 
         Glide.with(activity)
             .load(item.imageUrl)

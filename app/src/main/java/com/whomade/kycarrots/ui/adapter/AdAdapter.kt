@@ -15,11 +15,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.whomade.kycarrots.AdDetailActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.model.AdItem
+import java.text.DecimalFormat
 
 class AdAdapter(private val fragment: Fragment) :
     RecyclerView.Adapter<AdAdapter.ViewHolder>() {
 
     private val items: MutableList<AdItem> = mutableListOf()
+    private val decimalFormat = DecimalFormat("#,###원")
     private var onItemClick: ((AdItem, View) -> Unit)? = null   // ⬅ 공유뷰까지 전달
 
     // 새로고침 또는 첫 로딩 시 사용
@@ -46,6 +48,7 @@ class AdAdapter(private val fragment: Fragment) :
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.titleText)
         val brief: TextView = view.findViewById(R.id.briefText)
+        val price: TextView = view.findViewById(R.id.priceText)
         val image: ImageView = view.findViewById(R.id.imageView)
     }
 
@@ -59,6 +62,13 @@ class AdAdapter(private val fragment: Fragment) :
         val item = items[position]
         holder.title.text = item.title
         holder.brief.text = item.description
+
+        try {
+            val priceVal = item.price.toDouble().toLong()
+            holder.price.text = decimalFormat.format(priceVal)
+        } catch (e: Exception) {
+            holder.price.text = item.price
+        }
 
         holder.itemView.setOnClickListener {
             onItemClick?.invoke(item, holder.image)
