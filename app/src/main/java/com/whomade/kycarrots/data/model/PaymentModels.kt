@@ -50,3 +50,14 @@ data class OrderCancelRequest(
     @SerializedName("userNo") val userNo: Long
 )
 
+data class PaymentCancelRequest(
+    val paymentKey: String,
+    val orderId: String,
+    val amount: Int
+)
+
+data class PaymentCancelResponse(
+    val success: Boolean,
+    val message: String?
+)
+

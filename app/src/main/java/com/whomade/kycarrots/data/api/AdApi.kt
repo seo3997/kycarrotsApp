@@ -21,6 +21,8 @@ import com.whomade.kycarrots.data.model.OrderCreateRequest
 import com.whomade.kycarrots.data.model.OrderCreateResponse
 import com.whomade.kycarrots.data.model.PaymentConfirmRequest
 import com.whomade.kycarrots.data.model.PaymentConfirmResponse
+import com.whomade.kycarrots.data.model.PaymentCancelRequest
+import com.whomade.kycarrots.data.model.PaymentCancelResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
@@ -248,6 +250,9 @@ interface AdApi {
 
     @POST("/api/orders/cancel")
     suspend fun cancelOrder(@Body req: OrderCancelRequest): Response<SimpleResult>
+
+    @POST("/api/payment/cancel")
+    suspend fun cancelPayment(@Body req: PaymentCancelRequest): Response<PaymentCancelResponse>
 
     @GET("/api/orders/{orderNo}")
     suspend fun getOrderDetail(@Path("orderNo") orderNo: String): Response<OrderDetailResponse>

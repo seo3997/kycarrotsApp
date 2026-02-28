@@ -316,7 +316,7 @@
                     android:layout_height="56dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginBottom="24dp"
-                    android:text="결제 취소"
+                    android:text="주문 취소"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"

@@ -21,6 +21,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import com.whomade.kycarrots.data.model.OrderCancelRequest
+import com.whomade.kycarrots.data.model.PaymentCancelRequest
 import androidx.appcompat.app.AlertDialog
 
 class OrderDetailActivity : AppCompatActivity() {
@@ -118,16 +119,16 @@ class OrderDetailActivity : AppCompatActivity() {
 
     private fun checkCancelEligibility(order: com.whomade.kycarrots.data.model.OrderInfo) {
         if (order.orderStatus == "PAID") {
-            val paidAt = order.paidAt
-            if (paidAt != null) {
+            val dateToCheck = order.paidAt ?: order.orderedAt
+            if (dateToCheck != null) {
                 try {
                     val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                    val paidDate = sdf.parse(paidAt)
-                    if (paidDate != null) {
+                    val date = sdf.parse(dateToCheck)
+                    if (date != null) {
                         val oneWeekAgo = Calendar.getInstance()
                         oneWeekAgo.add(Calendar.DAY_OF_YEAR, -7)
 
-                        if (paidDate.after(oneWeekAgo.time)) {
+                        if (date.after(oneWeekAgo.time)) {
                             binding.btnCancelOrder.visibility = View.VISIBLE
                         } else {
                             binding.btnCancelOrder.visibility = View.GONE
@@ -161,8 +162,8 @@ class OrderDetailActivity : AppCompatActivity() {
 
     private fun showCancelConfirmDialog() {
         AlertDialog.Builder(this)
-            .setTitle("결제 취소")
-            .setMessage("정말로 결제를 취소하시겠습니까?")
+            .setTitle("주문 취소")
+            .setMessage("정말로 주문을 취소하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                 cancelOrder()
             }
@@ -172,21 +173,28 @@ class OrderDetailActivity : AppCompatActivity() {
 
     private fun cancelOrder() {
         val order = currentOrder ?: return
-        val request = OrderCancelRequest(
-            orderNo = order.orderNo,
-            cancelReason = "사용자 요청 취소",
-            userNo = order.userNo
+        val paymentKey = order.paymentKey ?: ""
+        
+        if (paymentKey.isEmpty()) {
+            Toast.makeText(this, "주문 정보가 부족하여 취소 처리를 진행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val request = PaymentCancelRequest(
+            paymentKey = paymentKey,
+            orderId = order.orderNo,
+            amount = order.totalPayAmount
         )
 
         binding.progressBarLayout.visibility = View.VISIBLE
         lifecycleScope.launch {
             try {
-                val success = appService.cancelOrder(request)
+                val success = appService.cancelPayment(request)
                 if (success) {
-                    Toast.makeText(this@OrderDetailActivity, "결제가 취소되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@OrderDetailActivity, "주문이 취소되었습니다.", Toast.LENGTH_SHORT).show()
                     loadOrderDetail(order.orderNo) // Refresh
                 } else {
-                    Toast.makeText(this@OrderDetailActivity, "결제 취소에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@OrderDetailActivity, "주문 취소에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@OrderDetailActivity, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()

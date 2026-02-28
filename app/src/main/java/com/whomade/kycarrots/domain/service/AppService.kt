@@ -20,6 +20,8 @@ import com.whomade.kycarrots.data.model.OrderCreateRequest
 import com.whomade.kycarrots.data.model.OrderCreateResponse
 import com.whomade.kycarrots.data.model.PaymentConfirmRequest
 import com.whomade.kycarrots.data.model.PaymentConfirmResponse
+import com.whomade.kycarrots.data.model.PaymentCancelRequest
+import com.whomade.kycarrots.data.model.PaymentCancelResponse
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductItem
@@ -394,6 +396,16 @@ class AppService(
             resp.isSuccessful && resp.body()?.result == true
         } catch (e: Exception) {
             Log.e("AppService", "cancelOrder error", e)
+            false
+        }
+    }
+
+    suspend fun cancelPayment(req: PaymentCancelRequest): Boolean {
+        return try {
+            val resp = repository.cancelPayment(req)
+            resp.isSuccessful && resp.body()?.success == true
+        } catch (e: Exception) {
+            Log.e("AppService", "cancelPayment error", e)
             false
         }
     }
