@@ -266,11 +266,7 @@ class RemoteRepository(
         return adApi.getOrderHistory(buyerNo, page, size)
     }
 
-    suspend fun cancelOrder(req: OrderCancelRequest): Response<SimpleResult> {
-        return adApi.cancelOrder(req)
-    }
-
-    suspend fun cancelPayment(req: PaymentCancelRequest): Response<PaymentCancelResponse> {
+    suspend fun cancelPayment(req: OrderCancelRequest): Response<PaymentCancelResponse> {
         return adApi.cancelPayment(req)
     }
 

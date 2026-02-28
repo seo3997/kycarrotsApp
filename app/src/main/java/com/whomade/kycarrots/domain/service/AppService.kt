@@ -390,17 +390,7 @@ class AppService(
         }
     }
 
-    suspend fun cancelOrder(req: OrderCancelRequest): Boolean {
-        return try {
-            val resp = repository.cancelOrder(req)
-            resp.isSuccessful && resp.body()?.result == true
-        } catch (e: Exception) {
-            Log.e("AppService", "cancelOrder error", e)
-            false
-        }
-    }
-
-    suspend fun cancelPayment(req: PaymentCancelRequest): Boolean {
+    suspend fun cancelPayment(req: OrderCancelRequest): Boolean {
         return try {
             val resp = repository.cancelPayment(req)
             resp.isSuccessful && resp.body()?.success == true

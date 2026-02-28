@@ -173,17 +173,10 @@ class OrderDetailActivity : AppCompatActivity() {
 
     private fun cancelOrder() {
         val order = currentOrder ?: return
-        val paymentKey = order.paymentKey ?: ""
-        
-        if (paymentKey.isEmpty()) {
-            Toast.makeText(this, "주문 정보가 부족하여 취소 처리를 진행할 수 없습니다.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val request = PaymentCancelRequest(
-            paymentKey = paymentKey,
-            orderId = order.orderNo,
-            amount = order.totalPayAmount
+        val request = OrderCancelRequest(
+            orderNo = order.orderNo,
+            cancelReason = "고객 변심",
+            userNo = order.userNo
         )
 
         binding.progressBarLayout.visibility = View.VISIBLE

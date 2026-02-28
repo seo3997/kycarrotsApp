@@ -248,11 +248,9 @@ interface AdApi {
         @Query("size") size: Int
     ): Response<AdResponse>
 
-    @POST("/api/orders/cancel")
-    suspend fun cancelOrder(@Body req: OrderCancelRequest): Response<SimpleResult>
 
     @POST("/api/payment/cancel")
-    suspend fun cancelPayment(@Body req: PaymentCancelRequest): Response<PaymentCancelResponse>
+    suspend fun cancelPayment(@Body req: OrderCancelRequest): Response<PaymentCancelResponse>
 
     @GET("/api/orders/{orderNo}")
     suspend fun getOrderDetail(@Path("orderNo") orderNo: String): Response<OrderDetailResponse>
