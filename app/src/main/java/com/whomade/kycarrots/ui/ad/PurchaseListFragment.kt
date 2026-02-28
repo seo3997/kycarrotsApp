@@ -54,7 +54,7 @@ class PurchaseListFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = AdAdapter(this)
+        adapter = AdAdapter(this, R.layout.item_purchase)
         recyclerView.adapter = adapter
 
         adapter.setOnItemClickListener { item, view ->

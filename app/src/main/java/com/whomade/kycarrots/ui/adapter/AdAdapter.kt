@@ -17,44 +17,47 @@ import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.model.AdItem
 import java.text.DecimalFormat
 
-class AdAdapter(private val fragment: Fragment) :
-    RecyclerView.Adapter<AdAdapter.ViewHolder>() {
+class AdAdapter(
+    private val fragment: Fragment,
+    private val layoutResId: Int = R.layout.item_ad
+) : RecyclerView.Adapter<AdAdapter.ViewHolder>() {
 
     private val items: MutableList<AdItem> = mutableListOf()
     private val decimalFormat = DecimalFormat("#,###원")
-    private var onItemClick: ((AdItem, View) -> Unit)? = null   // ⬅ 공유뷰까지 전달
+    private var onItemClick: ((AdItem, View) -> Unit)? = null
 
-    // 새로고침 또는 첫 로딩 시 사용
     fun updateList(newList: List<AdItem>) {
         items.clear()
         items.addAll(newList)
         notifyDataSetChanged()
     }
 
-    // 무한스크롤 추가 로딩 시 사용
     fun addList(moreItems: List<AdItem>) {
         val start = items.size
         items.addAll(moreItems)
         notifyItemRangeInserted(start, moreItems.size)
     }
 
-    // 리스트 전체 비움 (필요할 때)
     fun clearList() {
         items.clear()
         notifyDataSetChanged()
     }
-    fun setOnItemClickListener(listener: (AdItem, View) -> Unit) { onItemClick = listener }
+
+    fun setOnItemClickListener(listener: (AdItem, View) -> Unit) {
+        onItemClick = listener
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.titleText)
         val brief: TextView = view.findViewById(R.id.briefText)
         val price: TextView = view.findViewById(R.id.priceText)
         val image: ImageView = view.findViewById(R.id.imageView)
+        val status: TextView? = view.findViewById(R.id.statusText)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_ad, parent, false)
+            .inflate(layoutResId, parent, false)
         return ViewHolder(view)
     }
 
@@ -80,6 +83,31 @@ class AdAdapter(private val fragment: Fragment) :
             .error(R.drawable.ic_placeholder_default)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.image)
+
+        // statusText가 레이아웃에 있는 경우에만 처리
+        holder.status?.let { statusView ->
+            if (!item.paymentStatus.isNullOrEmpty()) {
+                statusView.visibility = View.VISIBLE
+                statusView.text = getOrderStatusText(item.paymentStatus)
+            } else {
+                statusView.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun getOrderStatusText(status: String): String {
+        return when (status) {
+            "READY" -> "결제대기"
+            "FAILED" -> "결제실패"
+            "PAID" -> "결제완료"
+            "CANCEL" -> "주문취소"
+            "PREPARING" -> "배송준비중"
+            "SHIPPING" -> "배송중"
+            "DELIVERED" -> "배송완료"
+            "RETURN_REQUESTED" -> "반품요청"
+            "EXCHANGED" -> "교환완료"
+            else -> status
+        }
     }
 
     override fun getItemCount(): Int = items.size
@@ -87,9 +115,8 @@ class AdAdapter(private val fragment: Fragment) :
     fun removeByProductId(productId: String) {
         val idx = items.indexOfFirst { it.productId == productId }
         if (idx != -1) {
-            val mutable = items.toMutableList()
-            mutable.removeAt(idx)
-            updateList(mutable) // or submitList if ListAdapter 사용
+            items.removeAt(idx)
+            notifyItemRemoved(idx)
         }
     }
 }
