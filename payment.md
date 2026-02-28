@@ -98,6 +98,20 @@
           입력 검증: 수령인 이름, 주소, 연락처가 비어있을 경우 결제 버튼을 비활성화하거나 경고 메시지를 노출합니다.
           재고 확인: 주문화면 진입 시 해당 옵션의 재고가 0인 경우 "품절된 상품입니다" 메시지와 함께 이전 화면으로 복귀시킵니다.
           결제 중단: 사용자가 결제창을 닫거나 취소했을 때 tb_orders의 상태를 적절히 처리할 수 있도록 리스너를 구현합니다.
+       3-2 주문상세 에서 결체취소 
+           주문후 7일 이내 상품은 결제최소 버튼 노출 결제 취소 버튼 클릭시 결제취소 처리 
+           EndPoint: POST /api/payment/cancel   
+           input:
+           {
+               "paymentKey": "tgen_20240219...",
+               "orderId": "ORDER-1708348400000",
+               "amount": 53000
+           }
+           output:
+           {
+               "success": true,
+               "message": "Payment cancelled"
+           }
    4. 요약된 결제 시퀀스 (MRD 기반)
      App: 주문 정보 입력 및 결제하기 클릭
      App → Server: POST /api/payment/order/create (주문서 가등록)
