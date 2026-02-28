@@ -102,12 +102,12 @@
            주문후 7일 이내 상품은 결제최소 버튼 노출 결제 취소 버튼 클릭시 결제취소 처리 
            EndPoint: POST /api/payment/cancel   
            input:
-           {
-               "paymentKey": "tgen_20240219...",
-               "orderId": "ORDER-1708348400000",
-               "amount": 53000
-           }
-           output:
+            {
+            "orderNo": "ORDER-1708348400000",
+            "cancelReason": "고객 변심",
+            "userNo": 1
+            }           
+            output:
            {
                "success": true,
                "message": "Payment cancelled"
