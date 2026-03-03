@@ -29,6 +29,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import android.webkit.WebView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
@@ -197,8 +198,43 @@ class AdDetailActivity : AppCompatActivity() {
 
 
         val descriptionTextView: TextView = findViewById(R.id.product_description)
-        // 설명 텍스트 표시
-        descriptionTextView.text = detail.product.description ?: "설명이 없습니다"
+        val descriptionWebView: WebView = findViewById(R.id.product_description_webview)
+
+        val editorMode = detail.product.editorMode
+        if (editorMode == "1" || editorMode == "2") {
+            descriptionTextView.visibility = View.GONE
+            descriptionWebView.visibility = View.VISIBLE
+
+            descriptionWebView.settings.apply {
+                javaScriptEnabled = true
+                builtInZoomControls = true
+                displayZoomControls = false
+                setSupportZoom(true)
+                loadWithOverviewMode = true
+                useWideViewPort = true
+            }
+
+            val htmlContent = """
+                <html>
+                <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        body { word-wrap: break-word; padding: 10px; }
+                        img { max-width: 100%; height: auto; }
+                    </style>
+                </head>
+                <body>
+                    ${detail.product.description ?: "설명이 없습니다"}
+                </body>
+                </html>
+            """.trimIndent()
+
+            descriptionWebView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
+        } else {
+            descriptionTextView.visibility = View.VISIBLE
+            descriptionWebView.visibility = View.GONE
+            descriptionTextView.text = detail.product.description ?: "설명이 없습니다"
+        }
 
         val priceTextView: TextView = findViewById(R.id.product_price)
         val priceLong = detail.product.price?.toDoubleOrNull()?.toLong() ?: 0L
