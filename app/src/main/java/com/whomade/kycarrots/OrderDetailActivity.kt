@@ -23,6 +23,8 @@ import java.util.Locale
 import com.whomade.kycarrots.data.model.OrderCancelRequest
 import com.whomade.kycarrots.data.model.PaymentCancelRequest
 import androidx.appcompat.app.AlertDialog
+import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContracts
 
 class OrderDetailActivity : AppCompatActivity() {
 
@@ -30,6 +32,20 @@ class OrderDetailActivity : AppCompatActivity() {
     private lateinit var appService: AppService
     private val decimalFormat = DecimalFormat("#,###")
     private var currentOrder: com.whomade.kycarrots.data.model.OrderInfo? = null
+    private var currentProductName: String = ""
+
+    private val paymentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val status = result.data?.getStringExtra("status")
+            if (status == "SUCCESS") {
+                val orderNo = intent.getStringExtra("orderNo") ?: ""
+                loadOrderDetail(orderNo) // Refresh
+            } else {
+                val message = result.data?.getStringExtra("message") ?: "결제에 실패했습니다."
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +65,7 @@ class OrderDetailActivity : AppCompatActivity() {
         binding.btnCancelOrder.setOnClickListener {
             showCancelConfirmDialog()
         }
+
     }
 
     private fun setupToolbar() {
@@ -84,7 +101,7 @@ class OrderDetailActivity : AppCompatActivity() {
     private fun displayOrderDetail(data: OrderDetailResponse) {
         val order = data.order
         currentOrder = order
-        binding.tvOrderStatus.text = getOrderStatusText(order.orderStatus)
+        binding.tvOrderStatus.text = order.orderStatusNm ?: ""
         binding.tvOrderNo.text = "주문번호: ${order.orderNo}"
         binding.tvOrderDate.text = "주문일시: ${order.orderedAt}"
 
@@ -103,6 +120,7 @@ class OrderDetailActivity : AppCompatActivity() {
         // Item
         if (data.items.isNotEmpty()) {
             val item = data.items[0]
+            currentProductName = item.productName
             binding.tvProductName.text = item.productName
             binding.tvPriceQuantity.text = "${decimalFormat.format(item.unitPrice)}원 / ${item.quantity}개"
 
@@ -117,7 +135,8 @@ class OrderDetailActivity : AppCompatActivity() {
     }
 
     private fun checkCancelEligibility(order: com.whomade.kycarrots.data.model.OrderInfo) {
-        if (order.orderStatus == "PAID") {
+        // 30: 결제완료
+        if (order.orderStatus == "50") {
             val dateToCheck = order.paidAt ?: order.orderedAt
             if (dateToCheck != null) {
                 try {
@@ -141,21 +160,6 @@ class OrderDetailActivity : AppCompatActivity() {
             }
         } else {
             binding.btnCancelOrder.visibility = View.GONE
-        }
-    }
-
-    private fun getOrderStatusText(status: String): String {
-        return when (status) {
-            "READY" -> "결제대기"
-            "FAILED" -> "결제실패"
-            "PAID" -> "결제완료"
-            "CANCEL" -> "주문취소"
-            "PREPARING" -> "배송준비중"
-            "SHIPPING" -> "배송중"
-            "DELIVERED" -> "배송완료"
-            "RETURN_REQUESTED" -> "반품요청"
-            "EXCHANGED" -> "교환완료"
-            else -> status
         }
     }
 

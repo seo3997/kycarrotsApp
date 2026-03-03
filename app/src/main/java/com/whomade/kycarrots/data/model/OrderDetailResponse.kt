@@ -32,6 +32,7 @@ data class OrderInfo(
     @SerializedName("orderNo") val orderNo: String,
     @SerializedName("userNo") val userNo: Long,
     @SerializedName("orderStatus") val orderStatus: String,
+    @SerializedName("orderStatusNm") val orderStatusNm: String?,
     @SerializedName("paymentStatus") val paymentStatus: String,
     @SerializedName("totalItemAmount") val totalItemAmount: Int,
     @SerializedName("deliveryFee") val deliveryFee: Int,
