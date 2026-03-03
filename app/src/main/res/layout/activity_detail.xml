@@ -183,51 +183,130 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- 가격 + 희망 출하일 (한 줄) -->
-                    <!-- 가격 & 희망 출하일 (세로) -->
+                    <TextView
+                        android:id="@+id/product_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="₩"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:paddingBottom="16dp"/>
+
+                    <!-- 배송비 카드 -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#E3F2FD"
+                        app:cardBackgroundColor="#F9FBFF">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="12dp"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_delivery"
+                                app:tint="#2196F3" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginStart="12dp">
+
+                                <TextView
+                                    android:id="@+id/tv_delivery_fee"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="배송비: 0원"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="(50,000원 이상 구매 시 무료)"
+                                    android:textColor="#757575"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- 구매 가능 수량 -->
+                    <TextView
+                        android:id="@+id/tv_available_quantity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="구매 가능 수량: 1000개"
+                        android:textColor="#757575"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="12dp" />
+
+                    <!-- 수량 조정 레이아웃 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingVertical="8dp">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="16dp">
 
-                        <!-- 1행: 가격 -->
                         <TextView
-                            android:id="@+id/product_price"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="₩"
-                            android:textSize="16sp"
+                            android:text="수량"
                             android:textStyle="bold"
-                            android:textColor="?attr/colorPrimary"/>
-
-                        <!-- 2행: 희망 출하일 (오른쪽 정렬) -->
-                        <TextView
-                            android:id="@+id/product_shipping_date"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="희망출하일:"
-                            android:textSize="14sp"
                             android:textColor="@android:color/black"
-                            android:paddingTop="4dp"/>
-                    </LinearLayout>
+                            android:textSize="14sp"
+                            android:layout_marginEnd="16dp" />
 
-                    <!-- 수량 + 단위 (한 줄) -->
-                    <TextView
-                        android:id="@+id/product_quantity_unit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="수량:"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/black"
-                        android:paddingBottom="8dp"/>
+                        <ImageView
+                            android:id="@+id/btn_minus"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_remove"
+                            android:background="@drawable/bg_circle_outline"
+                            android:padding="6dp"
+                            android:clickable="true"
+                            android:focusable="true" />
+
+                        <TextView
+                            android:id="@+id/tv_quantity"
+                            android:layout_width="48dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="1"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/btn_plus"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_add_black"
+                            android:background="@drawable/bg_circle_outline"
+                            android:padding="6dp"
+                            android:clickable="true"
+                            android:focusable="true" />
+                    </LinearLayout>
 
                     <!-- 구분선 -->
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/divider"
-                        android:layout_marginVertical="8dp"/>
+                        android:layout_marginBottom="12dp"/>
 
                     <!-- 카테고리명 -->
                     <TextView
@@ -235,8 +314,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="카테고리: "
-                        android:textSize="14sp"
-                        android:textColor="@android:color/black"
+                        android:textSize="13sp"
+                        android:textColor="#757575"
                         android:paddingBottom="4dp"/>
 
                     <!-- 지역명 -->
@@ -245,8 +324,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="지역: "
-                        android:textSize="14sp"
-                        android:textColor="@android:color/black"/>
+                        android:textSize="13sp"
+                        android:textColor="#757575"/>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

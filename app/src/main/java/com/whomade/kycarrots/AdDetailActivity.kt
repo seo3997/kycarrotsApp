@@ -82,6 +82,8 @@ class AdDetailActivity : AppCompatActivity() {
     private var selectedBuyerForCompletion: ChatBuyerDto? = null
     private lateinit var btnBuy: View
     private var currentProductDetail: ProductDetailResponse? = null
+    private var orderQuantity: Int = 1
+    private var maxQuantity: Int = 1
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,10 +145,30 @@ class AdDetailActivity : AppCompatActivity() {
                 putExtra("productId", detail.product.productId!!.toLong())
                 putExtra("productName", detail.product.title)
                 putExtra("unitPrice", detail.product.price?.toDoubleOrNull()?.toInt() ?: 0)
-                putExtra("selectedOption", detail.product.unitCodeNm) // Sample option
-                putExtra("quantity", 1)
+                putExtra("selectedOption", detail.product.unitCodeNm)
+                putExtra("quantity", orderQuantity)
             }
             startActivity(intent)
+        }
+
+        val btnMinus: View = findViewById(R.id.btn_minus)
+        val btnPlus: View = findViewById(R.id.btn_plus)
+        val tvQuantity: TextView = findViewById(R.id.tv_quantity)
+
+        btnMinus.setOnClickListener {
+            if (orderQuantity > 1) {
+                orderQuantity--
+                tvQuantity.text = orderQuantity.toString()
+            }
+        }
+
+        btnPlus.setOnClickListener {
+            if (orderQuantity < maxQuantity) {
+                orderQuantity++
+                tvQuantity.text = orderQuantity.toString()
+            } else {
+                Toast.makeText(this, "최대 구매 가능 수량입니다.", Toast.LENGTH_SHORT).show()
+            }
         }
 
 
@@ -255,17 +277,13 @@ class AdDetailActivity : AppCompatActivity() {
         val priceTextView: TextView = findViewById(R.id.product_price)
         val priceLong = detail.product.price?.toDoubleOrNull()?.toLong() ?: 0L
         val formattedPrice = String.format("%,d원", priceLong)
-        priceTextView.text = "가격: $formattedPrice"
+        priceTextView.text = formattedPrice
 
+        maxQuantity = detail.product.quantity.toIntOrNull() ?: 1
+        val tvAvailableQuantity: TextView = findViewById(R.id.tv_available_quantity)
+        tvAvailableQuantity.text = "구매 가능 수량: ${String.format("%,d", maxQuantity)}${detail.product.unitCodeNm}"
 
-        val shippingDateTextView: TextView = findViewById(R.id.product_shipping_date)
-        shippingDateTextView.text = "희망출하일: ${detail.product.desiredShippingDate}"
-
-        val quantityTextView: TextView = findViewById(R.id.product_quantity_unit)
-
-        val rawQty = detail.product.quantity.toLongOrNull() ?: 0L
-        val formattedQty = String.format("%,d", rawQty)
-        quantityTextView.text = "수량: ${formattedQty} ${detail.product.unitCodeNm}"
+        findViewById<TextView>(R.id.tv_delivery_fee).text = "배송비: 0원" // 필요한 경우 실제 데이터 매핑
 
         val categoryTextView: TextView = findViewById(R.id.product_category_name)
         categoryTextView.text =
