@@ -18,7 +18,6 @@ class AdAdapter(private val items: List<AdItem>) :
 
     inner class AdViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.titleText)
-        val brief: TextView = view.findViewById(R.id.briefText)
         val price: TextView = view.findViewById(R.id.priceText)
         val image: ImageView = view.findViewById(R.id.imageView)
     }
@@ -32,7 +31,6 @@ class AdAdapter(private val items: List<AdItem>) :
     override fun onBindViewHolder(holder: AdViewHolder, position: Int) {
         val item = items[position]
         holder.title.text = item.title
-        holder.brief.text = item.description
         
         try {
             val priceVal = item.price.toDouble().toLong()

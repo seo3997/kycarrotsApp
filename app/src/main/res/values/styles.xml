@@ -86,4 +86,8 @@
     </style>
 
 
+    <style name="ShapeAppearance.MediumComponent.Rounded" parent="">
+        <item name="cornerSize">12dp</item>
+    </style>
+
 </resources>
