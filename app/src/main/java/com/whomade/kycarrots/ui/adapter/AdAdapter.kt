@@ -52,6 +52,7 @@ class AdAdapter(
         val price: TextView = view.findViewById(R.id.priceText)
         val image: ImageView = view.findViewById(R.id.imageView)
         val status: TextView? = view.findViewById(R.id.statusText)
+        val overlay: View? = view.findViewById(R.id.soldOutOverlay)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -82,13 +83,31 @@ class AdAdapter(
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.image)
 
-        // statusText가 레이아웃에 있는 경우에만 처리
-        holder.status?.let { statusView ->
+        // saleStatusNm 처리 (판매중이 아니면 표시)
+        val isNotOnSale = !item.saleStatusNm.isNullOrEmpty() && item.saleStatusNm != "판매중"
+        
+        if (isNotOnSale) {
+            holder.status?.apply {
+                visibility = View.VISIBLE
+                text = item.saleStatusNm
+                // 판매중이 아닐 때의 스타일
+                setBackgroundResource(R.drawable.bg_status_badge_inactive)
+                setTextColor(android.graphics.Color.parseColor("#757575"))
+            }
+            holder.overlay?.visibility = View.VISIBLE
+        } else {
+            // "판매중" 이거나 null인 경우 paymentStatus 확인 (주문 목록 등에서)
             if (!item.paymentStatus.isNullOrEmpty()) {
-                statusView.visibility = View.VISIBLE
-                statusView.text = getOrderStatusText(item.paymentStatus)
+                holder.status?.apply {
+                    visibility = View.VISIBLE
+                    text = getOrderStatusText(item.paymentStatus)
+                    setBackgroundResource(R.drawable.bg_status_badge)
+                    setTextColor(android.graphics.Color.parseColor("#1976D2"))
+                }
+                holder.overlay?.visibility = View.GONE
             } else {
-                statusView.visibility = View.GONE
+                holder.status?.visibility = View.GONE
+                holder.overlay?.visibility = View.GONE
             }
         }
     }

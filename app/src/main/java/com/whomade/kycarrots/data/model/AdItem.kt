@@ -18,5 +18,7 @@ data class AdItem(
     @SerializedName(value = "orderNo", alternate = ["ORDER_NO"])
     val orderNo: String? = null,
     @SerializedName(value = "paymentStatus", alternate = ["PAYMENT_STATUS"])
-    val paymentStatus: String? = null
+    val paymentStatus: String? = null,
+    @SerializedName(value = "saleStatusNm", alternate = ["SALE_STATUS_NM"])
+    val saleStatusNm: String? = null
 )

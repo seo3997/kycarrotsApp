@@ -33,6 +33,8 @@ class AdActivityAdapter(
         val title: TextView  = view.findViewById(R.id.titleText)
         val price: TextView  = view.findViewById(R.id.priceText)
         val image: ImageView = view.findViewById(R.id.imageView)
+        val status: TextView? = view.findViewById(R.id.statusText)
+        val overlay: View? = view.findViewById(R.id.soldOutOverlay)
 
         init {
             view.setOnClickListener {
@@ -78,6 +80,22 @@ class AdActivityAdapter(
             .error(R.drawable.ic_placeholder_default)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.image)
+
+        // saleStatusNm 처리 (판매중이 아니면 표시)
+        val isNotOnSale = !item.saleStatusNm.isNullOrEmpty() && item.saleStatusNm != "판매중"
+        
+        if (isNotOnSale) {
+            holder.status?.apply {
+                visibility = View.VISIBLE
+                text = item.saleStatusNm
+                setBackgroundResource(R.drawable.bg_status_badge_inactive)
+                setTextColor(android.graphics.Color.parseColor("#757575"))
+            }
+            holder.overlay?.visibility = View.VISIBLE
+        } else {
+            holder.status?.visibility = View.GONE
+            holder.overlay?.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int = items.size
