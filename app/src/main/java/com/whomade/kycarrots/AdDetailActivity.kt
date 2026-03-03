@@ -212,24 +212,40 @@ class AdDetailActivity : AppCompatActivity() {
                 setSupportZoom(true)
                 loadWithOverviewMode = true
                 useWideViewPort = true
+                defaultTextEncodingName = "UTF-8"
+            }
+
+            // NestedScrollView 내에서 핀치 줌이 잘 작동하도록 터치 리스너 추가
+            descriptionWebView.setOnTouchListener { v, event ->
+                if (event.pointerCount >= 2) {
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                }
+                false
+            }
+
+            var description = detail.product.description ?: "설명이 없습니다"
+            if (description.contains("&lt;") || description.contains("&gt;")) {
+               description = android.text.Html.fromHtml(description, android.text.Html.FROM_HTML_MODE_LEGACY).toString()
             }
 
             val htmlContent = """
+                <!DOCTYPE html>
                 <html>
                 <head>
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
                     <style>
-                        body { word-wrap: break-word; padding: 10px; }
+                        body { word-wrap: break-word; padding: 0; margin: 0; }
                         img { max-width: 100%; height: auto; }
                     </style>
                 </head>
                 <body>
-                    ${detail.product.description ?: "설명이 없습니다"}
+                    $description
                 </body>
                 </html>
             """.trimIndent()
 
-            descriptionWebView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
+            descriptionWebView.loadDataWithBaseURL("about:blank", htmlContent, "text/html", "UTF-8", null)
         } else {
             descriptionTextView.visibility = View.VISIBLE
             descriptionWebView.visibility = View.GONE
