@@ -17,12 +17,18 @@ data class AdItem(
     val userId: String,
     @SerializedName(value = "orderNo", alternate = ["ORDER_NO"])
     val orderNo: String? = null,
-    @SerializedName(value = "paymentStatus", alternate = ["PAYMENT_STATUS"])
+    @SerializedName(value = "paymentStatus", alternate = ["PAYMENT_STATUS", "ORDER_STATUS"])
     val paymentStatus: String? = null,
     @SerializedName(value = "orderStatusNm", alternate = ["ORDER_STATUS_NM"])
     val orderStatusNm: String? = null,
     @SerializedName(value = "deliveredAt", alternate = ["DELIVERED_AT"])
     val deliveredAt: String? = null,
     @SerializedName(value = "saleStatusNm", alternate = ["SALE_STATUS_NM"])
-    val saleStatusNm: String? = null
+    val saleStatusNm: String? = null,
+    @SerializedName(value = "deliveryCompanyNm", alternate = ["DELIVERY_COMPANY_NM"])
+    val deliveryCompanyNm: String? = null,
+    @SerializedName(value = "trackingNo", alternate = ["TRACKING_NO"])
+    val trackingNo: String? = null,
+    @SerializedName(value = "orderedAt", alternate = ["ORDERED_AT"])
+    val orderedAt: String? = null
 )

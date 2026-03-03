@@ -5,103 +5,162 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="6dp"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="3dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
     app:strokeWidth="0dp"
     app:cardBackgroundColor="@color/color_white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:padding="16dp">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:scaleType="centerCrop"
-            android:transitionName="shared_image"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumComponent.Rounded"
-            android:contentDescription="@string/ad_image" />
-
+        <!-- Top Header: Order No -->
         <TextView
-            android:id="@+id/titleText"
+            android:id="@+id/orderNoText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/statusText"
-            app:layout_constraintStart_toEndOf="@id/imageView"
-            app:layout_constraintTop_toTopOf="@id/imageView" />
-
-        <TextView
-            android:id="@+id/statusText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_status_badge"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
-            android:textColor="#1976D2"
-            android:textSize="11sp"
+            android:textColor="#64748B"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/titleText" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="주문번호: 20240304-0001" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="#F1F5F9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orderNoText" />
+
+        <!-- Center Content: Image & Details -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="centerCrop"
+            android:transitionName="shared_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumComponent.Rounded"
+            android:contentDescription="@string/ad_image" />
 
         <TextView
             android:id="@+id/priceText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#E65100"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="10dp"
+            android:textColor="#0F172A"
             android:textSize="17sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/imageView"
-            app:layout_constraintStart_toStartOf="@id/titleText" />
+            app:layout_constraintStart_toEndOf="@id/imageView"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            android:text="0원" />
 
-        <LinearLayout
-            android:id="@+id/ll_actions"
+        <TextView
+            android:id="@+id/titleText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            android:divider="@drawable/spacer_8dp"
-            android:showDividers="middle"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#475569"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/titleText"
-            app:layout_constraintTop_toBottomOf="@id/priceText">
-            
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_cancel"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="주문취소"
-                android:textSize="12sp"
-                android:visibility="gone"
-                app:strokeColor="#ef4444"
-                android:textColor="#ef4444" />
+            app:layout_constraintStart_toStartOf="@id/priceText"
+            app:layout_constraintTop_toBottomOf="@id/priceText"
+            android:text="상품명" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_return"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/statusAndActions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/priceText"
+            app:layout_constraintTop_toBottomOf="@id/titleText">
+
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="반품요청"
-                android:textSize="12sp"
-                android:visibility="gone"
-                app:strokeColor="#666666"
-                android:textColor="#666666" />
+                android:background="@drawable/bg_status_badge"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:textColor="#1976D2"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:text="배송완료" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/ll_actions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:divider="@drawable/spacer_8dp"
+                android:showDividers="middle">
+                
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_cancel"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="80dp"
+                    android:layout_height="32dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    android:text="주문취소"
+                    android:textSize="11sp"
+                    android:visibility="gone"
+                    app:strokeColor="#EF4444"
+                    android:textColor="#EF4444"
+                    app:rippleColor="#20EF4444" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_return"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="80dp"
+                    android:layout_height="32dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    android:text="반품요청"
+                    android:textSize="11sp"
+                    android:visibility="gone"
+                    app:strokeColor="#94A3B8"
+                    android:textColor="#64748B"
+                    app:rippleColor="#1064748B" />
+            </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/deliveryInfoText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#94A3B8"
+            android:textSize="11sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/priceText"
+            app:layout_constraintTop_toBottomOf="@id/statusAndActions"
+            android:text="배송정보" />
 
         <View
             android:id="@+id/soldOutOverlay"

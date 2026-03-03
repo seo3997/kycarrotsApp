@@ -154,6 +154,27 @@ class PurchaseListFragment : Fragment() {
     }
 
     private fun cancelOrderInList(item: AdItem) {
+        // 7-day check
+        val orderedAt = item.orderedAt
+        if (!orderedAt.isNullOrEmpty()) {
+            try {
+                // Handling formats like "2024.03.04 12:00" or "2024-03-04 12:00:00"
+                val cleanDate = orderedAt.replace(".", "-")
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                val orderDate = sdf.parse(cleanDate)
+                if (orderDate != null) {
+                    val diff = System.currentTimeMillis() - orderDate.time
+                    val diffDays = diff / (1000 * 60 * 60 * 24)
+                    if (diffDays > 7) {
+                        Toast.makeText(requireContext(), "결제 후 7일이 경과하여 직접 취소가 불가능합니다. 고객센터로 문의해주세요.", Toast.LENGTH_LONG).show()
+                        return
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("PurchaseListFragment", "Cancel date parse error: $orderedAt")
+            }
+        }
+
         val userNoStr = LoginInfoUtil.getUserNo(requireContext())
         val userNo = userNoStr?.toLongOrNull() ?: 0L
         if (item.orderNo == null || userNo <= 0L) return
@@ -183,6 +204,26 @@ class PurchaseListFragment : Fragment() {
     }
 
     private fun returnOrderInList(item: AdItem) {
+        // 7-day check
+        val deliveredAt = item.deliveredAt
+        if (!deliveredAt.isNullOrEmpty()) {
+            try {
+                val cleanDate = deliveredAt.replace("T", " ")
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                val delDate = sdf.parse(cleanDate)
+                if (delDate != null) {
+                    val diff = System.currentTimeMillis() - delDate.time
+                    val diffDays = diff / (1000 * 60 * 60 * 24)
+                    if (diffDays > 7) {
+                        Toast.makeText(requireContext(), "배송 완료 후 7일이 경과하여 반품 요청이 불가능합니다. 고객센터로 문의해주세요.", Toast.LENGTH_LONG).show()
+                        return
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("PurchaseListFragment", "Return date parse error: $deliveredAt")
+            }
+        }
+
         val userNoStr = LoginInfoUtil.getUserNo(requireContext())
         val userNo = userNoStr?.toLongOrNull() ?: 0L
         if (item.orderNo == null || userNo <= 0L) return
