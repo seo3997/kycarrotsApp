@@ -30,5 +30,7 @@ data class OpUserVO(
     var updusrNo: Int = 0,                  // 수정자 번호
     var updtDt: String = "",                 // 수정 일시
     var provider: String = "",               // SNS 유형
-    var providerUserId: String = ""          // SNS ID
+    var providerUserId: String = "",         // SNS ID
+    var branchId: String = "",               // 지점 ID
+    var joinAppPackage: String = ""          // 가입 앱 패키지
 )

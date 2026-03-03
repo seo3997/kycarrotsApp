@@ -13,8 +13,10 @@ object LoginInfoUtil {
     public const val KEY_IS_LOGIN = "IsLogin"
     public const val KEY_LOGIN_CD = "LogIn_CD"
     public const val KEY_SOCIAL_ID = "LogIn_SOCIAL_ID"
+    public const val KEY_BRANCH_ID = "LogIn_BRANCH_ID"
+    public const val KEY_BRANCH_NAME = "LogIn_BRANCH_NAME"
 
-    fun saveLoginInfo(context: Context, email: String, loginNo: String, password: String, memberCode: String, loginNm: String, loginCd: String, loginSocialId: String) {
+    fun saveLoginInfo(context: Context, email: String, loginNo: String, password: String, memberCode: String, loginNm: String, loginCd: String, loginSocialId: String, branchId: String? = null, branchName: String? = null) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().apply {
             putString(KEY_ID, email)
             putString(KEY_NO, loginNo)
@@ -24,6 +26,8 @@ object LoginInfoUtil {
             putBoolean(KEY_IS_LOGIN, true)
             putString(KEY_LOGIN_CD, loginCd)
             putString(KEY_SOCIAL_ID, loginSocialId)
+            putString(KEY_BRANCH_ID, branchId ?: "")
+            putString(KEY_BRANCH_NAME, branchName ?: "")
             apply()
         }
     }
@@ -59,6 +63,16 @@ object LoginInfoUtil {
     fun getUserSocialId(context: Context): String {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .getString(KEY_SOCIAL_ID, "") ?: ""
+    }
+
+    fun getBranchId(context: Context): String {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_BRANCH_ID, "") ?: ""
+    }
+
+    fun getBranchName(context: Context): String {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_BRANCH_NAME, "") ?: ""
     }
 
 

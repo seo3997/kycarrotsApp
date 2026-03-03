@@ -13,5 +13,6 @@ data class LoginResponse(
     val login_id: String? = null,
     val login_cd: String = "",
     val login_social_id: String = "",
-    var login_pwd: String = ""
+    var login_pwd: String = "",
+    val branch_info: BranchInfoVo? = null
 )

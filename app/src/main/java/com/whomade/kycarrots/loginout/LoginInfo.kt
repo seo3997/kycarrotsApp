@@ -48,7 +48,7 @@ class LoginInfo(
     }
 
     private fun saveLoginInfo(info: LoginResponse) {
-        LoginInfoUtil.saveLoginInfo(context,email,info.login_idx?: "", password,info.member_code?: "",info.login_nm?: "",loginCd,providerUserId)
+        LoginInfoUtil.saveLoginInfo(context,email,info.login_idx?: "", password,info.member_code?: "",info.login_nm?: "",loginCd,providerUserId, info.branch_info?.branch_id?.toString(), info.branch_info?.branch_name)
         TokenUtil.saveToken(context,info.token ?: "")
     }
 }

@@ -12,6 +12,8 @@ object AuthManager {
             putString("LogIn_ID", "")
             putString("LogIn_PWD", "")
             putString("LogIn_MEMBERCODE", "")
+            putString("LogIn_BRANCH_ID", "")
+            putString("LogIn_BRANCH_NAME", "")
             putBoolean("IsLogin", false)
             apply()
         }
