@@ -152,6 +152,7 @@ class AdDetailActivity : AppCompatActivity() {
             if (orderQuantity > 1) {
                 orderQuantity--
                 tvQuantity.text = orderQuantity.toString()
+                updateTotalAmount()
             }
         }
 
@@ -159,6 +160,7 @@ class AdDetailActivity : AppCompatActivity() {
             if (orderQuantity < maxQuantity) {
                 orderQuantity++
                 tvQuantity.text = orderQuantity.toString()
+                updateTotalAmount()
             } else {
                 Toast.makeText(this, "최대 구매 가능 수량입니다.", Toast.LENGTH_SHORT).show()
             }
@@ -272,11 +274,18 @@ class AdDetailActivity : AppCompatActivity() {
         val formattedPrice = String.format("%,d원", priceLong)
         priceTextView.text = formattedPrice
 
-        maxQuantity = detail.product.quantity.toIntOrNull() ?: 1
+        maxQuantity = detail.product.availableQuantity.toIntOrNull() ?: 0
         val tvAvailableQuantity: TextView = findViewById(R.id.tv_available_quantity)
         tvAvailableQuantity.text = "구매 가능 수량: ${String.format("%,d", maxQuantity)} 개"
 
-        findViewById<TextView>(R.id.tv_delivery_fee).text = "배송비: 0원" // 필요한 경우 실제 데이터 매핑
+        // 지점 배송비 정보 설정
+        val baseShippingFee = LoginInfoUtil.getBaseShippingFee(this)
+        val freeThreshold = LoginInfoUtil.getFreeShippingThreshold(this)
+        
+        findViewById<TextView>(R.id.tv_delivery_fee).text = "배송비: ${String.format("%,d", baseShippingFee)}원"
+        findViewById<TextView>(R.id.tv_free_shipping_threshold).text = "(${String.format("%,d", freeThreshold)}원 이상 구매 시 무료)"
+        
+        updateTotalAmount()
 
 
 
@@ -388,6 +397,14 @@ class AdDetailActivity : AppCompatActivity() {
         renderRejectReason(detail.product.saleStatus,detail.product.rejectReason)
 
         invalidateOptionsMenu()
+    }
+
+    private fun updateTotalAmount() {
+        val detail = currentProductDetail ?: return
+        val price = detail.product.price?.toDoubleOrNull() ?: 0.0
+        val totalAmount = price * orderQuantity
+        val tvTotalPrice: TextView = findViewById(R.id.tv_total_price)
+        tvTotalPrice.text = String.format("%,d원", totalAmount.toLong())
     }
 
     private fun loadProductStatusOptions(systemType: Int, currentStatus: String?) {

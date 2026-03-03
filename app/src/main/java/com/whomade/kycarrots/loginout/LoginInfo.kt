@@ -48,7 +48,12 @@ class LoginInfo(
     }
 
     private fun saveLoginInfo(info: LoginResponse) {
-        LoginInfoUtil.saveLoginInfo(context,email,info.login_idx?: "", password,info.member_code?: "",info.login_nm?: "",loginCd,providerUserId, info.branch_info?.branch_id?.toString(), info.branch_info?.branch_name)
-        TokenUtil.saveToken(context,info.token ?: "")
+        val branch = info.branch_info
+        LoginInfoUtil.saveLoginInfo(
+            context, email, info.login_idx ?: "", password, info.member_code ?: "", info.login_nm ?: "", loginCd, providerUserId,
+            branch?.branch_id?.toString(), branch?.branch_name, branch?.toss_client_key,
+            branch?.base_shipping_fee ?: 0, branch?.free_shipping_threshold ?: 0
+        )
+        TokenUtil.saveToken(context, info.token ?: "")
     }
 }

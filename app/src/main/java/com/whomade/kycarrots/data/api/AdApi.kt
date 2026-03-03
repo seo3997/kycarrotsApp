@@ -32,6 +32,7 @@ import com.whomade.kycarrots.data.model.SimpleResult
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.data.model.SocialAuthRequest
 import com.whomade.kycarrots.data.model.SocialAuthResponse
+import com.whomade.kycarrots.data.model.TbAddressBookVo
 import com.whomade.kycarrots.data.model.UnlinkSocialRequest
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
 import okhttp3.MultipartBody
@@ -254,5 +255,17 @@ interface AdApi {
 
     @GET("/api/orders/{orderNo}")
     suspend fun getOrderDetail(@Path("orderNo") orderNo: String): Response<OrderDetailResponse>
+
+    @GET("/api/members/address")
+    suspend fun getAddressList(@Query("token") token: String): Response<List<Map<String, Any>>>
+
+    @POST("/api/members/address")
+    suspend fun addAddress(@Query("token") token: String, @Body address: TbAddressBookVo): Response<SimpleResultResponse>
+
+    @POST("/api/members/address/update/{id}")
+    suspend fun updateAddress(@Path("id") id: Long, @Query("token") token: String, @Body address: TbAddressBookVo): Response<SimpleResultResponse>
+
+    @POST("/api/members/address/delete/{id}")
+    suspend fun deleteAddress(@Path("id") id: Long, @Query("token") token: String): Response<SimpleResultResponse>
 }
 

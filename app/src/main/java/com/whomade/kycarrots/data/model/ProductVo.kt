@@ -35,5 +35,6 @@ data class ProductVo @JvmOverloads constructor(
     val fav: String = "",
     val systemType: String = "1",
     val rejectReason: String = "1",
-    val editorMode: String = "3"
+    val editorMode: String = "3",
+    val availableQuantity: String = "0"
 )

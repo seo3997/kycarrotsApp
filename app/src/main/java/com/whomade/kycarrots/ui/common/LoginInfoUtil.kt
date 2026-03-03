@@ -15,8 +15,11 @@ object LoginInfoUtil {
     public const val KEY_SOCIAL_ID = "LogIn_SOCIAL_ID"
     public const val KEY_BRANCH_ID = "LogIn_BRANCH_ID"
     public const val KEY_BRANCH_NAME = "LogIn_BRANCH_NAME"
+    public const val KEY_TOSS_CLIENT_KEY = "LogIn_TOSS_CLIENT_KEY"
+    public const val KEY_BASE_SHIPPING_FEE = "LogIn_BASE_SHIPPING_FEE"
+    public const val KEY_FREE_SHIPPING_THRESHOLD = "LogIn_FREE_SHIPPING_THRESHOLD"
 
-    fun saveLoginInfo(context: Context, email: String, loginNo: String, password: String, memberCode: String, loginNm: String, loginCd: String, loginSocialId: String, branchId: String? = null, branchName: String? = null) {
+    fun saveLoginInfo(context: Context, email: String, loginNo: String, password: String, memberCode: String, loginNm: String, loginCd: String, loginSocialId: String, branchId: String? = null, branchName: String? = null, tossClientKey: String? = null, baseShippingFee: Int = 0, freeShippingThreshold: Int = 0) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().apply {
             putString(KEY_ID, email)
             putString(KEY_NO, loginNo)
@@ -28,6 +31,9 @@ object LoginInfoUtil {
             putString(KEY_SOCIAL_ID, loginSocialId)
             putString(KEY_BRANCH_ID, branchId ?: "")
             putString(KEY_BRANCH_NAME, branchName ?: "")
+            putString(KEY_TOSS_CLIENT_KEY, tossClientKey ?: "")
+            putInt(KEY_BASE_SHIPPING_FEE, baseShippingFee)
+            putInt(KEY_FREE_SHIPPING_THRESHOLD, freeShippingThreshold)
             apply()
         }
     }
@@ -73,6 +79,21 @@ object LoginInfoUtil {
     fun getBranchName(context: Context): String {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .getString(KEY_BRANCH_NAME, "") ?: ""
+    }
+
+    fun getTossClientKey(context: Context): String {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_TOSS_CLIENT_KEY, "") ?: ""
+    }
+
+    fun getBaseShippingFee(context: Context): Int {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getInt(KEY_BASE_SHIPPING_FEE, 0)
+    }
+
+    fun getFreeShippingThreshold(context: Context): Int {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getInt(KEY_FREE_SHIPPING_THRESHOLD, 0)
     }
 
 

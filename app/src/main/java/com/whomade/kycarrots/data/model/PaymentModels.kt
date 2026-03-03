@@ -14,6 +14,7 @@ data class OrderCreateRequest(
     @SerializedName("address1") val address1: String,
     @SerializedName("address2") val address2: String,
     @SerializedName("orderMemo") val orderMemo: String,
+    @SerializedName("branchId") val branchId: Long? = null,
     @SerializedName("items") val items: List<OrderItemRequest>
 )
 

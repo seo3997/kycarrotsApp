@@ -34,7 +34,7 @@ class PaymentWebViewActivity : AppCompatActivity() {
         val orderNo = intent.getStringExtra("orderNo") ?: ""
         val amount = intent.getIntExtra("amount", 0)
         var productName = intent.getStringExtra("productName") ?: ""
-        val clientKey = "test_ck_yL0qZ4G1VOdympo01WQYroWb2MQY"
+        val clientKey = LoginInfoUtil.getTossClientKey(this)
 
         android.util.Log.d("PaymentWebView", "orderNo: $orderNo, amount: $amount, productName: $productName")
 

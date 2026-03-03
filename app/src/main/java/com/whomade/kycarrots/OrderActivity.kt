@@ -15,6 +15,7 @@ import com.whomade.kycarrots.data.model.OrderCreateRequest
 import com.whomade.kycarrots.data.model.OrderItemRequest
 import com.whomade.kycarrots.databinding.ActivityOrderBinding
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.TokenUtil
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -84,8 +85,12 @@ class OrderActivity : AppCompatActivity() {
         binding.tvProductOption.text = "옵션: $selectedOption / 수량: ${quantity}개"
 
         val totalItemAmount = unitPrice * quantity
-        // TODO: Later update this to fetch from product detail or server
-        deliveryFee = 0 
+        
+        // 지점 설정에서 배송비 및 무료 임계값 가져오기
+        val baseShippingFee = LoginInfoUtil.getBaseShippingFee(this)
+        val freeThreshold = LoginInfoUtil.getFreeShippingThreshold(this)
+
+        deliveryFee = if (totalItemAmount >= freeThreshold) 0 else baseShippingFee
         val totalPayAmount = totalItemAmount + deliveryFee
 
         binding.tvTotalItemAmount.text = formatCurrency(totalItemAmount)
@@ -99,13 +104,78 @@ class OrderActivity : AppCompatActivity() {
             addressSearchLauncher.launch(intent)
         }
 
+        binding.btnSelectAddress.setOnClickListener {
+            showAddressSelectionDialog()
+        }
+
         binding.btnPay.setOnClickListener {
             if (validateInputs()) {
                 showPaymentConfirmDialog()
             }
         }
 
+        loadDefaultAddress()
         setupPhoneNumberFormatting()
+    }
+
+    private fun loadDefaultAddress() {
+        val token = TokenUtil.getToken(this)
+        lifecycleScope.launch {
+            try {
+                val api = RetrofitProvider.retrofit.create(AdApi::class.java)
+                val response = api.getAddressList(token)
+                if (response.isSuccessful) {
+                    val list = response.body() ?: return@launch
+                    val defaultAddr = list.find { it["IS_DEFAULT"]?.toString() == "1.0" || it["IS_DEFAULT"]?.toString() == "1" }
+                    defaultAddr?.let {
+                        applyAddress(it)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun showAddressSelectionDialog() {
+        val token = TokenUtil.getToken(this)
+        lifecycleScope.launch {
+            try {
+                val api = RetrofitProvider.retrofit.create(AdApi::class.java)
+                val response = api.getAddressList(token)
+                if (response.isSuccessful) {
+                    val list = response.body() ?: return@launch
+                    if (list.isEmpty()) {
+                        showToast("저장된 배송지가 없습니다.")
+                        return@launch
+                    }
+
+                    val items = list.map { 
+                        "${it["RECIPIENT_NAME"]} (${it["RECIPIENT_PHONE"]})\n${it["ADDRESS_MAIN"]} ${it["ADDRESS_DETAIL"]}"
+                    }.toTypedArray()
+
+                    androidx.appcompat.app.AlertDialog.Builder(this@OrderActivity)
+                        .setTitle("최근 배송지 선택")
+                        .setItems(items) { _, which ->
+                            applyAddress(list[which])
+                        }
+                        .setNegativeButton("취소", null)
+                        .show()
+                } else {
+                    showToast("배송지 목록을 가져오는데 실패했습니다.")
+                }
+            } catch (e: Exception) {
+                showToast("오류 발생: ${e.message}")
+            }
+        }
+    }
+
+    private fun applyAddress(addr: Map<String, Any>) {
+        binding.etReceiverName.setText(addr["RECIPIENT_NAME"]?.toString() ?: "")
+        binding.etReceiverPhone.setText(addr["RECIPIENT_PHONE"]?.toString() ?: "")
+        binding.etZipCode.setText(addr["ZIP_CODE"]?.toString() ?: "")
+        binding.etAddress1.setText(addr["ADDRESS_MAIN"]?.toString() ?: "")
+        binding.etAddress2.setText(addr["ADDRESS_DETAIL"]?.toString() ?: "")
     }
 
     private fun setupPhoneNumberFormatting() {
@@ -202,6 +272,7 @@ class OrderActivity : AppCompatActivity() {
             address1 = binding.etAddress1.text.toString(),
             address2 = binding.etAddress2.text.toString(),
             orderMemo = binding.etOrderMemo.text.toString(),
+            branchId = LoginInfoUtil.getBranchId(this).toLongOrNull(),
             items = listOf(
                 OrderItemRequest(
                     productId = productId,
@@ -215,6 +286,22 @@ class OrderActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val api = RetrofitProvider.retrofit.create(AdApi::class.java)
+                
+                // 주소지 저장 체크 시 처리
+                if (binding.cbSaveAddress.isChecked) {
+                    val token = TokenUtil.getToken(this@OrderActivity)
+                    val addressVo = com.whomade.kycarrots.data.model.TbAddressBookVo(
+                        recipientName = binding.etReceiverName.text.toString(),
+                        recipientPhone = binding.etReceiverPhone.text.toString(),
+                        zipCode = binding.etZipCode.text.toString(),
+                        addressMain = binding.etAddress1.text.toString(),
+                        addressDetail = binding.etAddress2.text.toString(),
+                        isDefault = 1,
+                        memo = binding.etOrderMemo.text.toString()
+                    )
+                    api.addAddress(token, addressVo)
+                }
+
                 val response = api.createOrder(request)
 
                 if (response.isSuccessful && response.body()?.success == true) {

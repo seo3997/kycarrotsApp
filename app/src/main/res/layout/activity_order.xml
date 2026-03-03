@@ -56,14 +56,26 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <RelativeLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
-                            android:text="배송지 정보"
-                            android:textColor="@color/color_black"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:layout_marginBottom="12dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="배송지 정보"
+                                android:textColor="@color/color_black"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                            <Button
+                                android:id="@+id/btn_select_address"
+                                style="@style/Widget.MaterialComponents.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:text="최근 배송지"
+                                android:textSize="12sp" />
+                        </RelativeLayout>
 
                         <EditText
                             android:id="@+id/et_receiver_name"
@@ -118,6 +130,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="배송 메모 (선택)" />
+
+                        <CheckBox
+                            android:id="@+id/cb_save_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="주소록에 저장 (기본 배송지로 설정)"
+                            android:textSize="14sp"
+                            android:layout_marginTop="8dp" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

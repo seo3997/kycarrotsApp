@@ -234,6 +234,7 @@
                                     android:textSize="14sp" />
 
                                 <TextView
+                                    android:id="@+id/tv_free_shipping_threshold"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="(50,000원 이상 구매 시 무료)"
@@ -299,6 +300,32 @@
                             android:padding="6dp"
                             android:clickable="true"
                             android:focusable="true" />
+                    </LinearLayout>
+
+                    <!-- 총 결제 금액 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="총 상품 금액"
+                            android:textColor="@color/color_black"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tv_total_price"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:text="0원"
+                            android:textColor="@color/colorRPrimary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
 
 
