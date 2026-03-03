@@ -134,12 +134,14 @@ class AdDetailActivity : AppCompatActivity() {
         btnBuy.visibility = if (isBuyer) View.VISIBLE else View.GONE
         btnBuy.setOnClickListener {
             val detail = currentProductDetail ?: return@setOnClickListener
+            val mainImageUrl = currentProductDetail?.imageMetas?.firstOrNull { it.represent == "1" }?.imageUrl
             val intent = Intent(this, OrderActivity::class.java).apply {
                 putExtra("productId", detail.product.productId!!.toLong())
                 putExtra("productName", detail.product.title)
                 putExtra("unitPrice", detail.product.price?.toDoubleOrNull()?.toInt() ?: 0)
                 putExtra("selectedOption", detail.product.unitCodeNm)
                 putExtra("quantity", orderQuantity)
+                putExtra("productImage", mainImageUrl)
             }
             startActivity(intent)
         }

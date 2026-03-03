@@ -16,6 +16,7 @@ import com.whomade.kycarrots.data.model.OrderItemRequest
 import com.whomade.kycarrots.databinding.ActivityOrderBinding
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.TokenUtil
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -31,6 +32,7 @@ class OrderActivity : AppCompatActivity() {
     private var quantity: Int = 1
     private var expectedAmount: Int = 0
     private var deliveryFee: Int = 0 // Changed from hardcoded value to member variable
+    private var productImage: String? = null
 
 
     private val addressSearchLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -80,9 +82,15 @@ class OrderActivity : AppCompatActivity() {
         unitPrice = intent.getIntExtra("unitPrice", 0)
         selectedOption = intent.getStringExtra("selectedOption") ?: ""
         quantity = intent.getIntExtra("quantity", 1)
+        productImage = intent.getStringExtra("productImage")
 
         binding.tvProductName.text = productName
-        binding.tvProductOption.text = "옵션: $selectedOption / 수량: ${quantity}개"
+        binding.tvProductOption.text = "수량: ${quantity}개"
+
+        Glide.with(this)
+            .load(productImage)
+            .placeholder(R.drawable.ic_placeholder_default)
+            .into(binding.ivProduct)
 
         val totalItemAmount = unitPrice * quantity
         
@@ -93,6 +101,7 @@ class OrderActivity : AppCompatActivity() {
         deliveryFee = if (totalItemAmount >= freeThreshold) 0 else baseShippingFee
         val totalPayAmount = totalItemAmount + deliveryFee
 
+        binding.tvTotalItemLabel.text = "상품 금액 합계 (${quantity}개)"
         binding.tvTotalItemAmount.text = formatCurrency(totalItemAmount)
         binding.tvDeliveryFee.text = formatCurrency(deliveryFee)
         binding.tvTotalPayAmount.text = formatCurrency(totalPayAmount)
