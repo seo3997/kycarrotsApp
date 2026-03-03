@@ -127,14 +127,6 @@
                                     android:textStyle="bold"
                                     tools:text="상품명" />
 
-                                <TextView
-                                    android:id="@+id/tv_option_name"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:textColor="#666666"
-                                    android:textSize="12sp"
-                                    tools:text="옵션: kg" />
 
                                 <TextView
                                     android:id="@+id/tv_price_quantity"
@@ -209,6 +201,7 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="2dp">
 
@@ -323,6 +316,10 @@
                     android:visibility="gone"
                     app:backgroundTint="#FF4444"
                     app:cornerRadius="8dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

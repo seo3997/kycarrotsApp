@@ -104,7 +104,6 @@ class OrderDetailActivity : AppCompatActivity() {
         if (data.items.isNotEmpty()) {
             val item = data.items[0]
             binding.tvProductName.text = item.productName
-            binding.tvOptionName.text = if (item.optionName.isNullOrEmpty()) "" else "옵션: ${item.optionName}"
             binding.tvPriceQuantity.text = "${decimalFormat.format(item.unitPrice)}원 / ${item.quantity}개"
 
             Glide.with(this)
