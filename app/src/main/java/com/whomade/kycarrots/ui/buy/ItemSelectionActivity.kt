@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import com.whomade.kycarrots.BaseDrawerActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.NotificationPermissionUtil
 
 class ItemSelectionActivity : BaseDrawerActivity() {
@@ -63,8 +64,11 @@ class ItemSelectionActivity : BaseDrawerActivity() {
         bottom.setupWithNavController(navController)
 
         // (선택) 툴바 타이틀 sync
+        val branchName = LoginInfoUtil.getBranchName(this)
+        val activityTitle = if (branchName.isNotEmpty()) "($branchName) - 상품리스트" else "상품리스트"
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            supportActionBar?.title = destination.label
+            supportActionBar?.title = activityTitle
         }
     }
 

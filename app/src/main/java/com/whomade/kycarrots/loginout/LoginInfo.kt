@@ -51,8 +51,8 @@ class LoginInfo(
         val branch = info.branch_info
         LoginInfoUtil.saveLoginInfo(
             context, email, info.login_idx ?: "", password, info.member_code ?: "", info.login_nm ?: "", loginCd, providerUserId,
-            branch?.branch_id?.toString(), branch?.branch_name, branch?.toss_client_key,
-            branch?.base_shipping_fee ?: 0, branch?.free_shipping_threshold ?: 0
+            branch?.branchId?.toString(), branch?.branchName, branch?.tossClientKey,
+            branch?.baseShippingFee ?: 0, branch?.freeShippingThreshold ?: 0
         )
         TokenUtil.saveToken(context, info.token ?: "")
     }

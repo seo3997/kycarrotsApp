@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:layout_marginEnd="16dp"
-                android:text="판매중인 상품만 보기"/>
+                android:text="판매중인 상품"/>
 
             <CheckBox
                 android:id="@+id/checkbox_price"

@@ -17,8 +17,8 @@ object MainNavigation {
             login?.login_nm ?: "",
             login.login_cd,
             login.login_social_id,
-            login.branch_info?.branch_id?.toString(),
-            login.branch_info?.branch_name
+            login.branch_info?.branchId?.toString(),
+            login.branch_info?.branchName
         )
 
         activity.startActivity(
