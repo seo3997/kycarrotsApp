@@ -76,7 +76,7 @@ class AdDetailActivity : AppCompatActivity() {
     private lateinit var statusTextView: TextView // ← 추가
     private var memberCode: String? = null   // ← 현재 사용자 권한 저장
     private var isFav: Boolean = false
-    private lateinit var btnEditProduct: View
+
     private var statusChanged = false
     private var newStatus: String? = null
     private var selectedBuyerForCompletion: ChatBuyerDto? = null
@@ -89,7 +89,7 @@ class AdDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
         memberCode = LoginInfoUtil.getMemberCode(this)
-        btnEditProduct = findViewById(R.id.btn_edit_product)
+
 
 
         val intent = intent
@@ -127,14 +127,7 @@ class AdDetailActivity : AppCompatActivity() {
 
         }
 
-        val isSeller = (memberCode == Constants.ROLE_SELL)
-        btnEditProduct.visibility = if (isSeller) View.VISIBLE else View.GONE
-        btnEditProduct.setOnClickListener {
-            val intent = Intent(this, KtMakeADMainActivity::class.java)
-            intent.putExtra(KtMakeADDetailView.STR_PUT_AD_IDX, productIdStr) // 현재 ID 전달
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)
-        }
+
 
         btnBuy = findViewById(R.id.btn_buy)
         val isBuyer = (memberCode == Constants.ROLE_PUB)
@@ -281,16 +274,11 @@ class AdDetailActivity : AppCompatActivity() {
 
         maxQuantity = detail.product.quantity.toIntOrNull() ?: 1
         val tvAvailableQuantity: TextView = findViewById(R.id.tv_available_quantity)
-        tvAvailableQuantity.text = "구매 가능 수량: ${String.format("%,d", maxQuantity)}${detail.product.unitCodeNm}"
+        tvAvailableQuantity.text = "구매 가능 수량: ${String.format("%,d", maxQuantity)} 개"
 
         findViewById<TextView>(R.id.tv_delivery_fee).text = "배송비: 0원" // 필요한 경우 실제 데이터 매핑
 
-        val categoryTextView: TextView = findViewById(R.id.product_category_name)
-        categoryTextView.text =
-            "카테고리: ${detail.product.categoryMidNm} > ${detail.product.categorySclsNm}"
 
-        val regionTextView: TextView = findViewById(R.id.product_region_name)
-        regionTextView.text = "지역: ${detail.product.areaMidNm}  ${detail.product.areaSclsNm}"
 
 
         // 대표 이미지 (represent == 1)
