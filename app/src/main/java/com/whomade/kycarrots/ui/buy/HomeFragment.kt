@@ -38,29 +38,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var btnInquiry: Button
     private lateinit var sliderPrice: RangeSlider
     private lateinit var tvSelectedRange: TextView
-    private lateinit var dropdownCategory: AutoCompleteTextView
-    private lateinit var dropdownSubcategory: AutoCompleteTextView
-    private lateinit var dropdownCity: AutoCompleteTextView
-    private lateinit var dropdownDistrict: AutoCompleteTextView
     private lateinit var emptyTextView: TextView
     private lateinit var checkboxSaleOnly: CheckBox
 
-    // Data
-    private var categoryList    = listOf<TxtListDataInfo>()
-    private var subcategoryList = listOf<TxtListDataInfo>()
-    private var cityList        = listOf<TxtListDataInfo>()
-    private var districtList    = listOf<TxtListDataInfo>()
-
     private var currentAdCode = 1
     private var currentPage   = 1
-
-    var selectedCategoryGroup = "R010610"
-    var selectedCategoryMid   = "ALL"
-    var selectedCategoryScls  = "ALL"
-
-    var selectedAreaGroup = "R010070"
-    var selectedAreaMid   = "ALL"
-    var selectedAreaScls  = "ALL"
 
     private var badge: BadgeDrawable? = null
 
@@ -77,10 +59,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         btnInquiry          = view.findViewById(R.id.btn_inquiry)
         sliderPrice         = view.findViewById(R.id.slider_price)
         tvSelectedRange     = view.findViewById(R.id.selected_range)
-        dropdownCategory    = view.findViewById(R.id.dropdown_category)
-        dropdownSubcategory = view.findViewById(R.id.dropdown_subcategory)
-        dropdownCity        = view.findViewById(R.id.dropdown_city)
-        dropdownDistrict    = view.findViewById(R.id.dropdown_district)
         llProgress          = view.findViewById(R.id.ll_progress_circle)
         llProgress.visibility = View.GONE
         emptyTextView       = view.findViewById(R.id.emptyTextView)
@@ -112,8 +90,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         // 5) 조회하기 버튼
         btnInquiry.setOnClickListener {
-            viewModel.setCategoryFilter(selectedCategoryGroup, selectedCategoryMid, selectedCategoryScls)
-            viewModel.setAreaFilter(selectedAreaGroup, selectedAreaMid, selectedAreaScls)
             viewModel.resetPaging()
             viewModel.loadNextPage()
         }
@@ -148,42 +124,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         })
 
-        // 8) 드롭다운 초기화 + 리스너
-        loadCategories()
-        loadCities()
-
-        dropdownCategory.setOnItemClickListener { _, _, pos, _ ->
-            val code = categoryList[pos].strIdx
-            selectedCategoryMid = code
-            if (code == "ALL") {
-                val allEntry = TxtListDataInfo().apply { strIdx = "ALL"; strMsg = "전체" }
-                subcategoryList = listOf(allEntry)
-                dropdownSubcategory.setAdapter(
-                    ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listOf(allEntry.strMsg))
-                )
-                dropdownSubcategory.setText(allEntry.strMsg, false)
-            } else {
-                loadSubcategories(code)
-            }
-            applyFiltersAndReload()
-        }
-
-        dropdownSubcategory.setOnItemClickListener { _, _, pos, _ ->
-            selectedCategoryScls = subcategoryList[pos].strIdx
-            Toast.makeText(requireContext(), "선택: ${subcategoryList[pos].strMsg}", Toast.LENGTH_SHORT).show()
-            applyFiltersAndReload()
-        }
-
-        dropdownCity.setOnItemClickListener { _, _, pos, _ ->
-            selectedAreaMid = cityList[pos].strIdx
-            loadDistricts(selectedAreaMid)
-            applyFiltersAndReload()
-        }
-
-        dropdownDistrict.setOnItemClickListener { _, _, pos, _ ->
-            selectedAreaScls = districtList[pos].strIdx
-            applyFiltersAndReload()
-        }
+        // 8) 드롭다운 초기화 + 리스너 제거됨
 
         // 9) 최초 로드
         viewModel.resetAndLoad(currentAdCode)
@@ -191,87 +132,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
 
     // === Data loads ===
-    private fun loadCategories() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val apiList = appService.getCodeList("R010610")
-                val allEntry = TxtListDataInfo().apply { strIdx = "ALL"; strMsg = "전체" }
-                categoryList = listOf(allEntry) + apiList
-
-                dropdownCategory.setAdapter(
-                    ArrayAdapter(requireContext(), R.layout.list_txt_item, categoryList.map { it.strMsg })
-                )
-                dropdownCategory.setText(allEntry.strMsg, false)
-
-                loadSubcategories("ALL")
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "카테고리 로드 실패", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun loadSubcategories(midCode: String) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val allEntry = TxtListDataInfo().apply { strIdx = "ALL"; strMsg = "전체" }
-                subcategoryList = if (midCode == "ALL") {
-                    listOf(allEntry)
-                } else {
-                    val apiSubList = appService.getSCodeList("R010610", midCode)
-                    listOf(allEntry) + apiSubList
-                }
-                dropdownSubcategory.setAdapter(
-                    ArrayAdapter(requireContext(), R.layout.list_txt_item, subcategoryList.map { it.strMsg })
-                )
-                dropdownSubcategory.setText(allEntry.strMsg, false)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "세부항목 로드 실패", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun loadCities() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val apiList = appService.getCodeList("R010070")
-                val allEntry = TxtListDataInfo().apply { strIdx = "ALL"; strMsg = "전체" }
-                cityList = listOf(allEntry) + apiList
-
-                dropdownCity.setAdapter(
-                    ArrayAdapter(requireContext(), R.layout.list_txt_item, cityList.map { it.strMsg })
-                )
-                dropdownCity.setText(allEntry.strMsg, false)
-
-                loadDistricts("ALL")
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "도시 로드 실패", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun loadDistricts(cityCode: String) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val allEntry = TxtListDataInfo().apply { strIdx = "ALL"; strMsg = "전체" }
-                districtList = if (cityCode == "ALL") {
-                    listOf(allEntry)
-                } else {
-                    val apiSubList = appService.getSCodeList("R010070", cityCode)
-                    listOf(allEntry) + apiSubList
-                }
-                dropdownDistrict.setAdapter(
-                    ArrayAdapter(requireContext(), R.layout.list_txt_item, districtList.map { it.strMsg })
-                )
-                dropdownDistrict.setText(allEntry.strMsg, false)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "시·구 로드 실패", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     private fun applyFiltersAndReload() {
-        viewModel.setCategoryFilter(selectedCategoryGroup, selectedCategoryMid, selectedCategoryScls)
-        viewModel.setAreaFilter(selectedAreaGroup, selectedAreaMid, selectedAreaScls)
         viewModel.loadItems(adCode = currentAdCode, pageNo = currentPage)
     }
 }
