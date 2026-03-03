@@ -25,6 +25,8 @@ class AdAdapter(
     private val items: MutableList<AdItem> = mutableListOf()
     private val decimalFormat = DecimalFormat("#,###원")
     private var onItemClick: ((AdItem, View) -> Unit)? = null
+    private var onCancelClick: ((AdItem) -> Unit)? = null
+    private var onReturnClick: ((AdItem) -> Unit)? = null
 
     fun updateList(newList: List<AdItem>) {
         items.clear()
@@ -47,12 +49,22 @@ class AdAdapter(
         onItemClick = listener
     }
 
+    fun setOnCancelClickListener(listener: (AdItem) -> Unit) {
+        onCancelClick = listener
+    }
+
+    fun setOnReturnClickListener(listener: (AdItem) -> Unit) {
+        onReturnClick = listener
+    }
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.titleText)
         val price: TextView = view.findViewById(R.id.priceText)
         val image: ImageView = view.findViewById(R.id.imageView)
         val status: TextView? = view.findViewById(R.id.statusText)
         val overlay: View? = view.findViewById(R.id.soldOutOverlay)
+        val btnCancel: View? = view.findViewById(R.id.btn_cancel)
+        val btnReturn: View? = view.findViewById(R.id.btn_return)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -100,29 +112,56 @@ class AdAdapter(
             if (!item.paymentStatus.isNullOrEmpty()) {
                 holder.status?.apply {
                     visibility = View.VISIBLE
-                    text = getOrderStatusText(item.paymentStatus)
+                    text = item.orderStatusNm ?: getOrderStatusText(item.paymentStatus)
                     setBackgroundResource(R.drawable.bg_status_badge)
                     setTextColor(android.graphics.Color.parseColor("#1976D2"))
                 }
                 holder.overlay?.visibility = View.GONE
+
+                // Buttons logic
+                holder.btnCancel?.visibility = if (item.paymentStatus == "50") View.VISIBLE else View.GONE
+                
+                var showReturn = false
+                if (item.paymentStatus == "70") {
+                    item.deliveredAt?.let { delAt ->
+                        try {
+                            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                            val date = sdf.parse(delAt)
+                            if (date != null) {
+                                val cal = java.util.Calendar.getInstance()
+                                cal.add(java.util.Calendar.DAY_OF_YEAR, -7)
+                                if (date.after(cal.time)) showReturn = true
+                            }
+                        } catch (e: Exception) {}
+                    }
+                }
+                holder.btnReturn?.visibility = if (showReturn) View.VISIBLE else View.GONE
+
+                holder.btnCancel?.setOnClickListener { onCancelClick?.invoke(item) }
+                holder.btnReturn?.setOnClickListener { onReturnClick?.invoke(item) }
+
             } else {
                 holder.status?.visibility = View.GONE
                 holder.overlay?.visibility = View.GONE
+                holder.btnCancel?.visibility = View.GONE
+                holder.btnReturn?.visibility = View.GONE
             }
         }
     }
 
     private fun getOrderStatusText(status: String): String {
         return when (status) {
-            "READY" -> "결제대기"
-            "FAILED" -> "결제실패"
-            "PAID" -> "결제완료"
-            "CANCEL" -> "주문취소"
-            "PREPARING" -> "배송준비중"
-            "SHIPPING" -> "배송중"
-            "DELIVERED" -> "배송완료"
-            "RETURN_REQUESTED" -> "반품요청"
-            "EXCHANGED" -> "교환완료"
+            "READY", "10" -> "결제대기"
+            "FAILED", "20" -> "결제실패"
+            "PAID", "30" -> "결제완료"
+            "CANCEL", "40" -> "주문취소"
+            "PREPARING", "50" -> "배송준비중"
+            "SHIPPING", "60" -> "배송중"
+            "DELIVERED", "70" -> "배송완료"
+            "RETURN_REQUESTED", "80" -> "반품요청"
+            "RETURN_COMPLETED", "89" -> "반품완료"
+            "CONFIRM", "99" -> "주문확정"
+            "EXCHANGED", "90" -> "교환완료"
             else -> status
         }
     }

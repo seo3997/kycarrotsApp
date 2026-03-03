@@ -63,12 +63,31 @@ class PurchaseListFragment : Fragment() {
                     putExtra("orderNo", item.orderNo)
                 }
                 startActivity(intent)
-            } else {
-                // If there's no orderNo, maybe it's a regular product?
-                // But this is PurchaseList, so it should have orderNo.
-                // Fallback to product detail if needed.
             }
         }
+
+        adapter.setOnCancelClickListener { item ->
+            AlertDialog.Builder(requireContext())
+                .setTitle("주문 취소")
+                .setMessage("정말로 주문을 취소하시겠습니까?")
+                .setPositiveButton("확인") { _, _ ->
+                    cancelOrderInList(item)
+                }
+                .setNegativeButton("취소", null)
+                .show()
+        }
+
+        adapter.setOnReturnClickListener { item ->
+            AlertDialog.Builder(requireContext())
+                .setTitle("반품 요청")
+                .setMessage("반품을 요청하시겠습니까? (배송비가 발생할 수 있습니다.)")
+                .setPositiveButton("확인") { _, _ ->
+                    returnOrderInList(item)
+                }
+                .setNegativeButton("취소", null)
+                .show()
+        }
+
         
         progressBarLayout = view.findViewById(R.id.ll_progress_circle)
 
@@ -129,6 +148,64 @@ class PurchaseListFragment : Fragment() {
                 Log.e("PurchaseListFragment", "API 호출 실패: ${e.message}")
             } finally {
                 isLoading = false
+                hideProgressBar()
+            }
+        }
+    }
+
+    private fun cancelOrderInList(item: AdItem) {
+        val userNoStr = LoginInfoUtil.getUserNo(requireContext())
+        val userNo = userNoStr?.toLongOrNull() ?: 0L
+        if (item.orderNo == null || userNo <= 0L) return
+
+        val request = OrderCancelRequest(
+            orderNo = item.orderNo,
+            cancelReason = "고객 변심",
+            userNo = userNo
+        )
+
+        showProgressBar()
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val success = appService.cancelPayment(request)
+                if (success) {
+                    Toast.makeText(requireContext(), "주문이 취소되었습니다.", Toast.LENGTH_SHORT).show()
+                    fetchPurchaseList(isRefresh = true)
+                } else {
+                    Toast.makeText(requireContext(), "취소 실패", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "오류 발생", Toast.LENGTH_SHORT).show()
+            } finally {
+                hideProgressBar()
+            }
+        }
+    }
+
+    private fun returnOrderInList(item: AdItem) {
+        val userNoStr = LoginInfoUtil.getUserNo(requireContext())
+        val userNo = userNoStr?.toLongOrNull() ?: 0L
+        if (item.orderNo == null || userNo <= 0L) return
+
+        val req = mapOf(
+            "orderNo" to item.orderNo,
+            "returnReason" to "단순 변심",
+            "userNo" to userNo
+        )
+
+        showProgressBar()
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val success = appService.requestReturn(req)
+                if (success) {
+                    Toast.makeText(requireContext(), "반품 요청이 접수되었습니다.", Toast.LENGTH_SHORT).show()
+                    fetchPurchaseList(isRefresh = true)
+                } else {
+                    Toast.makeText(requireContext(), "반품 요청 실패", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "오류 발생", Toast.LENGTH_SHORT).show()
+            } finally {
                 hideProgressBar()
             }
         }

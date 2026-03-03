@@ -66,6 +66,10 @@ class OrderDetailActivity : AppCompatActivity() {
             showCancelConfirmDialog()
         }
 
+        binding.btnReturn.setOnClickListener {
+            showReturnConfirmDialog()
+        }
+
     }
 
     private fun setupToolbar() {
@@ -132,34 +136,80 @@ class OrderDetailActivity : AppCompatActivity() {
         }
 
         checkCancelEligibility(order)
+        checkReturnEligibility(order)
+    }
+
+    private fun showReturnConfirmDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("반품 요청")
+            .setMessage("반품을 요청하시겠습니까? (배송비가 발생할 수 있습니다.)")
+            .setPositiveButton("확인") { _, _ ->
+                requestReturn()
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun requestReturn() {
+        val order = currentOrder ?: return
+        lifecycleScope.launch {
+            try {
+                binding.progressBarLayout.visibility = View.VISIBLE
+                val req = mapOf(
+                    "orderNo" to order.orderNo,
+                    "returnReason" to "단순 변심",
+                    "userNo" to order.userNo
+                )
+                val success = appService.requestReturn(req)
+                if (success) {
+                    Toast.makeText(this@OrderDetailActivity, "반품 요청이 접수되었습니다.", Toast.LENGTH_SHORT).show()
+                    loadOrderDetail(order.orderNo)
+                } else {
+                    Toast.makeText(this@OrderDetailActivity, "반품 요청에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@OrderDetailActivity, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                binding.progressBarLayout.visibility = View.GONE
+            }
+        }
     }
 
     private fun checkCancelEligibility(order: com.whomade.kycarrots.data.model.OrderInfo) {
-        // 30: 결제완료
+        // Status 50: Cancelable according to request
         if (order.orderStatus == "50") {
-            val dateToCheck = order.paidAt ?: order.orderedAt
+            binding.btnCancelOrder.visibility = View.VISIBLE
+        } else {
+            binding.btnCancelOrder.visibility = View.GONE
+        }
+    }
+
+    private fun checkReturnEligibility(order: com.whomade.kycarrots.data.model.OrderInfo) {
+        // Status 70: Delivered. Returnable within 7 days.
+        if (order.orderStatus == "70") {
+            val dateToCheck = order.deliveredAt ?: order.paidAt ?: order.orderedAt
             if (dateToCheck != null) {
                 try {
                     val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                     val date = sdf.parse(dateToCheck)
                     if (date != null) {
-                        val oneWeekAgo = Calendar.getInstance()
-                        oneWeekAgo.add(Calendar.DAY_OF_YEAR, -7)
+                        val sevenDaysAgo = Calendar.getInstance()
+                        sevenDaysAgo.add(Calendar.DAY_OF_YEAR, -7)
 
-                        if (date.after(oneWeekAgo.time)) {
-                            binding.btnCancelOrder.visibility = View.VISIBLE
+                        if (date.after(sevenDaysAgo.time)) {
+                            binding.btnReturn.visibility = View.VISIBLE
                         } else {
-                            binding.btnCancelOrder.visibility = View.GONE
+                            binding.btnReturn.visibility = View.GONE
                         }
                     }
                 } catch (e: Exception) {
-                    binding.btnCancelOrder.visibility = View.GONE
+                    binding.btnReturn.visibility = View.GONE
                 }
             } else {
-                binding.btnCancelOrder.visibility = View.GONE
+                binding.btnReturn.visibility = View.GONE
             }
         } else {
-            binding.btnCancelOrder.visibility = View.GONE
+            binding.btnReturn.visibility = View.GONE
         }
     }
 

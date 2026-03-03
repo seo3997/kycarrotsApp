@@ -270,6 +270,10 @@ class RemoteRepository(
         return adApi.cancelPayment(req)
     }
 
+    suspend fun requestReturn(req: Map<String, Any>): Response<PaymentCancelResponse> {
+        return adApi.requestReturn(req)
+    }
+
     suspend fun fetchOrderDetail(orderNo: String): Response<OrderDetailResponse> {
         return adApi.getOrderDetail(orderNo)
     }

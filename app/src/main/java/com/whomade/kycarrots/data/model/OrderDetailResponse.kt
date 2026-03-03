@@ -47,6 +47,7 @@ data class OrderInfo(
     @SerializedName("orderedAt") val orderedAt: String,
     @SerializedName("paidAt") val paidAt: String?,
     @SerializedName("cancelledAt") val cancelledAt: String?,
+    @SerializedName("deliveredAt") val deliveredAt: String?,
     @SerializedName("pgTid") val pgTid: String?,
     @SerializedName("paymentId") val paymentId: String?,
     @SerializedName("registerNo") val registerNo: Long,

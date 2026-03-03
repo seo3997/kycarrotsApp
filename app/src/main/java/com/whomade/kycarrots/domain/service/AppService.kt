@@ -400,6 +400,16 @@ class AppService(
         }
     }
 
+    suspend fun requestReturn(req: Map<String, Any>): Boolean {
+        return try {
+            val resp = repository.requestReturn(req)
+            resp.isSuccessful && resp.body()?.success == true
+        } catch (e: Exception) {
+            Log.e("AppService", "requestReturn error", e)
+            false
+        }
+    }
+
     suspend fun getOrderDetail(orderNo: String): OrderDetailResponse? {
         return try {
             val resp = repository.fetchOrderDetail(orderNo)

@@ -253,6 +253,9 @@ interface AdApi {
     @POST("/api/payment/cancel")
     suspend fun cancelPayment(@Body req: OrderCancelRequest): Response<PaymentCancelResponse>
 
+    @POST("/api/payment/return")
+    suspend fun requestReturn(@Body req: Map<String, Any>): Response<PaymentCancelResponse>
+
     @GET("/api/orders/{orderNo}")
     suspend fun getOrderDetail(@Path("orderNo") orderNo: String): Response<OrderDetailResponse>
 

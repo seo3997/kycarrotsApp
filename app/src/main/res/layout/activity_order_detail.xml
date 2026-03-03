@@ -308,7 +308,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="12dp"
-                    android:layout_marginBottom="24dp"
                     android:text="주문 취소"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
@@ -316,6 +315,22 @@
                     android:visibility="gone"
                     app:backgroundTint="#FF4444"
                     app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_return"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="24dp"
+                    android:text="반품 요청"
+                    android:textColor="@color/color_black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:backgroundTint="#EEEEEE"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="#DDDDDD"
+                    app:strokeWidth="1dp" />
 
                 <View
                     android:layout_width="match_parent"
