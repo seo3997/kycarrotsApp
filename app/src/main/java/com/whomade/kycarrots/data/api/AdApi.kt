@@ -309,10 +309,11 @@ interface AdApi {
         @Query("trackingNo") trackingNo: String
     ): Response<Void>
 
-    @POST("api/order/confirmOrder")
-    suspend fun confirmOrderMgt(
+    @POST("api/order/status")
+    suspend fun updateOrderStatus(
         @Query("token") token: String,
-        @Query("orderNo") orderNo: String
+        @Query("orderNo") orderNo: String,
+        @Query("status") status: String
     ): Response<Void>
 }
 

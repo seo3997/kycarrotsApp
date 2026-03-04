@@ -480,9 +480,9 @@ class AppService(
         }
     }
 
-    suspend fun confirmOrderMgt(token: String, orderNo: String): Boolean {
+    suspend fun updateOrderStatus(token: String, orderNo: String, status: String): Boolean {
         return try {
-            val resp = repository.confirmOrderMgt(token, orderNo)
+            val resp = repository.updateOrderStatus(token, orderNo, status)
             resp.isSuccessful
         } catch (e: Exception) {
             false

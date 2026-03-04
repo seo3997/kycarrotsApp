@@ -304,8 +304,8 @@ class RemoteRepository(
         return adApi.updateShipping(token, orderNo, carrier, trackingNo)
     }
 
-    suspend fun confirmOrderMgt(token: String, orderNo: String): Response<Void> {
-        return adApi.confirmOrderMgt(token, orderNo)
+    suspend fun updateOrderStatus(token: String, orderNo: String, status: String): Response<Void> {
+        return adApi.updateOrderStatus(token, orderNo, status)
     }
 }
 

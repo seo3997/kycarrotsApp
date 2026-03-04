@@ -42,6 +42,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
     private lateinit var rvItems: RecyclerView
     private lateinit var btnConfirmDeposit: Button
     private lateinit var btnBranchConfirmDeposit: Button
+    private lateinit var btnConfirmDelivery: Button
     private lateinit var btnConfirmOrder: Button
     private lateinit var llShippingInput: View
     private lateinit var spCarrier: Spinner
@@ -87,6 +88,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         rvItems = findViewById(R.id.rv_items)
         btnConfirmDeposit = findViewById(R.id.btn_confirm_deposit)
         btnBranchConfirmDeposit = findViewById(R.id.btn_branch_confirm_deposit)
+        btnConfirmDelivery = findViewById(R.id.btn_confirm_delivery)
         btnConfirmOrder = findViewById(R.id.btn_confirm_order)
         llShippingInput = findViewById(R.id.ll_shipping_input)
         spCarrier = findViewById(R.id.sp_carrier)
@@ -94,6 +96,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         btnUpdateShipping = findViewById(R.id.btn_update_shipping)
 
         btnConfirmDeposit.setOnClickListener { confirmAction("DEPOSIT") }
+        btnConfirmDelivery.setOnClickListener { confirmAction("DELIVERY") }
         btnConfirmOrder.setOnClickListener { confirmAction("ORDER") }
         btnUpdateShipping.setOnClickListener { confirmAction("SHIPPING") }
     }
@@ -155,11 +158,14 @@ class OrderMgtDetailActivity : AppCompatActivity() {
 
         val role = LoginInfoUtil.getMemberCode(this)
         
-        // Action visibility based on status
+        // Action visibility based on status and role
+        val isHQOrAdmin = (role == Constants.ROLE_ADMIN || role == Constants.ROLE_SELL)
+
         btnConfirmDeposit.visibility = if (status == "10") View.VISIBLE else View.GONE
         btnBranchConfirmDeposit.visibility = if (role == Constants.ROLE_PROJ && status == "50") View.VISIBLE else View.GONE
-        llShippingInput.visibility = if (status == "30") View.VISIBLE else View.GONE
-        btnConfirmOrder.visibility = if (status == "70") View.VISIBLE else View.GONE
+        llShippingInput.visibility = if (isHQOrAdmin && (status == "30" || status == "50" || status == "60")) View.VISIBLE else View.GONE
+        btnConfirmDelivery.visibility = if (isHQOrAdmin && status == "60") View.VISIBLE else View.GONE
+        btnConfirmOrder.visibility = if (role == Constants.ROLE_PROJ && status == "70") View.VISIBLE else View.GONE
 
         // Setup Carrier Spinner
         val carrierNames = carrierList.map { it["CODE_NM"] ?: it["codeNm"] ?: "" }.map { it.toString() }
@@ -181,6 +187,24 @@ class OrderMgtDetailActivity : AppCompatActivity() {
     }
 
     private fun confirmAction(type: String) {
+        val title = when (type) {
+            "DEPOSIT" -> "입금 확인 처리를 하시겠습니까?"
+            "DELIVERY" -> "배송 완료 처리를 하시겠습니까?"
+            "ORDER" -> "주문 확정 처리를 하시겠습니까?"
+            "SHIPPING" -> "배송 정보를 업데이트하시겠습니까?"
+            else -> ""
+        }
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setMessage(title)
+            .setPositiveButton("확인") { _, _ ->
+                performAction(type)
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun performAction(type: String) {
         val token = TokenUtil.getToken(this)
         if (token.isEmpty()) return
 
@@ -189,9 +213,12 @@ class OrderMgtDetailActivity : AppCompatActivity() {
             try {
                 val success = when (type) {
                     "DEPOSIT" -> appService.confirmDeposit(token, orderNo!!)
-                    "ORDER" -> appService.confirmOrderMgt(token, orderNo!!)
+                    "DELIVERY" -> appService.updateOrderStatus(token, orderNo!!, "70")
+                    "ORDER" -> appService.updateOrderStatus(token, orderNo!!, "99")
                     "SHIPPING" -> {
-                        val carrier = carrierList[spCarrier.selectedItemPosition]["CODE"]?.toString() ?: ""
+                        val carrier = if (carrierList.isNotEmpty()) {
+                            (carrierList[spCarrier.selectedItemPosition]["CODE"] ?: carrierList[spCarrier.selectedItemPosition]["code"])?.toString() ?: ""
+                        } else ""
                         val tracking = etTrackingNo.text.toString()
                         if (tracking.isEmpty()) {
                             Toast.makeText(this@OrderMgtDetailActivity, "운송장 번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -205,12 +232,13 @@ class OrderMgtDetailActivity : AppCompatActivity() {
 
                 if (success) {
                     Toast.makeText(this@OrderMgtDetailActivity, "처리가 완료되었습니다.", Toast.LENGTH_SHORT).show()
-                    loadData() // Refresh
+                    loadData()
                 } else {
                     Toast.makeText(this@OrderMgtDetailActivity, "처리에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                Toast.makeText(this@OrderMgtDetailActivity, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
             } finally {
                 hideProgressBar()
             }
