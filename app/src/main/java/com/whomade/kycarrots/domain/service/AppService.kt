@@ -39,6 +39,8 @@ import okhttp3.ResponseBody
 import java.io.File
 import com.whomade.kycarrots.data.model.OrderCancelRequest
 import com.whomade.kycarrots.data.model.OrderDetailResponse
+import com.whomade.kycarrots.data.model.BranchInfoVo
+
 
 
 class AppService(
@@ -417,6 +419,16 @@ class AppService(
         } catch (e: Exception) {
             Log.e("AppService", "getOrderDetail error", e)
             null
+        }
+    }
+
+    suspend fun getBranchList(): List<BranchInfoVo> {
+        return try {
+            val resp = repository.fetchBranchList()
+            if (resp.isSuccessful) resp.body().orEmpty() else emptyList()
+        } catch (e: Exception) {
+            Log.e("AppService", "getBranchList error", e)
+            emptyList()
         }
     }
 }

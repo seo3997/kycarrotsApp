@@ -2,6 +2,7 @@ package com.whomade.kycarrots.data.api
 
 import com.whomade.kycarrots.data.model.AdListRequest
 import com.whomade.kycarrots.data.model.AdResponse
+import com.whomade.kycarrots.data.model.BranchInfoVo
 import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatMessageResponse
 import com.whomade.kycarrots.data.model.ChatRoomResponse
@@ -270,5 +271,8 @@ interface AdApi {
 
     @POST("/api/members/address/delete/{id}")
     suspend fun deleteAddress(@Path("id") id: Long, @Query("token") token: String): Response<SimpleResultResponse>
+
+    @GET("/api/branch/list")
+    suspend fun getBranchList(): Response<List<BranchInfoVo>>
 }
 

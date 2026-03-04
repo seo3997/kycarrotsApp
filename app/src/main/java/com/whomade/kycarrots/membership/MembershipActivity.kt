@@ -34,9 +34,11 @@ class MembershipActivity : AppCompatActivity() {
     private lateinit var rgSex: RadioGroup
     private lateinit var btnRegister: Button
     private lateinit var btnCheckEmail: Button
-
+    private lateinit var etBranch: MaterialAutoCompleteTextView
 
     private var isEmailChecked = false
+    private var branchList: List<com.whomade.kycarrots.data.model.BranchInfoVo> = emptyList()
+    private var selectedBranchId: String? = null
 
 
 
@@ -67,6 +69,9 @@ class MembershipActivity : AppCompatActivity() {
         etPhoneMid = findViewById(R.id.et_phone_mid)
         etPhoneLast = findViewById(R.id.et_phone_last)
 
+        etBranch = findViewById(R.id.et_branch)
+        fetchBranchList()
+
 
 
 
@@ -85,6 +90,23 @@ class MembershipActivity : AppCompatActivity() {
 
         btnCheckEmail.setOnClickListener { checkEmailDuplicate() }
         btnRegister.setOnClickListener { registerUser() }
+    }
+
+    private fun fetchBranchList() {
+        val appService = AppServiceProvider.getService()
+        lifecycleScope.launch {
+            try {
+                branchList = appService.getBranchList()
+                val branchNames = branchList.map { it.branchName ?: "" }
+                val adapter = ArrayAdapter(this@MembershipActivity, android.R.layout.simple_dropdown_item_1line, branchNames)
+                etBranch.setAdapter(adapter)
+                etBranch.setOnItemClickListener { _, _, position, _ ->
+                    selectedBranchId = branchList[position].branchId.toString()
+                }
+            } catch (e: Exception) {
+                Log.e("MembershipActivity", "지점 목록 조회 오류", e)
+            }
+        }
     }
 
     private fun checkEmailDuplicate() {
@@ -152,6 +174,10 @@ class MembershipActivity : AppCompatActivity() {
             showToast("성별을 선택하세요.")
             return
         }
+        if (selectedBranchId == null) {
+            showToast(getString(R.string.str_branch_select_err))
+            return
+        }
 
 
         val user = OpUserVO(
@@ -169,7 +195,8 @@ class MembershipActivity : AppCompatActivity() {
             referrerId = "",
             userSttusCode = "10",
             memberCode = "ROLE_PUB",
-            provider = "PWD"
+            provider = "PWD",
+            branchId = selectedBranchId ?: ""
         )
         showLoading(true)
         val appService = AppServiceProvider.getService()

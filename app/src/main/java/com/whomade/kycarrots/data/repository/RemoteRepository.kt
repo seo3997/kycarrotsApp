@@ -45,6 +45,8 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Field
 import java.io.File
+import com.whomade.kycarrots.data.model.BranchInfoVo
+
 
 class RemoteRepository(
     private val adApi: AdApi
@@ -276,6 +278,10 @@ class RemoteRepository(
 
     suspend fun fetchOrderDetail(orderNo: String): Response<OrderDetailResponse> {
         return adApi.getOrderDetail(orderNo)
+    }
+
+    suspend fun fetchBranchList(): Response<List<BranchInfoVo>> {
+        return adApi.getBranchList()
     }
 }
 
