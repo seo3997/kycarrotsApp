@@ -87,6 +87,12 @@ open class BaseDrawerActivity : AppCompatActivity() {
                 R.id.nav_discuss -> {
                     WebViewActivity.start(this, Constants.BASE_URL + "front/board/selectPageListBoard.do?sch_bbs_se_code_m=20&ss_user_no="+loginNo, title = "문의하기")
                 }
+                R.id.nav_order_mgt -> {
+                    val intent = Intent(this, OrderMgtActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    }
+                    startActivity(intent)
+                }
                 R.id.nav_forum -> {
                     WebViewActivity.start(this, Constants.BASE_URL + "link/join_terms.do", title = "약관 및 정책")
                 }
@@ -113,8 +119,9 @@ open class BaseDrawerActivity : AppCompatActivity() {
     private fun applyMenuForRole(role: String?) {
         navView.menu.clear()
         val menuRes = when (role) {
-            "ROLE_SELL" -> R.menu.drawer_view_seller
-            "ROLE_PROJ" -> R.menu.drawer_view_wholesaler
+            Constants.ROLE_ADMIN -> R.menu.drawer_view_seller
+            Constants.ROLE_SELL -> R.menu.drawer_view_seller
+            Constants.ROLE_PROJ -> R.menu.drawer_view_wholesaler
             else        -> R.menu.drawer_view_buyer
         }
         navView.inflateMenu(menuRes)

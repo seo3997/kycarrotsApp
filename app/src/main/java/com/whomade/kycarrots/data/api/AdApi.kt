@@ -274,5 +274,45 @@ interface AdApi {
 
     @GET("/api/branch/list")
     suspend fun getBranchList(): Response<List<BranchInfoVo>>
+
+    @GET("api/dashboard")
+    suspend fun getDashboardData(
+        @Query("token") token: String
+    ): Response<Map<String, Any>>
+
+    @GET("api/order/list")
+    suspend fun getOrderMgtList(
+        @Query("token") token: String,
+        @Query("orderStatus") orderStatus: String?,
+        @Query("orderStDt") orderStDt: String?,
+        @Query("orderEdDt") orderEdDt: String?,
+        @Query("searchKeyword") searchKeyword: String?
+    ): Response<Map<String, Any>>
+
+    @GET("api/order/{orderNo}")
+    suspend fun getOrderMgtDetail(
+        @Path("orderNo") orderNo: String,
+        @Query("token") token: String
+    ): Response<Map<String, Any>>
+
+    @POST("api/order/confirmDeposit")
+    suspend fun confirmDeposit(
+        @Query("token") token: String,
+        @Query("orderNo") orderNo: String
+    ): Response<Void>
+
+    @POST("api/order/updateShipping")
+    suspend fun updateShipping(
+        @Query("token") token: String,
+        @Query("orderNo") orderNo: String,
+        @Query("carrier") carrier: String,
+        @Query("trackingNo") trackingNo: String
+    ): Response<Void>
+
+    @POST("api/order/confirmOrder")
+    suspend fun confirmOrderMgt(
+        @Query("token") token: String,
+        @Query("orderNo") orderNo: String
+    ): Response<Void>
 }
 

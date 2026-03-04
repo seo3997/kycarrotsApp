@@ -283,5 +283,29 @@ class RemoteRepository(
     suspend fun fetchBranchList(): Response<List<BranchInfoVo>> {
         return adApi.getBranchList()
     }
+
+    suspend fun fetchDashboardMgtData(token: String): Response<Map<String, Any>> {
+        return adApi.getDashboardData(token)
+    }
+
+    suspend fun fetchOrderMgtList(token: String, orderStatus: String?, orderStDt: String?, orderEdDt: String?, searchKeyword: String?): Response<Map<String, Any>> {
+        return adApi.getOrderMgtList(token, orderStatus, orderStDt, orderEdDt, searchKeyword)
+    }
+
+    suspend fun fetchOrderMgtDetail(orderNo: String, token: String): Response<Map<String, Any>> {
+        return adApi.getOrderMgtDetail(orderNo, token)
+    }
+
+    suspend fun confirmDeposit(token: String, orderNo: String): Response<Void> {
+        return adApi.confirmDeposit(token, orderNo)
+    }
+
+    suspend fun updateShipping(token: String, orderNo: String, carrier: String, trackingNo: String): Response<Void> {
+        return adApi.updateShipping(token, orderNo, carrier, trackingNo)
+    }
+
+    suspend fun confirmOrderMgt(token: String, orderNo: String): Response<Void> {
+        return adApi.confirmOrderMgt(token, orderNo)
+    }
 }
 

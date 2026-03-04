@@ -431,5 +431,62 @@ class AppService(
             emptyList()
         }
     }
+
+    suspend fun getDashboardMgtData(token: String): Map<String, Any>? {
+        return try {
+            val resp = repository.fetchDashboardMgtData(token)
+            if (resp.isSuccessful) resp.body() else null
+        } catch (e: Exception) {
+            Log.e("AppService", "getDashboardMgtData error", e)
+            null
+        }
+    }
+
+    suspend fun getOrderMgtList(token: String, orderStatus: String?, orderStDt: String?, orderEdDt: String?, searchKeyword: String?): Map<String, Any>? {
+        return try {
+            val resp = repository.fetchOrderMgtList(token, orderStatus, orderStDt, orderEdDt, searchKeyword)
+            if (resp.isSuccessful) resp.body() else null
+        } catch (e: Exception) {
+            Log.e("AppService", "getOrderMgtList error", e)
+            null
+        }
+    }
+
+    suspend fun getOrderMgtDetail(orderNo: String, token: String): Map<String, Any>? {
+        return try {
+            val resp = repository.fetchOrderMgtDetail(orderNo, token)
+            if (resp.isSuccessful) resp.body() else null
+        } catch (e: Exception) {
+            Log.e("AppService", "getOrderMgtDetail error", e)
+            null
+        }
+    }
+
+    suspend fun confirmDeposit(token: String, orderNo: String): Boolean {
+        return try {
+            val resp = repository.confirmDeposit(token, orderNo)
+            resp.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun updateShipping(token: String, orderNo: String, carrier: String, trackingNo: String): Boolean {
+        return try {
+            val resp = repository.updateShipping(token, orderNo, carrier, trackingNo)
+            resp.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun confirmOrderMgt(token: String, orderNo: String): Boolean {
+        return try {
+            val resp = repository.confirmOrderMgt(token, orderNo)
+            resp.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
+    }
 }
 

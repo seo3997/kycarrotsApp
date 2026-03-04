@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_branch_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="강남본점"
+            android:textSize="12sp"
+            android:textColor="#64748B"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/tv_order_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="2024-03-04"
+            android:textSize="11sp"
+            android:textColor="#94A3B8"/>
+
+        <TextView
+            android:id="@+id/tv_order_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="결제완료"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:background="@drawable/bg_status_badge_neutral"
+            android:textColor="#64748B"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_order_no"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ORDER-20240304-123"
+            android:textSize="14sp"
+            android:textColor="#1E293B"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tv_order_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="50,000원"
+            android:textSize="14sp"
+            android:textColor="#1E293B"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:background="#F1F5F9"/>
+
+</LinearLayout>
