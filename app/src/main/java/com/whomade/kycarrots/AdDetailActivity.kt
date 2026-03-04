@@ -130,9 +130,18 @@ class AdDetailActivity : AppCompatActivity() {
 
 
         btnBuy = findViewById(R.id.btn_buy)
+        val btnMinus: View = findViewById(R.id.btn_minus)
+        val btnPlus: View = findViewById(R.id.btn_plus)
+        val tvQuantity: TextView = findViewById(R.id.tv_quantity)
+
         val isBuyer = (memberCode == Constants.ROLE_PUB)
         btnBuy.visibility = if (isBuyer) View.VISIBLE else View.GONE
+        
         btnBuy.setOnClickListener {
+            if (currentStatus != "1") {
+                Toast.makeText(this, "판매 중인 상품만 구매 가능합니다.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val detail = currentProductDetail ?: return@setOnClickListener
             val mainImageUrl = currentProductDetail?.imageMetas?.firstOrNull { it.represent == "1" }?.imageUrl
             val intent = Intent(this, OrderActivity::class.java).apply {
@@ -146,11 +155,8 @@ class AdDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val btnMinus: View = findViewById(R.id.btn_minus)
-        val btnPlus: View = findViewById(R.id.btn_plus)
-        val tvQuantity: TextView = findViewById(R.id.tv_quantity)
-
         btnMinus.setOnClickListener {
+            if (currentStatus != "1") return@setOnClickListener
             if (orderQuantity > 1) {
                 orderQuantity--
                 tvQuantity.text = orderQuantity.toString()
@@ -159,6 +165,7 @@ class AdDetailActivity : AppCompatActivity() {
         }
 
         btnPlus.setOnClickListener {
+            if (currentStatus != "1") return@setOnClickListener
             if (orderQuantity < maxQuantity) {
                 orderQuantity++
                 tvQuantity.text = orderQuantity.toString()
@@ -214,6 +221,8 @@ class AdDetailActivity : AppCompatActivity() {
 
         wholesalerId = detail.product.wholesalerId                                                  //도매상ID
         isFav = detail.product.fav == "1"
+        currentStatus = detail.product.saleStatus
+        updatePurchaseUi()
 
 
         val descriptionTextView: TextView = findViewById(R.id.product_description)
@@ -394,9 +403,9 @@ class AdDetailActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
          */
-        currentStatus = detail.product.saleStatus
         loadProductStatusOptions( Constants.SYSTEM_TYPE, currentStatus)
         renderRejectReason(detail.product.saleStatus,detail.product.rejectReason)
+        updatePurchaseUi()
 
         invalidateOptionsMenu()
     }
@@ -691,6 +700,8 @@ class AdDetailActivity : AppCompatActivity() {
                 val statusName = getStatusName(code)
                 if (success) {
                     Toast.makeText(this@AdDetailActivity, "상태가 \"$statusName\"(으)로 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                    currentStatus = code
+                    updatePurchaseUi()
                 } else {
                     Toast.makeText(this@AdDetailActivity, "상태 변경 실패", Toast.LENGTH_SHORT).show()
                     restoreSpinnerSelection()
@@ -705,6 +716,16 @@ class AdDetailActivity : AppCompatActivity() {
                 showLoading(false)
             }
         }
+    }
+
+    private fun updatePurchaseUi() {
+        if (!::btnBuy.isInitialized) return
+        val isSale = (currentStatus == "1")
+        val alpha = if (isSale) 1.0f else 0.5f
+
+        btnBuy.alpha = alpha
+        findViewById<View>(R.id.btn_minus).alpha = alpha
+        findViewById<View>(R.id.btn_plus).alpha = alpha
     }
     private fun maybeSetResultAndFinish() {
         if (statusChanged && newStatus in listOf("1", "10", "99")) {

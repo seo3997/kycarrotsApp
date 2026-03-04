@@ -48,7 +48,8 @@ class MainActivity : BaseDrawerActivity() {
         supportActionBar?.let { ab ->
             ab.setHomeAsUpIndicator(R.drawable.ic_menu)
             ab.setDisplayHomeAsUpEnabled(true)
-            title = "내 등록 매물"
+            val branchName = LoginInfoUtil.getBranchName(this)
+            title = if (branchName.isNotEmpty()) "($branchName) 상품리스트" else "상품리스트"
         }
 
 
