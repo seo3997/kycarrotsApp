@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -36,7 +37,8 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
+                app:cardUseCompatPadding="true"
+                android:layout_marginBottom="12dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -74,10 +76,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:strokeWidth="2dp"
-                app:strokeColor="#EEF2FF"
-                android:layout_marginBottom="16dp">
+                app:cardElevation="2dp"
+                app:cardUseCompatPadding="true"
+                android:layout_marginBottom="12dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,6 +98,15 @@
                         android:layout_height="wrap_content"
                         android:text="입금 확인 (배송시작가능)"
                         android:backgroundTint="#4F46E5"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp"/>
+
+                    <Button
+                        android:id="@+id/btn_branch_confirm_deposit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="본사 입금 확인 요청"
+                        android:backgroundTint="#8B5CF6"
                         android:visibility="gone"
                         android:layout_marginBottom="8dp"/>
 
@@ -151,7 +161,8 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
+                app:cardUseCompatPadding="true"
+                android:layout_marginBottom="12dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -188,6 +199,17 @@
                         android:layout_marginTop="8dp"
                         android:textSize="14sp"
                         android:textColor="#888888"/>
+
+                     <TextView
+                        android:id="@+id/tv_carrier_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="배송사: 미정"
+                        android:layout_marginTop="8dp"
+                        android:textSize="14sp"
+                        android:textColor="#4F46E5"
+                        android:textStyle="bold"
+                        android:visibility="gone"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -196,7 +218,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
+                app:cardElevation="2dp"
+                app:cardUseCompatPadding="true"
+                android:layout_marginBottom="80dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -24,7 +24,8 @@ import com.whomade.kycarrots.ui.common.TokenUtil
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
-
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.common.Constants
 class OrderMgtDetailActivity : AppCompatActivity() {
 
     private val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
@@ -37,8 +38,10 @@ class OrderMgtDetailActivity : AppCompatActivity() {
     private lateinit var tvBuyerInfo: TextView
     private lateinit var tvAddress: TextView
     private lateinit var tvMemo: TextView
+    private lateinit var tvCarrierInfo: TextView
     private lateinit var rvItems: RecyclerView
     private lateinit var btnConfirmDeposit: Button
+    private lateinit var btnBranchConfirmDeposit: Button
     private lateinit var btnConfirmOrder: Button
     private lateinit var llShippingInput: View
     private lateinit var spCarrier: Spinner
@@ -80,8 +83,10 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         tvBuyerInfo = findViewById(R.id.tv_buyer_info)
         tvAddress = findViewById(R.id.tv_address)
         tvMemo = findViewById(R.id.tv_memo)
+        tvCarrierInfo = findViewById(R.id.tv_carrier_info)
         rvItems = findViewById(R.id.rv_items)
         btnConfirmDeposit = findViewById(R.id.btn_confirm_deposit)
+        btnBranchConfirmDeposit = findViewById(R.id.btn_branch_confirm_deposit)
         btnConfirmOrder = findViewById(R.id.btn_confirm_order)
         llShippingInput = findViewById(R.id.ll_shipping_input)
         spCarrier = findViewById(R.id.sp_carrier)
@@ -119,28 +124,57 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         val items = data["orderItemList"] as? List<Map<String, Any>> ?: emptyList()
         carrierList = data["deliveryCompanyList"] as? List<Map<String, Any>> ?: emptyList()
 
-        tvOrderNo.text = "주문번호: ${order["ORDER_NO"]}"
-        tvOrderDate.text = "주문일시: ${order["ORDERED_AT"] ?: order["ORDER_DATE"]}"
+        tvOrderNo.text = "주문번호: ${order["orderNo"] ?: order["ORDER_NO"]}"
+        tvOrderDate.text = "주문일시: ${order["orderedAt"] ?: order["ORDERED_AT"] ?: order["ORDER_DATE"] ?: ""}"
         
-        val status = order["ORDER_STATUS"]?.toString() ?: ""
-        tvOrderStatus.text = getOrderStatusName(status)
+        val status = (order["orderStatus"] ?: order["ORDER_STATUS"])?.toString() ?: ""
+        val statusNm = (order["orderStatusNm"] ?: order["ORDER_STATUS_NM"])?.toString()
+        tvOrderStatus.text = statusNm ?: getOrderStatusNameFallback(status)
 
-        tvBuyerInfo.text = "주문자: ${order["USER_NM"] ?: order["BRANCH_NAME"]} (${order["TEL_NO"] ?: order["PHONE"]})"
-        tvAddress.text = "주소: (${order["ZIP_CODE"]}) ${order["ADDRESS_MAIN"] ?: order["ADDRESS1"]} ${order["ADDRESS_DETAIL"] ?: order["ADDRESS2"] ?: ""}"
-        tvMemo.text = "배송메모: ${order["ORDER_MEMO"] ?: "없음"}"
+        // Customer Info: Prefer receiverName/Phone if available, else user/branch info
+        val buyerName = order["receiverName"] ?: order["USER_NM"] ?: order["BRANCH_NAME"] ?: ""
+        val buyerPhone = order["receiverPhone"] ?: order["TEL_NO"] ?: order["PHONE"] ?: ""
+        tvBuyerInfo.text = "주문자: $buyerName ($buyerPhone)"
+        
+        val zip = order["zipCode"] ?: order["ZIP_CODE"] ?: ""
+        val addr1 = order["address1"] ?: order["ADDRESS_MAIN"] ?: ""
+        val addr2 = order["address2"] ?: order["ADDRESS_DETAIL"] ?: ""
+        tvAddress.text = "주소: ($zip) $addr1 $addr2"
+        
+        val memo = order["orderMemo"] ?: order["ORDER_MEMO"] ?: "없음"
+        tvMemo.text = "배송메모: $memo"
 
+        val carrierNm = order["deliveryCompanyNm"] ?: order["DELIVERY_COMPANY_NM"] ?: ""
+        val trackingNo = order["trackingNo"] ?: order["TRACKING_NO"] ?: ""
+        if (carrierNm.toString().isNotEmpty() || trackingNo.toString().isNotEmpty()) {
+            tvCarrierInfo.text = "현재배송: $carrierNm (${trackingNo})"
+            tvCarrierInfo.visibility = View.VISIBLE
+        } else {
+            tvCarrierInfo.visibility = View.GONE
+        }
+
+        val role = LoginInfoUtil.getMemberCode(this)
+        
         // Action visibility based on status
         btnConfirmDeposit.visibility = if (status == "10") View.VISIBLE else View.GONE
+        btnBranchConfirmDeposit.visibility = if (role == Constants.ROLE_PROJ && status == "50") View.VISIBLE else View.GONE
         llShippingInput.visibility = if (status == "30") View.VISIBLE else View.GONE
         btnConfirmOrder.visibility = if (status == "70") View.VISIBLE else View.GONE
 
         // Setup Carrier Spinner
-        val carrierNames = carrierList.map { it["CODE_NM"]?.toString() ?: "" }
+        val carrierNames = carrierList.map { it["CODE_NM"] ?: it["codeNm"] ?: "" }.map { it.toString() }
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, carrierNames)
         spCarrier.adapter = spinnerAdapter
+        
+        // Select current carrier if exists in spinner
+        val currentCarrierCode = (order["deliveryCompanyCode"] ?: order["DELIVERY_COMPANY_CODE"])?.toString() ?: ""
+        if (currentCarrierCode.isNotEmpty()) {
+            val idx = carrierList.indexOfFirst { (it["CODE"] ?: it["code"])?.toString() == currentCarrierCode }
+            if (idx >= 0) spCarrier.setSelection(idx)
+        }
 
         // If shipping already exists, fill it
-        etTrackingNo.setText(order["TRACKING_NO"]?.toString() ?: "")
+        etTrackingNo.setText(trackingNo.toString())
 
         rvItems.layoutManager = LinearLayoutManager(this)
         rvItems.adapter = OrderItemsAdapter(items)
@@ -183,7 +217,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun getOrderStatusName(status: String): String {
+    private fun getOrderStatusNameFallback(status: String): String {
         return when (status) {
             "10" -> "결제대기"
             "30" -> "결제완료"
@@ -226,9 +260,12 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         override fun getItemCount(): Int = items.size
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = items[position]
-            holder.name.text = "${item["PRODUCT_NAME"]} [${item["OPTION_NAME"] ?: "기본"}]"
-            val qty = item["QUANTITY"]?.toString()?.toDoubleOrNull()?.toInt() ?: 0
-            val price = (item["UNIT_PRICE"] ?: 0).toString().toDoubleOrNull()?.toInt() ?: 0
+            val prodName = item["productName"] ?: item["PRODUCT_NAME"] ?: item["TITLE"] ?: ""
+            //val optName = item["optionName"] ?: item["OPTION_NAME"] ?: "기본"
+            holder.name.text = "$prodName"
+            
+            val qty = (item["quantity"] ?: item["QUANTITY"] ?: 0).toString().toDoubleOrNull()?.toInt() ?: 0
+            val price = (item["unitPrice"] ?: item["UNIT_PRICE"] ?: 0).toString().toDoubleOrNull()?.toInt() ?: 0
             holder.sub.text = "${NumberFormat.getNumberInstance(Locale.KOREA).format(qty)}개 / " +
                     NumberFormat.getCurrencyInstance(Locale.KOREA).format(price * qty)
         }

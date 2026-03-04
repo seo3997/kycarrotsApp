@@ -177,36 +177,21 @@ class OrderMgtActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val order = items[position]
-            holder.branchName.text = (order["BRANCH_NAME"] ?: order["USER_NM"] ?: "").toString()
-            holder.orderDate.text = (order["ORDERED_AT"] ?: order["ORDER_DATE"] ?: "").toString()
-            holder.orderNo.text = (order["ORDER_NO"] ?: "").toString()
+            holder.branchName.text = (order["BRANCH_NAME"] ?: order["branchName"] ?: order["USER_NM"] ?: order["userNm"] ?: "").toString()
+            holder.orderDate.text = (order["ORDERED_AT"] ?: order["orderedAt"] ?: order["ORDER_DATE"] ?: order["orderDate"] ?: "").toString()
+            holder.orderNo.text = (order["ORDER_NO"] ?: order["orderNo"] ?: "").toString()
             
-            val amtValue = (order["TOTAL_PAY_AMOUNT"] ?: order["SUPPLY_PRICE_SUM"])?.toString()?.toDoubleOrNull()?.toInt() ?: 0
+            val amtValue = (order["TOTAL_PAY_AMOUNT"] ?: order["totalPayAmount"] ?: order["SUPPLY_PRICE_SUM"] ?: order["supplyPriceSum"])?.toString()?.toDoubleOrNull()?.toInt() ?: 0
             holder.orderAmount.text = NumberFormat.getCurrencyInstance(Locale.KOREA).format(amtValue)
             
-            val status = (order["ORDER_STATUS"] ?: "").toString()
-            holder.orderStatus.text = getOrderStatusName(status)
+            val statusNm = (order["ORDER_STATUS_NM"] ?: order["orderStatusNm"])?.toString()
+            holder.orderStatus.text = statusNm ?: (order["ORDER_STATUS"] ?: order["orderStatus"] ?: "").toString()
 
             holder.itemView.setOnClickListener {
                 val intent = Intent(it.context, OrderMgtDetailActivity::class.java).apply {
-                    putExtra("orderNo", (order["ORDER_NO"] ?: "").toString())
+                    putExtra("orderNo", (order["ORDER_NO"] ?: order["orderNo"])?.toString())
                 }
                 it.context.startActivity(intent)
-            }
-        }
-
-        private fun getOrderStatusName(status: String): String {
-            return when (status) {
-                "10" -> "결제대기"
-                "30" -> "결제완료"
-                "40" -> "주문취소"
-                "50" -> "배송준비"
-                "60" -> "배송중"
-                "70" -> "배송완료"
-                "80" -> "반품요청"
-                "89" -> "반품완료"
-                "99" -> "주문확정"
-                else -> status
             }
         }
     }
