@@ -171,6 +171,14 @@
             android:name=".OrderDetailActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
+        <activity
+            android:name=".OrderMgtActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".OrderMgtDetailActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
 
         <service
             android:name=".message.MyFirebaseMessagingService"

@@ -8,7 +8,8 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -83,6 +84,8 @@
                     android:orientation="vertical"
                     android:padding="16dp">
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="📦 관리가능 처리"
                         android:textSize="15sp"
                         android:textStyle="bold"
@@ -155,6 +158,8 @@
                     android:orientation="vertical"
                     android:padding="16dp">
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="📋 주문 및 배송 정보"
                         android:textSize="15sp"
                         android:textStyle="bold"
@@ -198,6 +203,8 @@
                     android:orientation="vertical"
                     android:padding="16dp">
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="📦 상품 목록"
                         android:textSize="15sp"
                         android:textStyle="bold"
