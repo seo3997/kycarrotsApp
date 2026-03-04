@@ -34,29 +34,13 @@ class MembershipActivity : AppCompatActivity() {
     private lateinit var rgSex: RadioGroup
     private lateinit var btnRegister: Button
     private lateinit var btnCheckEmail: Button
-    private lateinit var spinnerCity: MaterialAutoCompleteTextView
-    private lateinit var spinnerTown: MaterialAutoCompleteTextView
+
 
     private var isEmailChecked = false
 
-    private var selectedCityName = ""
-    private var selectedCityValue = ""
 
-    private var selectedTownName = ""
-    private var selectedTownValue = ""
 
-    val roleMap = if (Constants.SYSTEM_TYPE == 1) {
-        mapOf(
-            "판매자" to "ROLE_SELL",
-            "구매자" to "ROLE_PUB"
-        )
-    } else {
-        mapOf(
-            "판매자" to "ROLE_SELL",
-            "센터관리" to "ROLE_PROJ",
-            "구매자" to "ROLE_PUB"
-        )
-    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_membership)
@@ -75,29 +59,17 @@ class MembershipActivity : AppCompatActivity() {
         rgSex = findViewById(R.id.rg_sex)
         btnRegister = findViewById(R.id.btn_register)
         btnCheckEmail = findViewById(R.id.btn_check_email)
-        spinnerCity = findViewById(R.id.spinner_city)
-        spinnerTown = findViewById(R.id.spinner_town)
+
 
         etPhoneFirst= findViewById<MaterialAutoCompleteTextView>(R.id.et_phone_first)
         etPhoneFirst.setAdapter(ArrayAdapter.createFromResource(this, R.array.first_phone_num, android.R.layout.simple_list_item_1))
         if (etPhoneFirst.text.isNullOrBlank()) etPhoneFirst.setText("010", false)
         etPhoneMid = findViewById(R.id.et_phone_mid)
-        etPhoneLast = findViewById(R.id.et_phone_mid)
+        etPhoneLast = findViewById(R.id.et_phone_last)
 
-        val roles = roleMap.keys.toList()
-        val adapter = ArrayAdapter(this, R.layout.list_txt_item, roles)
-        findViewById<MaterialAutoCompleteTextView>(R.id.dropdown_role).setAdapter(adapter)
 
-        val dropdown = findViewById<MaterialAutoCompleteTextView>(R.id.dropdown_role)
-        dropdown.setOnClickListener {
-            dropdown.showDropDown()
-        }
 
-        dropdown.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) dropdown.showDropDown()
-        }
 
-        loadCityList()
 
         etEmail.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -150,8 +122,7 @@ class MembershipActivity : AppCompatActivity() {
         val genderId = rgSex.checkedRadioButtonId
         val gender = if (genderId == R.id.rb_man) "1" else if (genderId == R.id.rb_woman) "2" else ""
 
-        val selectedText = findViewById<MaterialAutoCompleteTextView>(R.id.dropdown_role).text.toString()
-        val selectedCode = roleMap[selectedText] ?: ""
+
 
         if (name.isEmpty()) {
             showToast("이름을 입력하세요.")
@@ -181,10 +152,7 @@ class MembershipActivity : AppCompatActivity() {
             showToast("성별을 선택하세요.")
             return
         }
-        if (selectedCityValue.isEmpty() || selectedTownValue.isEmpty()) {
-            showToast("지역을 모두 선택하세요.")
-            return
-        }
+
 
         val user = OpUserVO(
             userNm = name,
@@ -195,12 +163,12 @@ class MembershipActivity : AppCompatActivity() {
             gender = gender.toInt(),
             userAge = "",
             birthDate = birth,
-            areaCode    =selectedCityValue,
-            areaSeCodeS = selectedTownValue,
+            areaCode    = "",
+            areaSeCodeS = "",
             areaSeCodeD = "",
             referrerId = "",
             userSttusCode = "10",
-            memberCode = selectedCode,
+            memberCode = "ROLE_PUB",
             provider = "PWD"
         )
         showLoading(true)
@@ -230,85 +198,7 @@ class MembershipActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun loadCityList() {
-        val cityDropdown = findViewById<MaterialAutoCompleteTextView>(R.id.spinner_city)
-        val appService = AppServiceProvider.getService()
-        lifecycleScope.launch {
-            try {
-                val codeList = appService.getCodeList("R010070") // "AREA1" = 시/도 그룹 ID
-                val cityNames = codeList.map { it.strMsg}
 
-                val adapter = ArrayAdapter(this@MembershipActivity, R.layout.list_txt_item, cityNames)
-                cityDropdown.setAdapter(adapter)
-
-                cityDropdown.setOnClickListener {
-                    cityDropdown.showDropDown()
-                }
-
-                cityDropdown.setOnFocusChangeListener { _, hasFocus ->
-                    if (hasFocus) cityDropdown.showDropDown()
-                }
-
-                // 선택된 시/도 코드 저장 가능하도록 설정
-                cityDropdown.setOnItemClickListener { _, _, position, _ ->
-                    val selectedCityCode = codeList[position].strIdx
-                    selectedCityName = codeList[position].strMsg
-                    selectedCityValue = selectedCityCode
-                    resetTownSelection()
-                    loadTownList()
-                    Log.d("지역 선택", "선택된 지역: $selectedCityName ($selectedCityCode)")
-                }
-
-            } catch (e: Exception) {
-                Log.e("MembershipActivity", "지역 코드 조회 실패", e)
-                Toast.makeText(this@MembershipActivity, "지역 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun resetTownSelection() {
-        val cityTowndown = findViewById<MaterialAutoCompleteTextView>(R.id.spinner_town)
-        selectedTownName = ""
-        selectedTownValue = ""
-        cityTowndown.setText("", false)         // 표시값 비우기
-        cityTowndown.isEnabled = false          // 로딩 전 비활성화
-    }
-    private fun loadTownList() {
-        val cityTowndown = findViewById<MaterialAutoCompleteTextView>(R.id.spinner_town)
-        val appService = AppServiceProvider.getService()
-        //showLoading(true)
-        lifecycleScope.launch {
-            try {
-                val codeList = appService.getSCodeList("R010070",selectedCityValue) // "AREA1" = 시/도 그룹 ID
-                val cityNames = codeList.map { it.strMsg}
-
-                val adapter = ArrayAdapter(this@MembershipActivity, R.layout.list_txt_item, cityNames)
-                cityTowndown.setAdapter(adapter)
-                cityTowndown.isEnabled = true   // 여기서 다시 활성화!
-
-                cityTowndown.setOnClickListener {
-                    cityTowndown.showDropDown()
-                }
-
-                cityTowndown.setOnFocusChangeListener { _, hasFocus ->
-                    if (hasFocus) cityTowndown.showDropDown()
-                }
-
-                // 선택된 시/도 코드 저장 가능하도록 설정
-                cityTowndown.setOnItemClickListener { _, _, position, _ ->
-                    val selectedTownCode = codeList[position].strIdx
-                    selectedTownName = codeList[position].strMsg
-                    selectedTownValue = selectedTownCode
-                    Log.d("지역 선택", "선택된 지역: $selectedTownName ($selectedTownCode)")
-                }
-                //showLoading(false)
-            } catch (e: Exception) {
-                //showLoading(false)
-                Log.e("MembershipActivity", "지역 코드 조회 실패", e)
-                Toast.makeText(this@MembershipActivity, "지역 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
     private fun showLoading(show: Boolean) {
         findViewById<View>(R.id.ll_progress_circle).visibility =
             if (show) View.VISIBLE else View.GONE

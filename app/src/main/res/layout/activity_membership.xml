@@ -231,59 +231,8 @@
                     android:imeOptions="actionDone"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 지역 선택 라벨 -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="지역 선택"
-                android:textSize="16sp"
-                android:textStyle="bold" />
 
-            <!-- 시/도 + 구/군 Spinner 나란히 배치 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:weightSum="2">
 
-                <!-- 시/도 Spinner -->
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/spinner_city"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:hint="시/도 선택"
-                    android:inputType="none" />
-
-                <!-- 구/군 Spinner -->
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/spinner_town"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="구/군 선택"
-                    android:inputType="none" />
-            </LinearLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="사용자구분"
-                app:boxBackgroundMode="outline">
-
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/dropdown_role"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:minHeight="56dp"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp" />
-            </com.google.android.material.textfield.TextInputLayout>
             <!-- 가입 버튼 -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_register"
