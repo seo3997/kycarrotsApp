@@ -44,9 +44,9 @@ class AdListFragment : Fragment() {
     private lateinit var emptyTextView: TextView
     // TAB_CD -> saleStatus 매핑: 1->"1"(판매중), 2->"10"(예약중), 3->"99"(판매완료)
     private fun mapSaleStatusFromTab(tabCd: String?): String = when (tabCd) {
-        "0" -> "0"
-        "1" -> "1"
-        "2" -> "10"
+        "0" -> "1"
+        "1" -> "20"
+        "2" -> "30"
         "3" -> "99"
         else -> "1"
     }

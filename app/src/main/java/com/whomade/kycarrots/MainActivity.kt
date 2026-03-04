@@ -247,21 +247,13 @@ class MainActivity : BaseDrawerActivity() {
     }
 
     private fun buildPagerAdapter(): Adapter {
-        val items = if (SYSTEM_TYPE == 2) {
+        val items =
             listOf(
-                "0" to "승인반려",
-                "1" to "판매중",
-                "2" to "예약중",
+                "0" to "판매중",
+                "1" to "품절",
+                "2" to "판매중지",
                 "3" to "판매완료"
             )
-        } else {
-            listOf(
-                "1" to "판매중",
-                "2" to "예약중",
-                "3" to "판매완료"
-            )
-        }
-
         return Adapter(supportFragmentManager).apply {
             items.forEach { (status, title) ->
                 addFragment(AdListFragment.newInstance(status), title)
@@ -301,9 +293,9 @@ class MainActivity : BaseDrawerActivity() {
 
     fun refreshTabBySaleStatus(status: String?) {
         val position = when (status) {
-            "0"  -> 0  // 판매중 탭
-            "1"  -> 1  // 판매중 탭
-            "10" -> 2  // 예약중 탭
+            "1"  -> 0  // 판매중 탭
+            "20"  -> 1  // 품절 탭
+            "30" -> 2  // 판매중지 탭
             "99" -> 3  // 판매완료 탭
             else -> return
         }
