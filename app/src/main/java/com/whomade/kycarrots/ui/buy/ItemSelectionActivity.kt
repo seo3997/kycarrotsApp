@@ -65,7 +65,7 @@ class ItemSelectionActivity : BaseDrawerActivity() {
 
         // (선택) 툴바 타이틀 sync
         val branchName = LoginInfoUtil.getBranchName(this)
-        val activityTitle = if (branchName.isNotEmpty()) "($branchName) - 상품리스트" else "상품리스트"
+        val activityTitle = if (branchName.isNotEmpty()) "($branchName) 상품리스트" else "상품리스트"
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             supportActionBar?.title = activityTitle

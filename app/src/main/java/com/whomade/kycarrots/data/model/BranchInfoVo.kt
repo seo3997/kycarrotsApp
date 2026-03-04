@@ -3,42 +3,42 @@ package com.whomade.kycarrots.data.model
 import com.google.gson.annotations.SerializedName
 
 data class BranchInfoVo(
-    @SerializedName("BRANCH_ID")
+    @SerializedName(value = "BRANCH_ID", alternate = ["branchId"])
     val branchId: Long = 0,
-    @SerializedName("BRANCH_CODE")
+    @SerializedName(value = "BRANCH_CODE", alternate = ["branchCode"])
     val branchCode: String? = null,
-    @SerializedName("BRANCH_NAME")
+    @SerializedName(value = "BRANCH_NAME", alternate = ["branchName"])
     val branchName: String? = null,
-    @SerializedName("LOGO_IMAGE_URL")
+    @SerializedName(value = "LOGO_IMAGE_URL", alternate = ["logoImageUrl"])
     val logoImageUrl: String? = null,
-    @SerializedName("BRANCH_STATUS")
+    @SerializedName(value = "BRANCH_STATUS", alternate = ["branchStatus"])
     val branchStatus: String? = null,
-    @SerializedName("TOSS_CLIENT_KEY")
+    @SerializedName(value = "TOSS_CLIENT_KEY", alternate = ["tossClientKey"])
     val tossClientKey: String? = null,
-    @SerializedName("BANK_CD")
+    @SerializedName(value = "BANK_CD", alternate = ["bankCd"])
     val bankCd: String? = null,
-    @SerializedName("ACCOUNT_NO")
+    @SerializedName(value = "ACCOUNT_NO", alternate = ["accountNo"])
     val accountNo: String? = null,
-    @SerializedName("ACCOUNT_HOLDER")
+    @SerializedName(value = "ACCOUNT_HOLDER", alternate = ["accountHolder"])
     val accountHolder: String? = null,
-    @SerializedName("BASE_SHIPPING_FEE")
+    @SerializedName(value = "BASE_SHIPPING_FEE", alternate = ["baseShippingFee"])
     val baseShippingFee: Int = 0,
-    @SerializedName("FREE_SHIPPING_THRESHOLD")
+    @SerializedName(value = "FREE_SHIPPING_THRESHOLD", alternate = ["freeShippingThreshold"])
     val freeShippingThreshold: Int = 0,
-    @SerializedName("EXTRA_SHIPPING_FEE")
+    @SerializedName(value = "EXTRA_SHIPPING_FEE", alternate = ["extraShippingFee"])
     val extraShippingFee: Int = 0,
-    @SerializedName("IS_USE_CUSTOM_PRICE")
+    @SerializedName(value = "IS_USE_CUSTOM_PRICE", alternate = ["isUseCustomPrice"])
     val isUseCustomPrice: Int = 0,
-    @SerializedName("COMPANY_NAME")
+    @SerializedName(value = "COMPANY_NAME", alternate = ["companyName"])
     val companyName: String? = null,
-    @SerializedName("REPRESENTATIVE_NAME")
+    @SerializedName(value = "REPRESENTATIVE_NAME", alternate = ["representativeName"])
     val representativeName: String? = null,
-    @SerializedName("BUSINESS_NUMBER")
+    @SerializedName(value = "BUSINESS_NUMBER", alternate = ["businessNumber"])
     val businessNumber: String? = null,
-    @SerializedName("TONGSIN_NUMBER")
+    @SerializedName(value = "TONGSIN_NUMBER", alternate = ["tongsinNumber"])
     val tongsinNumber: String? = null,
-    @SerializedName("CS_PHONE")
+    @SerializedName(value = "CS_PHONE", alternate = ["csPhone"])
     val csPhone: String? = null,
-    @SerializedName("ADDRESS")
+    @SerializedName(value = "ADDRESS", alternate = ["address"])
     val address: String? = null
 )
