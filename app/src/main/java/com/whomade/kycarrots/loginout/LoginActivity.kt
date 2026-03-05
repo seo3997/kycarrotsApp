@@ -36,10 +36,20 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     private lateinit var llProgress: LinearLayout
     private var selectedUserType: String = "1" // 기본값: 판매자
 
+    private var pushRoomId: String? = null
+    private var pushProductId: String? = null
+    private var pushType: String? = null
+    private var pushMsg: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         CheckLoginService.mActivityList.add(this)
+
+        pushRoomId = intent?.getStringExtra("roomId")
+        pushProductId = intent?.getStringExtra("productId")
+        pushType = intent?.getStringExtra("type")
+        pushMsg = intent?.getStringExtra("msg")
 
         findViewById<Button>(R.id.btn_membership).setOnClickListener(this)
         findViewById<Button>(R.id.btn_login).setOnClickListener(this)
@@ -280,7 +290,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                             appService.saveJwt(auth.token!!)
                             showLoading(false)
                             //goMain()
-                            MainNavigation.goMain(this@LoginActivity, auth)
+                            MainNavigation.goMain(this@LoginActivity, auth, pushRoomId, pushProductId, pushType, pushMsg)
                             return@launch
                         }
                         auth.resultCode == 604 -> {
@@ -377,6 +387,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                         this@LoginActivity,
                                         IntroActivity::class.java
                                     ).apply {
+                                        putExtra("roomId", pushRoomId)
+                                        putExtra("productId", pushProductId)
+                                        putExtra("type", pushType)
+                                        putExtra("msg", pushMsg)
                                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                                     })
 

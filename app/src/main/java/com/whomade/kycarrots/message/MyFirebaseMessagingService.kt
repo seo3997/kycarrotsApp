@@ -43,7 +43,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         when (type) {
             "chat" -> {
                 val roomId    = data["roomId"]
-                val buyerId   = data["buyerId"]
                 val productId = data["productId"]
                 val msg       = data["msg"]
 
@@ -57,7 +56,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     deeplink = "app://chat/room/${roomId ?: ""}"
                 )
 
-                showNotification(title, body, roomId, buyerId, productId, type, msg)
+                showNotification(title, body, roomId, productId, type, msg)
             }
             "product" -> {
                 val productId = data["productId"]
@@ -73,7 +72,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     deeplink = "app://product/${productId ?: ""}"
                 )
 
-                showNotification(title, body, null, null, productId, type, null)
+                showNotification(title, body, null, null,  type, null)
             }
             else -> {
                 // 기타 유형
@@ -85,7 +84,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     roomId = null,
                     deeplink = null
                 )
-                showNotification(title, body, null, null, null, type, null)
+                showNotification(title, body, null,  null, type, null)
             }
         }
     }
@@ -131,7 +130,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         title: String,
         body: String,
         roomId: String?,
-        buyerId: String?,
         productId: String?,
         type: String?,
         msg: String?
@@ -162,7 +160,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, IntroActivity::class.java).apply {
             putExtra("type", type)
             putExtra("roomId", roomId)
-            putExtra("buyerId", buyerId)
             putExtra("productId", productId)
             putExtra("msg", msg)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)

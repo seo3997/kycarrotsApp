@@ -36,8 +36,6 @@ import com.whomade.kycarrots.ui.common.printKakaoKeyHash
 
 class IntroActivity : AppCompatActivity() {
     private var pushRoomId: String? = null
-    private var pushBuyerId: String? = null
-    private var pushBranchId: String? = null
     private var pushProductId: String? = null
     private var pushType: String? = null
     private var pushMsg: String? = null
@@ -48,11 +46,10 @@ class IntroActivity : AppCompatActivity() {
     }
     private fun savePushIntentData(intent: Intent?) {
         pushRoomId = intent?.getStringExtra("roomId")
-        pushBuyerId = intent?.getStringExtra("buyerId")
-        pushBranchId = intent?.getStringExtra("branchId")
         pushProductId = intent?.getStringExtra("productId")
         pushType = intent?.getStringExtra("type")
         pushMsg = intent?.getStringExtra("msg")
+        Log.d("PushIntent", "savePushIntentData - type: $pushType, roomId: $pushRoomId, productId: $pushProductId, msg: $pushMsg")
     }
 
     // (1) Activity의 멤버 변수(필드)로 선언!
@@ -201,8 +198,6 @@ class IntroActivity : AppCompatActivity() {
             else -> Intent(this, LoginActivity::class.java).apply {
                 // 로그인 후 다시 채팅 or 상품 상세로 이동할 수 있도록 push 데이터 전달
                 putExtra("roomId", pushRoomId)
-                putExtra("buyerId", pushBuyerId)
-                putExtra("branchId", pushBranchId)
                 putExtra("productId", pushProductId)
                 putExtra("type", pushType)
                 putExtra("msg", pushMsg)
@@ -218,15 +213,23 @@ class IntroActivity : AppCompatActivity() {
         return when (pushType) {
             "chat" -> {
                 // 채팅 데이터가 모두 존재해야 채팅으로 이동
-                if (!pushRoomId.isNullOrBlank() && !pushBuyerId.isNullOrBlank()
-                    && !pushBranchId.isNullOrBlank() && !pushProductId.isNullOrBlank()) {
+                if (!pushRoomId.isNullOrBlank()  && !pushProductId.isNullOrBlank()) {
+                    val parts = pushRoomId?.split("_") ?: emptyList()
+                    var productId = ""
+                    var buyerId = ""
+                    var branchId = ""
+                    if (parts.size >= 3) {
+                        productId = parts[0]
+                        buyerId = parts[1]
+                        branchId = parts[2]
+                    }
                     Intent(this, ChatActivity::class.java).apply {
-                        putExtra("roomId", pushRoomId)
-                        putExtra("buyerId", pushBuyerId)
-                        putExtra("branchId", pushBranchId)
-                        putExtra("productId", pushProductId)
-                        putExtra("type", pushType)
-                        putExtra("msg", pushMsg)
+                    putExtra("roomId", pushRoomId)
+                    putExtra("buyerId", buyerId)
+                    putExtra("branchId", branchId)
+                    putExtra("productId", productId)
+                    putExtra("type", pushType)
+                    putExtra("msg", pushMsg)
                     }
                 } else {
                     defaultIntentForMember(memberCode)

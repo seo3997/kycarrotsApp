@@ -7,7 +7,14 @@ import com.whomade.kycarrots.data.model.LoginResponse
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 
 object MainNavigation {
-    fun goMain(activity: AppCompatActivity, login: LoginResponse? = null) {
+    fun goMain(
+        activity: AppCompatActivity,
+        login: LoginResponse? = null,
+        pushRoomId: String? = null,
+        pushProductId: String? = null,
+        pushType: String? = null,
+        pushMsg: String? = null
+    ) {
         LoginInfoUtil.saveLoginInfo(
             activity,
             login?.login_id!!,
@@ -23,6 +30,10 @@ object MainNavigation {
 
         activity.startActivity(
             Intent(activity, IntroActivity::class.java).apply {
+                putExtra("roomId", pushRoomId)
+                putExtra("productId", pushProductId)
+                putExtra("type", pushType)
+                putExtra("msg", pushMsg)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             }
         )
