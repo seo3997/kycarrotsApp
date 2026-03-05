@@ -14,6 +14,7 @@ import com.whomade.kycarrots.AdDetailActivity
 import com.whomade.kycarrots.BaseDrawerActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.chatting.ChatActivity
+import com.whomade.kycarrots.data.local.NotifType
 import com.whomade.kycarrots.databinding.ActivityNotificationListBinding
 import com.whomade.kycarrots.data.local.PushNotificationEntity
 import com.whomade.kycarrots.data.local.PushRepositoryProvider
@@ -94,7 +95,7 @@ class NotificationListActivity : BaseDrawerActivity() {
 
         // 라우팅
         when (item.type) {
-            "CHAT" -> {
+            NotifType.CHAT -> {
                 val parts = item.roomId?.split("_") ?: emptyList()
                 if (parts.size >= 3) {
                     val productId = parts[0]
@@ -108,7 +109,7 @@ class NotificationListActivity : BaseDrawerActivity() {
                     )
                 }
             }
-            "PRODUCT_REGISTERED", "PRODUCT_APPROVED", "PRODUCT_REJECTED", "PRODUCT" -> {
+            NotifType.PRODUCT_REGISTERED -> {
                 val productId = item.productId?.toString() ?: ""
 
 

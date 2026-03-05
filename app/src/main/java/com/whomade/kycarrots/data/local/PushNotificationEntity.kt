@@ -14,7 +14,6 @@ data class PushNotificationEntity(
     val title: String,
     val body: String?,
     val productId: Long?,               // 상품 관련이면 사용
-    val sellerId: String?,              // ✅ 추가
     val roomId: String?,                // 채팅 관련이면 사용
     val deeplink: String?,              // app://product/123, app://chat/room/abc ...
     val isRead: Boolean = false,        // 미리 “읽음/안읽음” 표시용 (숫자 카운트는 관리 안 함)
