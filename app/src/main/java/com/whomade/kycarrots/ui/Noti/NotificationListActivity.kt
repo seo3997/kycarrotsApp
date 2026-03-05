@@ -109,7 +109,7 @@ class NotificationListActivity : BaseDrawerActivity() {
                     )
                 }
             }
-            NotifType.PRODUCT_REGISTERED -> {
+            NotifType.PRODUCT -> {
                 val productId = item.productId?.toString() ?: ""
 
 

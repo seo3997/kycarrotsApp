@@ -65,7 +65,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
                 // ✅ 로컬 DB 저장
                 savePushLocally(
-                    type = NotifType.PRODUCT_REGISTERED,
+                    type = NotifType.PRODUCT,
                     title = title,
                     body = body,
                     productId = productId?.toLongOrNull(),

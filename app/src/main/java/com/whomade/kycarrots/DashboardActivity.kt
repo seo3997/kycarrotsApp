@@ -20,7 +20,9 @@ import com.whomade.kycarrots.data.api.AdApi
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.NotificationBadgeHelper
 import com.whomade.kycarrots.ui.common.TokenUtil
+import com.whomade.kycarrots.ui.Noti.NotificationListActivity
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -189,6 +191,7 @@ class DashboardActivity : BaseDrawerActivity() {
     override fun onResume() {
         super.onResume()
         loadDashboardData()
+        NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
     }
 
     inner class MgtOrderDashboardAdapter(
@@ -233,6 +236,24 @@ class DashboardActivity : BaseDrawerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        badge = NotificationBadgeHelper.attach(
+            activity = this,
+            menu = menu,
+            toolbar = toolbar,
+            menuItemId = R.id.action_notifications
+        )
+        NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_notifications -> {
+                startActivity(Intent(this, NotificationListActivity::class.java))
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
