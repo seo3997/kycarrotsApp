@@ -148,9 +148,9 @@ class RemoteRepository(
     suspend fun createOrGetChatRoom(
         productId: String,
         buyerId: String,
-        sellerId: String
+        branchId: String
     ): Response<ChatRoomResponse> {
-        return adApi.createOrGetChatRoom(productId, buyerId ,sellerId)
+        return adApi.createOrGetChatRoom(productId, buyerId ,branchId)
     }
 
     // 채팅방 목록 조회
@@ -211,28 +211,14 @@ class RemoteRepository(
 
     suspend fun fetchChatBuyers(
         productId: Long,
-        sellerId: String
+        brainchId: String
     ): Response<List<ChatBuyerDto>> {
-        return adApi.getChatBuyers(productId, sellerId)
+        return adApi.getChatBuyers(productId, brainchId)
     }
     suspend fun createPurchase(
         body: PurchaseHistoryRequest
     ): Response<SimpleResult> = adApi.createPurchase(body)
 
-    //도매상(중간센터) 목록 조회
-    suspend fun fetchWholesalers(memberCode: String): Response<List<OpUserVO>> {
-        return adApi.getWholesalers(memberCode)
-    }
-
-    //기본 중간센터 조회
-    suspend fun fetchDefaultWholesaler(userId: String): Response<Long> {
-        return adApi.getDefaultWholesaler(userId)
-    }
-
-    //기본 중간센터 설정
-    suspend fun updateDefaultWholesaler(userId: String, wholesalerNo: String): Response<Void> {
-        return adApi.setDefaultWholesaler(userId, wholesalerNo)
-    }
 
     suspend fun sendEmailCode(req: EmailSendReq) :Response<Void> {
        return adApi.sendEmailCode(req)

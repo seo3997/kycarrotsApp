@@ -124,7 +124,7 @@ interface AdApi {
     suspend fun createOrGetChatRoom(
         @Query("productId") productId: String,
         @Query("buyerId") buyerId: String,
-        @Query("sellerId") sellerId: String
+        @Query("branchId") branchId: String
     ): Response<ChatRoomResponse>
 
     @GET("/api/chat/rooms/{productId}/{userId}")
@@ -190,7 +190,7 @@ interface AdApi {
     @GET("api/product/chat/buyers")
     suspend fun getChatBuyers(
         @Query("productId") productId: Long,
-        @Query("sellerId") sellerId: String
+        @Query("branchId") branchId: String
     ): Response<List<ChatBuyerDto>>
 
     @POST("api/purchases")
@@ -198,24 +198,6 @@ interface AdApi {
         @Body body: PurchaseHistoryRequest
     ): Response<SimpleResult>
 
-    // 도매상(중간센터) 목록 조회
-    @GET("api/members/wholesalers")
-    suspend fun getWholesalers(
-        @Query("memberCode") memberCode: String
-    ): Response<List<OpUserVO>>
-
-    //사용자 기본 중간센터 조회 (Long 하나만 반환)
-    @GET("api/members/default-wholesaler")
-    suspend fun getDefaultWholesaler(
-        @Query("userId") userId: String
-    ): Response<Long>
-
-    // 사용자 기본 중간센터 설정
-    @POST("api/members/default-wholesaler")
-    suspend fun setDefaultWholesaler(
-        @Query("userId") userId: String,
-        @Query("wholesalerNo") wholesalerNo: String
-    ): Response<Void>
 
     @POST("api/email/send-code")
     suspend fun sendEmailCode(@Body req: EmailSendReq): Response<Void>

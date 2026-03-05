@@ -32,7 +32,7 @@ class ChatActivity : AppCompatActivity() {
 
     private lateinit var roomId: String
     private lateinit var buyerId: String
-    private lateinit var sellerId: String
+    private lateinit var branchId: String
     private lateinit var productId: String
     private lateinit var currentUserId: String
     private lateinit var senderId: String
@@ -75,14 +75,14 @@ class ChatActivity : AppCompatActivity() {
     private fun initializeChat() {
         roomId = intent.getStringExtra("roomId") ?: return finishWithError("roomId 누락")
         buyerId = intent.getStringExtra("buyerId") ?: return finishWithError("buyerId 누락")
-        sellerId = intent.getStringExtra("sellerId") ?: return finishWithError("sellerId 누락")
+        branchId = intent.getStringExtra("branchId") ?: return finishWithError("branchId 누락")
         productId = intent.getStringExtra("productId") ?: return finishWithError("productId 누락")
 
         val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
         val sUID = prefs.getString("LogIn_ID", "") ?: ""
         val sMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
 
-        otherId = resolveOtherId(sUID, buyerId, sellerId)
+        otherId = resolveOtherId(sUID, buyerId, branchId)
 
         currentUserId = sUID
         isBuyer = sMemberCode == Constants.ROLE_PUB
@@ -93,12 +93,12 @@ class ChatActivity : AppCompatActivity() {
         loadChatMessages(roomId)
     }
 
-    private fun resolveOtherId(myId: String, buyerId: String, sellerId: String): String {
+    private fun resolveOtherId(myId: String, buyerId: String, branchId: String): String {
         return when (myId) {
-            buyerId -> sellerId
-            sellerId -> buyerId
-            else -> if (myId.isNotBlank()) listOf(buyerId, sellerId).firstOrNull { it != myId } ?: sellerId
-            else sellerId
+            buyerId -> branchId
+            branchId -> buyerId
+            else -> if (myId.isNotBlank()) listOf(buyerId, branchId).firstOrNull { it != myId } ?: branchId
+            else branchId
         }
     }
 

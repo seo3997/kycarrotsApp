@@ -67,8 +67,7 @@ import com.whomade.kycarrots.ui.dialog.SelectOptionDialogFragment
 
 class AdDetailActivity : AppCompatActivity() {
     private lateinit var productIdStr: String
-    private lateinit var productUserId: String
-    private lateinit var wholesalerId  : String
+    private lateinit var branchId: String
     private lateinit var spinner: AppCompatSpinner
     private var currentStatus: String? = null
     private lateinit var filteredList: List<TxtListDataInfo>  // ← 전역 선언 필요
@@ -99,7 +98,6 @@ class AdDetailActivity : AppCompatActivity() {
             finish() // 유효하지 않은 ID는 종료
             return
         }
-        productUserId = intent.getStringExtra(EXTRA_USER_ID) ?: "0"
 
 
         val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
@@ -119,12 +117,7 @@ class AdDetailActivity : AppCompatActivity() {
 
         val fab: View = findViewById(R.id.fab_send)
         fab.setOnClickListener {
-            when (Constants.SYSTEM_TYPE) {
-                1 -> handleFabClickForSystemType1()
-                2 -> handleFabClickForSystemType2()
-                else -> showToast("지원하지 않는 시스템 유형입니다.")
-            }
-
+            handleFabClickForSystemType2()
         }
 
 
@@ -199,7 +192,7 @@ class AdDetailActivity : AppCompatActivity() {
                         selectedBuyerForCompletion = ChatBuyerDto(
                             roomId     = selected.code3,           // 예: roomId
                             productId  = selected.code6.toLongOrNull() ?: 0L, // 예: productId
-                            sellerId   = selected.code4,           // 예: sellerId
+                            branchId   = selected.code4,           // 예: branchId
                             buyerId    = selected.code1,           // 예: buyerId
                             buyerNo    = selected.code2.toLongOrNull() ?: 0L,   // 필요 없으면 0L
                             buyerNm    = selected.name,            // 표시용 이름
@@ -219,7 +212,7 @@ class AdDetailActivity : AppCompatActivity() {
         val collapsingToolbar: CollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar)
         collapsingToolbar.title = detail.product.title
 
-        wholesalerId = detail.product.wholesalerId                                                  //도매상ID
+        branchId = detail.product.branchId
         isFav = detail.product.fav == "1"
         currentStatus = detail.product.saleStatus
         updatePurchaseUi()
@@ -403,7 +396,7 @@ class AdDetailActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
          */
-        loadProductStatusOptions( Constants.SYSTEM_TYPE, currentStatus)
+        loadProductStatusOptions(currentStatus)
         renderRejectReason(detail.product.saleStatus,detail.product.rejectReason)
         updatePurchaseUi()
 
@@ -418,7 +411,7 @@ class AdDetailActivity : AppCompatActivity() {
         tvTotalPrice.text = String.format("%,d원", totalAmount.toLong())
     }
 
-    private fun loadProductStatusOptions(systemType: Int, currentStatus: String?) {
+    private fun loadProductStatusOptions(currentStatus: String?) {
         spinner = findViewById(R.id.spinner_product_status)
         statusTextView = findViewById(R.id.text_product_status)
 
@@ -426,8 +419,8 @@ class AdDetailActivity : AppCompatActivity() {
 
         val isReadonly = when {
             memberCode == Constants.ROLE_PUB -> true
-            systemType == 2 && memberCode == Constants.ROLE_SELL && currentStatus == "0" -> true
-            systemType == 2 && memberCode == Constants.ROLE_PROJ && currentStatus == "98" -> true
+            memberCode == Constants.ROLE_SELL && currentStatus == "0" -> true
+            memberCode == Constants.ROLE_PROJ && currentStatus == "98" -> true
             else -> false
         }
 
@@ -459,11 +452,9 @@ class AdDetailActivity : AppCompatActivity() {
 
                 filteredList = statusList.filter {
                     when {
-                        systemType == 1 && memberCode == Constants.ROLE_SELL ->
-                            it.strIdx in listOf("1", "10", "99") || it.strIdx == currentStatus
-                        systemType == 2 && memberCode == Constants.ROLE_PROJ ->
+                        memberCode == Constants.ROLE_PROJ ->
                             it.strIdx in listOf("0", "1", "10", "98", "99") || it.strIdx == currentStatus
-                        systemType == 2 && memberCode == Constants.ROLE_SELL ->
+                        memberCode == Constants.ROLE_SELL ->
                             // 반려 상태인 경우 승인요청만 허용
                             it.strIdx in listOf("0", "98")
                         else -> false
@@ -510,11 +501,9 @@ class AdDetailActivity : AppCompatActivity() {
 
     private fun handleStatusChange(label: String, code: String) {
         val memberCode = LoginInfoUtil.getMemberCode(this)
-        val systemType  = Constants.SYSTEM_TYPE
         val canChange = when {
-            systemType == 1 && memberCode == Constants.ROLE_SELL -> code in listOf("1", "10", "99")
-            systemType == 2 && memberCode == Constants.ROLE_PROJ -> code in listOf("1", "10", "98", "99") // 예: 승인요청, 반려
-            systemType == 2 && memberCode == Constants.ROLE_SELL ->
+            memberCode == Constants.ROLE_PROJ -> code in listOf("1", "10", "98", "99") // 예: 승인요청, 반려
+            memberCode == Constants.ROLE_SELL ->
                 currentStatus == "98" && code == "0" // 반려 → 승인요청만 허용
             else -> false
         }
@@ -543,14 +532,14 @@ class AdDetailActivity : AppCompatActivity() {
 
     private fun maybePickBuyerThenConfirm(label: String, code: String) {
         val pid = productIdStr.toLongOrNull()
-        val sellerId = resolveSellerId() // 로그인한 내 ID
+        var branchId = LoginInfoUtil.getBranchId(this)
 
         if (pid == null) {
             Toast.makeText(this, "상품 ID가 유효하지 않습니다.", Toast.LENGTH_SHORT).show()
             restoreSpinnerSelection()
             return
         }
-        if (sellerId.isBlank()) {
+        if (branchId.isBlank()) {
             Toast.makeText(this, "로그인 정보를 확인해주세요.", Toast.LENGTH_SHORT).show()
             restoreSpinnerSelection()
             return
@@ -560,7 +549,7 @@ class AdDetailActivity : AppCompatActivity() {
             showLoading(true)
             try {
                 // ✅ 서버에서 구매자 목록 가져오기
-                val buyers = AppServiceProvider.getService().getChatBuyers(pid, sellerId)
+                val buyers = AppServiceProvider.getService().getChatBuyers(pid, branchId)
 
                 if (buyers.isEmpty()) {
                     // 구매자 없음 → 바로 확인 다이얼로그(= 상태만 변경)
@@ -587,7 +576,7 @@ class AdDetailActivity : AppCompatActivity() {
                                 code1 = b.buyerId,   // 내부적으로 사용할 코드
                                 code2 = b.buyerNo.toString(),
                                 code3 = b.roomId,
-                                code4 = b.sellerId,
+                                code4 = b.branchId,
                                 code5 = b.sellerNo.toString(),
                                 code6 = b.productId.toString(),
                                 name =  b.buyerId+"/"+b.buyerNm    // 다이얼로그에 표시될 라벨
@@ -693,7 +682,6 @@ class AdDetailActivity : AppCompatActivity() {
                     saleStatus = code,
                     updusrNo = 0,
                     rejectReason = rejectReason,
-                    systemType = Constants.SYSTEM_TYPE.toString()
                 )
 
                 val success = AppServiceProvider.getService().updateProductStatus(token,productItem)
@@ -769,7 +757,6 @@ class AdDetailActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PRODUCT_ID = "product_id"
-        const val EXTRA_USER_ID = "user_id"
     }
 
     private fun loadProductDetail(productId: Long) {
@@ -858,70 +845,41 @@ class AdDetailActivity : AppCompatActivity() {
         maybeSetResultAndFinish()
     }
 
-    private fun handleFabClickForSystemType1() {
-        val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
-        val sUID = prefs.getString("LogIn_ID", "") ?: ""
-        val sMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
-        val isBuyer = sMemberCode == "ROLE_PUB"
-        val systemType = Constants.SYSTEM_TYPE
-
-        // SYSTEM_TYPE 체크
-        if (systemType != 1) {
-            showToast("SYSTEM_TYPE 1 전용 로직입니다.")
-            return
-        }
-
-        // 값 설정
-        val buyerId = if (isBuyer) sUID else ""         //구매자
-        val sellerId  = resolveSellerId()               //판매자
-        val productId = productIdStr                    //상품ID
-
-        if (isBuyer) {
-            // 구매자 → 채팅방 생성 요청
-            createOrGetRoomFromServer(productId, buyerId, sellerId)
-        } else {
-            // 판매자 → 채팅방 목록 확인
-            fetchRoomListForSeller(productId, sellerId)
-        }
-    }
 
 
     private fun handleFabClickForSystemType2() {
-        val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
-        val myId = prefs.getString("LogIn_ID", "") ?: ""
-        val myRole = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
+        val myId = LoginInfoUtil.getUserId(this)
+        val myRole = LoginInfoUtil.getMemberCode(this)
         val productId = productIdStr
-
+        val mybranchId = LoginInfoUtil.getBranchId(this)
+        val centerBranchId = Constants.CENTER_BRANCH_ID
         when (myRole) {
             "ROLE_PUB" -> {
-                // 구매자 → 도매상과 채팅 생성
+                // 구매자 → 지점과 채팅 생성
                 val buyerId = myId
-                val sellerId = resolveSellerId()
-                createOrGetRoomFromServer(productId, buyerId, sellerId)
+                val branchId = mybranchId
+                createOrGetRoomFromServer(productId, buyerId, branchId)
             }
 
             "ROLE_SELL" -> {
-                // 판매자 → 도매상과 채팅방 입장 (생성 불가)
-                val sellerId = myId
-                fetchRoomListForSeller(productId, sellerId)
+                // 본사 → 지점과 채팅방 입장 (생성 불가)
+                fetchRoomListForSeller(productId, centerBranchId)
             }
 
             "ROLE_PROJ" -> {
                 // 도매상 → 구매자 or 판매자 판별
-                val options = arrayOf("판매자에게 채팅", "구매자에게 채팅")
+                val options = arrayOf("구매자에게 채팅", "본사와 채팅")
                 AlertDialog.Builder(this)
                     .setTitle("채팅 대상 선택")
                     .setItems(options) { _, which ->
                         when (which) {
                             0 -> {
-                                // 도매상 → 판매자: 채팅방 생성 가능
-                                val targetBuyerId = myId
-                                val targetSellerId = productUserId
-                                createOrGetRoomFromServer(productId, targetBuyerId, targetSellerId)
+                                // 지점 판매자와 채팅 목록 조회
+                                fetchRoomListForSeller(productId, mybranchId)
                             }
                             1 -> {
-                                // 도매상 본인이 sellerId인 채팅 목록 조회
-                                fetchRoomListForSeller(productId, myId)
+                                // 지점 → 본사: 채팅방 생성 가능
+                                createOrGetRoomFromServer(productId, mybranchId, centerBranchId)
                             }
                         }
                     }
@@ -941,14 +899,14 @@ class AdDetailActivity : AppCompatActivity() {
     }
 
 
-    private fun createOrGetRoomFromServer(productId: String, buyerId: String, sellerId: String) {
+    private fun createOrGetRoomFromServer(productId: String, buyerId: String, branchId: String) {
         val appService = AppServiceProvider.getService()
 
         lifecycleScope.launch {
             try {
-                val chatRoom = appService.createOrGetChatRoom(productId, buyerId, sellerId)
+                val chatRoom = appService.createOrGetChatRoom(productId, buyerId, branchId)
                 if (chatRoom != null) {
-                    openChatActivity(chatRoom.roomId,buyerId,sellerId,productId)
+                    openChatActivity(chatRoom.roomId,buyerId,branchId,productId)
                 } else {
                     Toast.makeText(this@AdDetailActivity, "채팅방 생성 실패", Toast.LENGTH_SHORT).show()
                 }
@@ -959,12 +917,12 @@ class AdDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchRoomListForSeller(productId: String, sellerId: String) {
+    private fun fetchRoomListForSeller(productId: String, branchId: String) {
         val appService = AppServiceProvider.getService()
 
         lifecycleScope.launch {
             try {
-                val chatRooms = appService.getUserChatRooms(productId,sellerId)
+                val chatRooms = appService.getUserChatRooms(productId,branchId)
                 //val chatRooms = allChatRooms.filter { it.productId == productId }
 
                 when {
@@ -981,7 +939,7 @@ class AdDetailActivity : AppCompatActivity() {
                         openChatActivity(
                             selectedRoom.roomId,
                             selectedRoom.buyerId,
-                            selectedRoom.sellerId,
+                            selectedRoom.branchId,
                             selectedRoom.productId
                         )
                     }
@@ -1010,7 +968,7 @@ class AdDetailActivity : AppCompatActivity() {
                 openChatActivity(
                     selectedRoom.roomId,
                     selectedRoom.buyerId,
-                    selectedRoom.sellerId,
+                    selectedRoom.branchId,
                     selectedRoom.productId
                 )
             }
@@ -1021,13 +979,13 @@ class AdDetailActivity : AppCompatActivity() {
     private fun openChatActivity(
         roomId: String,
         buyerId: String,
-        sellerId: String,
+        branchId: String,
         productId: String
     ) {
         val intent = Intent(this@AdDetailActivity, ChatActivity::class.java).apply {
             putExtra("roomId", roomId)
             putExtra("buyerId", buyerId)
-            putExtra("sellerId", sellerId)
+            putExtra("branchId", branchId)
             putExtra("productId", productId)
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
@@ -1037,14 +995,6 @@ class AdDetailActivity : AppCompatActivity() {
     private fun showLoading(show: Boolean) {
         findViewById<View>(R.id.ll_progress_circle).visibility =
             if (show) View.VISIBLE else View.GONE
-    }
-
-    private fun resolveSellerId(): String {
-        return when (Constants.SYSTEM_TYPE) {
-            1 -> productUserId
-            2 -> wholesalerId
-            else -> productUserId // 안전 기본값
-        }
     }
 
     private fun getStatusName(code: String): String {

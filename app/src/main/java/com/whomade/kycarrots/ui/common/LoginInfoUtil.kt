@@ -102,6 +102,7 @@ object LoginInfoUtil {
             .getBoolean(KEY_IS_LOGIN, false)
     }
 
+
     fun clearLoginInfo(context: Context) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().clear().apply()
     }

@@ -109,7 +109,6 @@ class AdListFragment : Fragment() {
             val intent = Intent(requireContext(), AdDetailActivity::class.java).apply {
                 putExtra("imageUrl", item.imageUrl)
                 putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, item.productId)
-                putExtra(AdDetailActivity.EXTRA_USER_ID, item.userId)
             }
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                 requireActivity(), sharedView, "shared_image"

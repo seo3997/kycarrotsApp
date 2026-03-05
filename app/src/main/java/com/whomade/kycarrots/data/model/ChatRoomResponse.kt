@@ -4,7 +4,7 @@ data class ChatRoomResponse(
     val id: Long,
     val roomId: String,
     val buyerId: String,
-    val sellerId: String,
+    val branchId: String,
     val productId: String,
     val createdAt: String
 )

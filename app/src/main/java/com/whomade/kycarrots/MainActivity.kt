@@ -18,7 +18,6 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.whomade.kycarrots.common.Constants
-import com.whomade.kycarrots.common.Constants.SYSTEM_TYPE
 import com.whomade.kycarrots.data.model.OpUserVO
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.Noti.NotificationListActivity
@@ -76,11 +75,7 @@ class MainActivity : BaseDrawerActivity() {
             context.startActivity(intent)
              */
             //registerLauncher.launch(Intent(this, MakeADMainActivity::class.java))
-            if (SYSTEM_TYPE == 1) {
-                moveToMakeAD()
-            } else {
-                launchMakeAdWithCenterGuard()
-            }
+            // moveToMakeAD()
 
         }
 
@@ -100,77 +95,6 @@ class MainActivity : BaseDrawerActivity() {
 
     }
 
-    private fun launchMakeAdWithCenterGuard() {
-        showProgressBar()
-        val appService = AppServiceProvider.getService();
-        val userId = LoginInfoUtil.getUserId(this)
-        lifecycleScope.launch {
-            try {
-
-
-                // 1) 기본 중간센터 있는지 확인
-                val defaultNo = appService.getDefaultWholesaler(userId)
-                if (defaultNo != null) {
-                    moveToMakeAD()
-                    return@launch
-                }
-
-                // 2) 없으면 도매상 목록 → 선택 다이얼로그
-                val wholesalers = appService.getWholesalers(Constants.ROLE_PROJ)
-                val centers = wholesalers.map { it.toBottomDto() }
-                if (centers.isEmpty()) {
-                    Toast.makeText(this@MainActivity, "선택 가능한 중간센터가 없습니다.", Toast.LENGTH_SHORT).show()
-                    return@launch
-                }
-
-                BottomDtoPickerSheet.new(
-                    centers = centers,
-                    title = "중간센터 선택",
-                    onPicked = { picked ->
-                        lifecycleScope.launch {
-                            showProgressBar()
-                            try {
-                                val ok = appService.setDefaultWholesaler(userId, picked.code)
-                                if (ok) {
-                                    Toast.makeText(this@MainActivity, "기본 중간센터 지정 완료", Toast.LENGTH_SHORT).show()
-                                    moveToMakeAD()
-                                } else {
-                                    Toast.makeText(this@MainActivity, "센터 지정 실패", Toast.LENGTH_SHORT).show()
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                Toast.makeText(this@MainActivity, "센터 지정 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-                            } finally {
-                                hideProgressBar()
-                            }
-                        }
-                    }
-                ).show(supportFragmentManager, "center_picker")
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this@MainActivity, "처리 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-            } finally {
-                hideProgressBar()
-            }
-        }
-    }
-    private fun moveToMakeAD() {
-        registerLauncher.launch(Intent(this, KtMakeADMainActivity::class.java))
-    }
-
-    private fun showProgressBar() {
-        findViewById<View>(R.id.ll_progress_circle)?.visibility = View.VISIBLE
-    }
-    private fun hideProgressBar() {
-        findViewById<View>(R.id.ll_progress_circle)?.visibility = View.GONE
-    }
-    private fun OpUserVO.toBottomDto(): BottomDto =
-        BottomDto(
-            code = this.userNo?.toString() ?: "", // Long → String
-            name = this.userNm ?: (this.userId ?: ""),
-            text1 = null, text2 = null, text3 = null, text4 = null
-        )
 
     /*
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

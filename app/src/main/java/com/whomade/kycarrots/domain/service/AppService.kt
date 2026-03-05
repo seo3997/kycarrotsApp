@@ -147,9 +147,9 @@ class AppService(
     suspend fun createOrGetChatRoom(
         productId: String,
         buyerId: String,
-        sellerId: String
+        branchId: String
     ): ChatRoomResponse? {
-        val response = repository.createOrGetChatRoom(productId, buyerId, sellerId)
+        val response = repository.createOrGetChatRoom(productId, buyerId, branchId)
         return if (response.isSuccessful) {
             response.body()
         } else {
@@ -284,10 +284,10 @@ class AppService(
 
     suspend fun getChatBuyers(
         productId: Long,
-        sellerId: String
+        branchId: String
     ): List<ChatBuyerDto> {
         return try {
-            val resp = repository.fetchChatBuyers(productId, sellerId)
+            val resp = repository.fetchChatBuyers(productId, branchId)
             if (resp.isSuccessful) resp.body().orEmpty() else emptyList()
         } catch (_: Exception) {
             emptyList()
@@ -319,26 +319,6 @@ class AppService(
         }
     }
 
-    //도매상(중간센터) 목록 조회
-    suspend fun getWholesalers(memberCode: String): List<OpUserVO> {
-        val resp = repository.fetchWholesalers(memberCode)
-        return if (resp.isSuccessful) resp.body().orEmpty() else emptyList()
-    }
-
-    //기본 중간센터 조회 (지정 없으면 null)
-    suspend fun getDefaultWholesaler(userId: String): Long? {
-        val resp = repository.fetchDefaultWholesaler(userId) // Response<Long>
-        return when {
-            resp.code() == 204 -> null               // ✅ 204 → 미지정
-            resp.isSuccessful   -> resp.body()       // 200 with number
-            else                -> null
-        }
-    }
-    //기본 중간센터 설정
-    suspend fun setDefaultWholesaler(userId: String, wholesalerNo: String): Boolean {
-        val resp = repository.updateDefaultWholesaler(userId, wholesalerNo)
-        return resp.isSuccessful
-    }
 
     suspend fun sendEmailCode(req: EmailSendReq) :Boolean {
         val resp = repository.sendEmailCode(req)

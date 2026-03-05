@@ -37,7 +37,7 @@ import com.whomade.kycarrots.ui.common.printKakaoKeyHash
 class IntroActivity : AppCompatActivity() {
     private var pushRoomId: String? = null
     private var pushBuyerId: String? = null
-    private var pushSellerId: String? = null
+    private var pushBranchId: String? = null
     private var pushProductId: String? = null
     private var pushType: String? = null
     private var pushMsg: String? = null
@@ -49,7 +49,7 @@ class IntroActivity : AppCompatActivity() {
     private fun savePushIntentData(intent: Intent?) {
         pushRoomId = intent?.getStringExtra("roomId")
         pushBuyerId = intent?.getStringExtra("buyerId")
-        pushSellerId = intent?.getStringExtra("sellerId")
+        pushBranchId = intent?.getStringExtra("branchId")
         pushProductId = intent?.getStringExtra("productId")
         pushType = intent?.getStringExtra("type")
         pushMsg = intent?.getStringExtra("msg")
@@ -142,14 +142,6 @@ class IntroActivity : AppCompatActivity() {
         val sProviderUserId = LoginInfoUtil.getUserSocialId(this)
         Log.d("FCM", "autoLoginCheck: true")
 
-        /*
-        if (sMEMBERCODE == "ROLE_PROJ" && Constants.SYSTEM_TYPE.toString() == "1" ) {
-            Toast.makeText(this, "직거래앱은 센터로 로그인 할수 없습니다.", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this@IntroActivity, LoginActivity::class.java))
-            finish()
-            return
-        }
-         */
         if (sUID.isNotBlank() &&  sLoginCd.isNotBlank() && mThisAppVersion.isNotEmpty()) {
             val appService = AppServiceProvider.getService()
 
@@ -210,7 +202,7 @@ class IntroActivity : AppCompatActivity() {
                 // 로그인 후 다시 채팅 or 상품 상세로 이동할 수 있도록 push 데이터 전달
                 putExtra("roomId", pushRoomId)
                 putExtra("buyerId", pushBuyerId)
-                putExtra("sellerId", pushSellerId)
+                putExtra("branchId", pushBranchId)
                 putExtra("productId", pushProductId)
                 putExtra("type", pushType)
                 putExtra("msg", pushMsg)
@@ -227,11 +219,11 @@ class IntroActivity : AppCompatActivity() {
             "chat" -> {
                 // 채팅 데이터가 모두 존재해야 채팅으로 이동
                 if (!pushRoomId.isNullOrBlank() && !pushBuyerId.isNullOrBlank()
-                    && !pushSellerId.isNullOrBlank() && !pushProductId.isNullOrBlank()) {
+                    && !pushBranchId.isNullOrBlank() && !pushProductId.isNullOrBlank()) {
                     Intent(this, ChatActivity::class.java).apply {
                         putExtra("roomId", pushRoomId)
                         putExtra("buyerId", pushBuyerId)
-                        putExtra("sellerId", pushSellerId)
+                        putExtra("branchId", pushBranchId)
                         putExtra("productId", pushProductId)
                         putExtra("type", pushType)
                         putExtra("msg", pushMsg)
@@ -246,7 +238,6 @@ class IntroActivity : AppCompatActivity() {
                 if (!pushProductId.isNullOrBlank()) {
                     Intent(this, AdDetailActivity::class.java).apply {
                         putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, pushProductId)
-                        putExtra(AdDetailActivity.EXTRA_USER_ID, pushSellerId)
                         putExtra("type", pushType)
                         putExtra("msg", pushMsg)
                     }

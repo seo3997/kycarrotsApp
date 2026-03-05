@@ -24,12 +24,13 @@ object Constants {
         }
 
 
-    const val SYSTEM_TYPE = 2  // 1또는 2로 설정 1:직거래,2:중간센터
 
     const val ROLE_ADMIN = "ROLE_ADMIN"
     const val ROLE_PUB = "ROLE_PUB"
     const val ROLE_SELL = "ROLE_SELL"
     const val ROLE_PROJ = "ROLE_PROJ"
+
+    const val CENTER_BRANCH_ID = "BR_0002"
 
 
 }

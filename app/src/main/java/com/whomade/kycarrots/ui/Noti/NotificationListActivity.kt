@@ -99,11 +99,11 @@ class NotificationListActivity : BaseDrawerActivity() {
                 if (parts.size >= 3) {
                     val productId = parts[0]
                     val buyerId = parts[1]
-                    val sellerId = parts[2]
+                    val branchId = parts[2]
                     openChatActivity(
                         roomId = item.roomId ?: return,
                         buyerId = buyerId,
-                        sellerId = sellerId,
+                        branchId = branchId,
                         productId = productId
                     )
                 }
@@ -114,7 +114,6 @@ class NotificationListActivity : BaseDrawerActivity() {
 
                 val intent = Intent(this@NotificationListActivity, AdDetailActivity::class.java).apply {
                     putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, productId)
-                    putExtra(AdDetailActivity.EXTRA_USER_ID,    item.sellerId)
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 }
                 startActivity(intent)
@@ -155,13 +154,13 @@ class NotificationListActivity : BaseDrawerActivity() {
     private fun openChatActivity(
         roomId: String,
         buyerId: String,
-        sellerId: String,
+        branchId: String,
         productId: String
     ) {
         val intent = Intent(this@NotificationListActivity, ChatActivity::class.java).apply {
             putExtra("roomId", roomId)
             putExtra("buyerId", buyerId)
-            putExtra("sellerId", sellerId)
+            putExtra("branchId", branchId)
             putExtra("productId", productId)
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }

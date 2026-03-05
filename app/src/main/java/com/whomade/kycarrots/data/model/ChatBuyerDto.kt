@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 data class ChatBuyerDto(
     @SerializedName("room_id")    val roomId: String,
     @SerializedName("product_id") val productId: Long,
-    @SerializedName("seller_id")  val sellerId: String,
+    @SerializedName("branch_id")  val branchId: String,
     @SerializedName("buyer_id")   val buyerId: String,
     @SerializedName("buyer_no")   val buyerNo: Long,
     @SerializedName("buyer_nm")   val buyerNm: String,

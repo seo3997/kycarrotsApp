@@ -274,8 +274,7 @@ class MakeADPreviewActivity : AppCompatActivity(), View.OnClickListener {
         llProgress.isVisible = true
 
         val userNo = LoginInfoUtil.getUserNo(this)
-        val systemType = com.whomade.kycarrots.common.Constants.SYSTEM_TYPE
-        val saleStatus = if (systemType == 1) "1" else "0"
+        val saleStatus = "0"
 
         val productVo = ProductVo(
             strADIdx,
@@ -296,7 +295,6 @@ class MakeADPreviewActivity : AppCompatActivity(), View.OnClickListener {
             strADDesiredShippingDate.orEmpty(),
             userNo, "",
             userNo, "",
-            systemType = systemType.toString()
         )
 
         // 이미지 메타 + 파일

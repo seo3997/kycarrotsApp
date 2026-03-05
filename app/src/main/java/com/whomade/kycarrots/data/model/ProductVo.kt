@@ -30,10 +30,8 @@ data class ProductVo @JvmOverloads constructor(
     val unitCodeNm: String = "",
     val saleStatusNm: String = "",
     val userId: String = "",
-    val wholesalerNo: String = "",
-    val wholesalerId: String = "",
+    val branchId: String = "",
     val fav: String = "",
-    val systemType: String = "1",
     val rejectReason: String = "1",
     val editorMode: String = "3",
     val availableQuantity: String = "0"

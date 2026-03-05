@@ -341,9 +341,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                 Toast.makeText(this, getString(R.string.str_input_pwd_err), Toast.LENGTH_SHORT).show()
             }
 
-            strMemberCode == Constants.ROLE_PROJ && Constants.SYSTEM_TYPE.toString() == "1" -> {
-                Toast.makeText(this, "직거래앱은 센터로 로그인 할수 없습니다.", Toast.LENGTH_SHORT).show()
-            }
 
             else -> {
                 if (!llProgress.isShown) llProgress.visibility = View.VISIBLE

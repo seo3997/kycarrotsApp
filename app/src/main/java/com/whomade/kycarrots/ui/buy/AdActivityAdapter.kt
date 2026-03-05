@@ -44,7 +44,6 @@ class AdActivityAdapter(
                 val item = items[pos]
                 val intent = Intent(activity, AdDetailActivity::class.java).apply {
                     putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, item.productId)
-                    putExtra(AdDetailActivity.EXTRA_USER_ID,    item.userId)
                     putExtra("imageUrl", item.imageUrl)
                 }
                 val options = ActivityOptionsCompat.makeSceneTransitionAnimation(

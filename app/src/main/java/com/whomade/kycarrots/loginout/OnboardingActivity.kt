@@ -46,18 +46,11 @@ class OnboardingActivity : AppCompatActivity() {
     private var selectedTownName = ""
     private var selectedTownValue = ""
 
-    val roleMap = if (Constants.SYSTEM_TYPE == 1) {
-        mapOf(
-            "판매자" to "ROLE_SELL",
-            "구매자" to "ROLE_PUB"
-        )
-    } else {
-        mapOf(
-            "판매자" to "ROLE_SELL",
-            "센터관리" to "ROLE_PROJ",
-            "구매자" to "ROLE_PUB"
-        )
-    }
+    val roleMap = mapOf(
+        "판매자" to "ROLE_SELL",
+        "센터관리" to "ROLE_PROJ",
+        "구매자" to "ROLE_PUB"
+    )
     private val provider by lazy { intent.getStringExtra("provider") ?: "KAKAO" }
     private val providerUserId by lazy { intent.getStringExtra("providerUserId").orEmpty() }
 
