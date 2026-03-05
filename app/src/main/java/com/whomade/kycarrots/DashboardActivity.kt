@@ -31,6 +31,11 @@ class DashboardActivity : BaseDrawerActivity() {
     private val appService = AppService(repository)
     private var badge: BadgeDrawable? = null
 
+    private val notiPermissionLauncher =
+        registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { granted ->
+            android.util.Log.d("NOTI", "POST_NOTIFICATIONS granted=$granted")
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
@@ -38,6 +43,10 @@ class DashboardActivity : BaseDrawerActivity() {
         initToolbar()
         initViews()
         loadDashboardData()
+
+        if (com.whomade.kycarrots.ui.common.NotificationPermissionUtil.shouldRequest(this)) {
+            notiPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     private fun initToolbar() {

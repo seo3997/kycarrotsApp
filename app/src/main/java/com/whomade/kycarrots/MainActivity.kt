@@ -37,6 +37,11 @@ class MainActivity : BaseDrawerActivity() {
     private lateinit var viewPager: ViewPager
     private lateinit var pagerAdapter: Adapter
 
+    private val notiPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            android.util.Log.d("NOTI", "POST_NOTIFICATIONS granted=$granted")
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -93,6 +98,9 @@ class MainActivity : BaseDrawerActivity() {
         })
          */
 
+        if (com.whomade.kycarrots.ui.common.NotificationPermissionUtil.shouldRequest(this)) {
+            notiPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
 

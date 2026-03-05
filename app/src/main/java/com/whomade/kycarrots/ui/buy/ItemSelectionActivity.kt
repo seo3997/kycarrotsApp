@@ -70,6 +70,10 @@ class ItemSelectionActivity : BaseDrawerActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             supportActionBar?.title = activityTitle
         }
+
+        if (NotificationPermissionUtil.shouldRequest(this)) {
+            notiPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     // 배지 유지용: 기존 메뉴/헬퍼 그대로 사용
@@ -89,10 +93,6 @@ class ItemSelectionActivity : BaseDrawerActivity() {
     override fun onResume() {
         super.onResume()
         NotificationBadgeHelper.refresh(this, lifecycleScope, badge)
-        if (NotificationPermissionUtil.shouldRequest(this)) {
-            notiPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
