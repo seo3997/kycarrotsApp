@@ -30,7 +30,7 @@ object Constants {
     const val ROLE_SELL = "ROLE_SELL"
     const val ROLE_PROJ = "ROLE_PROJ"
 
-    const val CENTER_BRANCH_ID = "BR_0002"
+    const val CENTER_BRANCH_ID = "2"
 
 
 }

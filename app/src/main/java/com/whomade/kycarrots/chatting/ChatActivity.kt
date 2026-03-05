@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.domain.service.AppServiceProvider
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -94,12 +95,26 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun resolveOtherId(myId: String, buyerId: String, branchId: String): String {
+        var memberCode=LoginInfoUtil.getMemberCode(this)
+        var branchName=LoginInfoUtil.getBranchName(this)
+        var sRetrun =""
+        if(memberCode==Constants.ROLE_PUB) {
+            sRetrun = branchName
+        } else if(memberCode==Constants.ROLE_PROJ){
+            if(branchId.equals("2")) sRetrun = "본사"
+            else sRetrun = buyerId
+        } else if(memberCode==Constants.ROLE_SELL){
+            sRetrun = buyerId+" 지점"
+        }
+        return sRetrun
+        /*
         return when (myId) {
             buyerId -> branchId
             branchId -> buyerId
             else -> if (myId.isNotBlank()) listOf(buyerId, branchId).firstOrNull { it != myId } ?: branchId
             else branchId
         }
+        */
     }
 
     private fun setupSendButton() {
