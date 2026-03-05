@@ -86,11 +86,16 @@ object StompManager {
     fun disconnect() {
         clearSubscriptions()
         try {
-            stompClient?.disconnect()
+            if (stompClient != null) {
+                // disconnect()를 호출하면 비동기로 소켓을 닫습니다.
+                // 바로 null로 날려버리면 종료 프레임 전달 전 스레드가 죽을 수 있으므로
+                // 참조를 살려두고 네트워크 단에서 종료되길 기다립니다.
+                val client = stompClient
+                stompClient = null 
+                client?.disconnect()
+            }
         } catch (e: Throwable) {
             Log.w("STOMP", "disconnect 중 오류", e)
-        } finally {
-            stompClient = null
         }
     }
 }

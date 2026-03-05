@@ -193,23 +193,28 @@ class IntroActivity : AppCompatActivity() {
                 }
         }
 
-        val intent = when {
-            isLogin -> createIntentForPushNavigation(memberCode, isLogin)
-            else -> Intent(this, LoginActivity::class.java).apply {
+        if (isLogin) {
+            val intents = createIntentsForPushNavigation(memberCode)
+            startActivities(intents)
+        } else {
+            val intent = Intent(this, LoginActivity::class.java).apply {
                 // 로그인 후 다시 채팅 or 상품 상세로 이동할 수 있도록 push 데이터 전달
                 putExtra("roomId", pushRoomId)
                 putExtra("productId", pushProductId)
                 putExtra("type", pushType)
                 putExtra("msg", pushMsg)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             }
+            startActivity(intent)
         }
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        startActivity(intent)
         finish()
     }
 
-    private fun createIntentForPushNavigation(memberCode: String, isLogin: Boolean): Intent {
+    private fun createIntentsForPushNavigation(memberCode: String): Array<Intent> {
+        val defaultIntent = defaultIntentForMember(memberCode).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+
         return when (pushType) {
             "chat" -> {
                 // 채팅 데이터가 모두 존재해야 채팅으로 이동
@@ -223,34 +228,36 @@ class IntroActivity : AppCompatActivity() {
                         buyerId = parts[1]
                         branchId = parts[2]
                     }
-                    Intent(this, ChatActivity::class.java).apply {
-                    putExtra("roomId", pushRoomId)
-                    putExtra("buyerId", buyerId)
-                    putExtra("branchId", branchId)
-                    putExtra("productId", productId)
-                    putExtra("type", pushType)
-                    putExtra("msg", pushMsg)
+                    val chatIntent = Intent(this, ChatActivity::class.java).apply {
+                        putExtra("roomId", pushRoomId)
+                        putExtra("buyerId", buyerId)
+                        putExtra("branchId", branchId)
+                        putExtra("productId", productId)
+                        putExtra("type", pushType)
+                        putExtra("msg", pushMsg)
                     }
+                    arrayOf(defaultIntent, chatIntent)
                 } else {
-                    defaultIntentForMember(memberCode)
+                    arrayOf(defaultIntent)
                 }
             }
 
             "product" -> {
                 // productId만 있어도 상품 상세로 이동
                 if (!pushProductId.isNullOrBlank()) {
-                    Intent(this, AdDetailActivity::class.java).apply {
+                    val productIntent = Intent(this, AdDetailActivity::class.java).apply {
                         putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, pushProductId)
                         putExtra("type", pushType)
                         putExtra("msg", pushMsg)
                     }
+                    arrayOf(defaultIntent, productIntent)
                 } else {
-                    defaultIntentForMember(memberCode)
+                    arrayOf(defaultIntent)
                 }
             }
 
             else -> {
-                defaultIntentForMember(memberCode)
+                arrayOf(defaultIntent)
             }
         }
     }

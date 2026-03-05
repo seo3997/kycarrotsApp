@@ -195,11 +195,9 @@ class ChatActivity : AppCompatActivity() {
         } else super.onOptionsItemSelected(item)
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         topicPath?.let { StompManager.unsubscribe(it) }
-        StompManager.disconnect() // 방을 나가면 완전 오프라인 처리 원할 때
+        StompManager.disconnect() // 방을(화면을) 완전히 나갈 때 소켓 종료
     }
-
-
 }
