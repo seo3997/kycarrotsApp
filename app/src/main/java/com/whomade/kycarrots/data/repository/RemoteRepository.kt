@@ -286,6 +286,10 @@ class RemoteRepository(
         return adApi.confirmDeposit(token, orderNo)
     }
 
+    suspend fun requestBranchDeposit(token: String, orderNo: String): Response<Void> {
+        return adApi.requestBranchDeposit(token, orderNo)
+    }
+
     suspend fun updateShipping(token: String, orderNo: String, carrier: String, trackingNo: String): Response<Void> {
         return adApi.updateShipping(token, orderNo, carrier, trackingNo)
     }

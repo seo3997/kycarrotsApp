@@ -283,6 +283,12 @@ interface AdApi {
         @Query("orderId") orderId: String
     ): Response<Void>
 
+    @POST("api/order/requestBranchDeposit")
+    suspend fun requestBranchDeposit(
+        @Query("token") token: String,
+        @Query("orderId") orderId: String
+    ): Response<Void>
+
     @POST("api/order/updateShipping")
     suspend fun updateShipping(
         @Query("token") token: String,

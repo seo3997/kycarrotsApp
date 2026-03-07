@@ -451,6 +451,15 @@ class AppService(
         }
     }
 
+    suspend fun requestBranchDeposit(token: String, orderNo: String): Boolean {
+        return try {
+            val resp = repository.requestBranchDeposit(token, orderNo)
+            resp.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun updateShipping(token: String, orderNo: String, carrier: String, trackingNo: String): Boolean {
         return try {
             val resp = repository.updateShipping(token, orderNo, carrier, trackingNo)

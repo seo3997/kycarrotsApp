@@ -96,6 +96,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         btnUpdateShipping = findViewById(R.id.btn_update_shipping)
 
         btnConfirmDeposit.setOnClickListener { confirmAction("DEPOSIT") }
+        btnBranchConfirmDeposit.setOnClickListener { confirmAction("BRANCH_DEPOSIT") }
         btnConfirmDelivery.setOnClickListener { confirmAction("DELIVERY") }
         btnConfirmOrder.setOnClickListener { confirmAction("ORDER") }
         btnUpdateShipping.setOnClickListener { confirmAction("SHIPPING") }
@@ -131,8 +132,10 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         tvOrderDate.text = "주문일시: ${order["orderedAt"] ?: order["ORDERED_AT"] ?: order["ORDER_DATE"] ?: ""}"
         
         val status = (order["orderStatus"] ?: order["ORDER_STATUS"])?.toString() ?: ""
-        val statusNm = order["orderStatusNm"] ?: order["ORDER_STATUS_NM"] ?: status
-        tvOrderStatus.text = statusNm.toString()
+        val statusNm = (order["orderStatusNm"] ?: order["ORDER_STATUS_NM"] ?: status).toString()
+        val depositStatusNm = (order["branchDepositStatusNm"] ?: order["BRANCH_DEPOSIT_STATUS_NM"])?.toString() ?: ""
+        
+        tvOrderStatus.text = if (depositStatusNm.isNotEmpty()) "$statusNm ($depositStatusNm)" else statusNm
 
         // Customer Info: Prefer receiverName/Phone if available, else user/branch info
         val buyerName = order["receiverName"] ?: order["USER_NM"] ?: order["BRANCH_NAME"] ?: ""
@@ -161,8 +164,13 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         // Action visibility based on status and role
         val isHQOrAdmin = (role == Constants.ROLE_ADMIN || role == Constants.ROLE_SELL)
 
-        btnConfirmDeposit.visibility = if (status == "10") View.VISIBLE else View.GONE
-        btnBranchConfirmDeposit.visibility = if (role == Constants.ROLE_PROJ && status == "50") View.VISIBLE else View.GONE
+        // HQ can confirm if status is 10 (Waiting) or 20 (Requested)
+        val branchDepositStatus = (order["branchDepositStatus"] ?: order["BRANCH_DEPOSIT_STATUS"])?.toString() ?: ""
+        btnConfirmDeposit.visibility = if (isHQOrAdmin && (branchDepositStatus == "10" || branchDepositStatus == "20")) View.VISIBLE else View.GONE
+        
+        // Branch can request if status is 10 (Waiting) or 20 (Requested - can request again)
+        btnBranchConfirmDeposit.visibility = if (role == Constants.ROLE_PROJ && (branchDepositStatus == "10" || branchDepositStatus == "20")) View.VISIBLE else View.GONE
+        
         llShippingInput.visibility = if (isHQOrAdmin && (status == "30" || status == "50" || status == "60")) View.VISIBLE else View.GONE
         btnConfirmDelivery.visibility = if (isHQOrAdmin && status == "60") View.VISIBLE else View.GONE
         btnConfirmOrder.visibility = if (role == Constants.ROLE_PROJ && status == "70") View.VISIBLE else View.GONE
@@ -189,6 +197,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
     private fun confirmAction(type: String) {
         val title = when (type) {
             "DEPOSIT" -> "입금 확인 처리를 하시겠습니까?"
+            "BRANCH_DEPOSIT" -> "본사에 입금 확인 요청을 하시겠습니까?"
             "DELIVERY" -> "배송 완료 처리를 하시겠습니까?"
             "ORDER" -> "주문 확정 처리를 하시겠습니까?"
             "SHIPPING" -> "배송 정보를 업데이트하시겠습니까?"
@@ -213,6 +222,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
             try {
                 val success = when (type) {
                     "DEPOSIT" -> appService.confirmDeposit(token, orderId!!)
+                    "BRANCH_DEPOSIT" -> appService.requestBranchDeposit(token, orderId!!)
                     "DELIVERY" -> appService.updateOrderStatus(token, orderId!!, "70")
                     "ORDER" -> appService.updateOrderStatus(token, orderId!!, "99")
                     "SHIPPING" -> {
