@@ -239,8 +239,8 @@ interface AdApi {
     @POST("/api/payment/return")
     suspend fun requestReturn(@Body req: Map<String, Any>): Response<PaymentCancelResponse>
 
-    @GET("/api/orders/{orderNo}")
-    suspend fun getOrderDetail(@Path("orderNo") orderNo: String): Response<OrderDetailResponse>
+    @GET("/api/orders/{orderId}")
+    suspend fun getOrderDetail(@Path("orderId") orderId: String): Response<OrderDetailResponse>
 
     @GET("/api/members/address")
     suspend fun getAddressList(@Query("token") token: String): Response<List<Map<String, Any>>>
@@ -271,22 +271,22 @@ interface AdApi {
         @Query("searchKeyword") searchKeyword: String?
     ): Response<Map<String, Any>>
 
-    @GET("api/order/{orderNo}")
+    @GET("api/order/{orderId}")
     suspend fun getOrderMgtDetail(
-        @Path("orderNo") orderNo: String,
+        @Path("orderId") orderId: String,
         @Query("token") token: String
     ): Response<Map<String, Any>>
 
     @POST("api/order/confirmDeposit")
     suspend fun confirmDeposit(
         @Query("token") token: String,
-        @Query("orderNo") orderNo: String
+        @Query("orderId") orderId: String
     ): Response<Void>
 
     @POST("api/order/updateShipping")
     suspend fun updateShipping(
         @Query("token") token: String,
-        @Query("orderNo") orderNo: String,
+        @Query("orderId") orderId: String,
         @Query("carrier") carrier: String,
         @Query("trackingNo") trackingNo: String
     ): Response<Void>
@@ -294,7 +294,7 @@ interface AdApi {
     @POST("api/order/status")
     suspend fun updateOrderStatus(
         @Query("token") token: String,
-        @Query("orderNo") orderNo: String,
+        @Query("orderId") orderId: String,
         @Query("status") status: String
     ): Response<Void>
 }

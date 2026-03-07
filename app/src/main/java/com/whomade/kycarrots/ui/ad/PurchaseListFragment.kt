@@ -58,7 +58,8 @@ class PurchaseListFragment : Fragment() {
         recyclerView.adapter = adapter
 
         adapter.setOnItemClickListener { item, view ->
-            val oid = item.orderId ?: item.orderNo
+            val rawId = item.orderId
+            val oid = rawId?.toDoubleOrNull()?.toLong()?.toString()
             if (!oid.isNullOrEmpty()) {
                 val intent = Intent(requireContext(), OrderDetailActivity::class.java).apply {
                     putExtra("orderId", oid)
@@ -178,10 +179,12 @@ class PurchaseListFragment : Fragment() {
 
         val userNoStr = LoginInfoUtil.getUserNo(requireContext())
         val userNo = userNoStr?.toLongOrNull() ?: 0L
-        if (item.orderNo == null || userNo <= 0L) return
+        val rawId = item.orderId
+        val oid = rawId?.toDoubleOrNull()?.toLong()?.toString()
+        if (oid.isNullOrEmpty() || userNo <= 0L) return
 
         val request = OrderCancelRequest(
-            orderNo = item.orderNo,
+            orderId = oid,
             cancelReason = "고객 변심",
             userNo = userNo
         )
@@ -227,10 +230,12 @@ class PurchaseListFragment : Fragment() {
 
         val userNoStr = LoginInfoUtil.getUserNo(requireContext())
         val userNo = userNoStr?.toLongOrNull() ?: 0L
-        if (item.orderNo == null || userNo <= 0L) return
+        val rawId = item.orderId
+        val oid = rawId?.toDoubleOrNull()?.toLong()?.toString()
+        if (oid.isNullOrEmpty() || userNo <= 0L) return
 
         val req = mapOf(
-            "orderNo" to item.orderNo,
+            "orderId" to oid,
             "returnReason" to "단순 변심",
             "userNo" to userNo
         )

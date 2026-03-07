@@ -34,18 +34,6 @@ class OrderDetailActivity : AppCompatActivity() {
     private var currentOrder: com.whomade.kycarrots.data.model.OrderInfo? = null
     private var currentProductName: String = ""
 
-    private val paymentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val status = result.data?.getStringExtra("status")
-            if (status == "SUCCESS") {
-                val orderNo = intent.getStringExtra("orderNo") ?: ""
-                loadOrderDetail(orderNo) // Refresh
-            } else {
-                val message = result.data?.getStringExtra("message") ?: "결제에 실패했습니다."
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,11 +72,11 @@ class OrderDetailActivity : AppCompatActivity() {
         appService = AppService(repository)
     }
 
-    private fun loadOrderDetail(orderNo: String) {
+    private fun loadOrderDetail(orderId: String) {
         binding.progressBarLayout.visibility = View.VISIBLE
         lifecycleScope.launch {
             try {
-                val response = appService.getOrderDetail(orderNo)
+                val response = appService.getOrderDetail(orderId)
                 if (response != null) {
                     displayOrderDetail(response)
                 } else {
@@ -163,7 +151,7 @@ class OrderDetailActivity : AppCompatActivity() {
                 val success = appService.requestReturn(req)
                 if (success) {
                     Toast.makeText(this@OrderDetailActivity, "반품 요청이 접수되었습니다.", Toast.LENGTH_SHORT).show()
-                    loadOrderDetail(order.orderNo)
+                    loadOrderDetail(order.orderId.toString())
                 } else {
                     Toast.makeText(this@OrderDetailActivity, "반품 요청에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
@@ -227,7 +215,7 @@ class OrderDetailActivity : AppCompatActivity() {
     private fun cancelOrder() {
         val order = currentOrder ?: return
         val request = OrderCancelRequest(
-            orderNo = order.orderNo,
+            orderId = order.orderId.toString(),
             cancelReason = "고객 변심",
             userNo = order.userNo
         )
@@ -238,7 +226,7 @@ class OrderDetailActivity : AppCompatActivity() {
                 val success = appService.cancelPayment(request)
                 if (success) {
                     Toast.makeText(this@OrderDetailActivity, "주문이 취소되었습니다.", Toast.LENGTH_SHORT).show()
-                    loadOrderDetail(order.orderNo) // Refresh
+                    loadOrderDetail(order.orderId.toString()) // Refresh
                 } else {
                     Toast.makeText(this@OrderDetailActivity, "주문 취소에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }

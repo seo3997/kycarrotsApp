@@ -227,7 +227,9 @@ class DashboardActivity : BaseDrawerActivity() {
 
             holder.itemView.setOnClickListener {
                 val intent = Intent(it.context, OrderMgtDetailActivity::class.java).apply {
-                    putExtra("orderNo", (order["ORDER_NO"] ?: order["orderNo"])?.toString())
+                    val rawId = order["ORDER_ID"] ?: order["orderId"]
+                    val oid = rawId?.toString()?.toDoubleOrNull()?.toLong()?.toString()
+                    putExtra("orderId", oid)
                 }
                 it.context.startActivity(intent)
             }

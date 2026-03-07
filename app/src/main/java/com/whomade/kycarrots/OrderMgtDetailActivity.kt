@@ -49,15 +49,15 @@ class OrderMgtDetailActivity : AppCompatActivity() {
     private lateinit var etTrackingNo: EditText
     private lateinit var btnUpdateShipping: Button
 
-    private var orderNo: String? = null
+    private var orderId: String? = null
     private var carrierList: List<Map<String, Any>> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order_mgt_detail)
 
-        orderNo = intent.getStringExtra("orderId")
-        if (orderNo.isNullOrEmpty()) {
+        orderId = intent.getStringExtra("orderId")
+        if (orderId.isNullOrEmpty()) {
             Toast.makeText(this, "주문 정보가 없습니다.", Toast.LENGTH_SHORT).show()
             finish()
             return
@@ -108,7 +108,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         showProgressBar()
         lifecycleScope.launch {
             try {
-                val result = appService.getOrderMgtDetail(orderNo!!, token)
+                val result = appService.getOrderMgtDetail(orderId!!, token)
                 if (result != null) {
                     updateUI(result)
                 } else {
@@ -212,9 +212,9 @@ class OrderMgtDetailActivity : AppCompatActivity() {
             showProgressBar()
             try {
                 val success = when (type) {
-                    "DEPOSIT" -> appService.confirmDeposit(token, orderNo!!)
-                    "DELIVERY" -> appService.updateOrderStatus(token, orderNo!!, "70")
-                    "ORDER" -> appService.updateOrderStatus(token, orderNo!!, "99")
+                    "DEPOSIT" -> appService.confirmDeposit(token, orderId!!)
+                    "DELIVERY" -> appService.updateOrderStatus(token, orderId!!, "70")
+                    "ORDER" -> appService.updateOrderStatus(token, orderId!!, "99")
                     "SHIPPING" -> {
                         val carrier = if (carrierList.isNotEmpty()) {
                             (carrierList[spCarrier.selectedItemPosition]["CODE"] ?: carrierList[spCarrier.selectedItemPosition]["code"])?.toString() ?: ""
@@ -225,7 +225,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
                             hideProgressBar()
                             return@launch
                         }
-                        appService.updateShipping(token, orderNo!!, carrier, tracking)
+                        appService.updateShipping(token, orderId!!, carrier, tracking)
                     }
                     else -> false
                 }

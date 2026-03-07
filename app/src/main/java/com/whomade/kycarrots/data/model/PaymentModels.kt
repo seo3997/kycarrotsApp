@@ -46,7 +46,7 @@ data class PaymentConfirmResponse(
 )
 
 data class OrderCancelRequest(
-    @SerializedName("orderNo") val orderNo: String,
+    @SerializedName("orderId") val orderId: String,
     @SerializedName("cancelReason") val cancelReason: String,
     @SerializedName("userNo") val userNo: Long
 )
