@@ -97,8 +97,6 @@ class PurchaseListFragment : Fragment() {
         val repository = RemoteRepository(adApi)
         appService = AppService(repository)
 
-        fetchPurchaseList(isRefresh = true)
-
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(rv, dx, dy)
@@ -110,6 +108,11 @@ class PurchaseListFragment : Fragment() {
                 }
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchPurchaseList(isRefresh = true)
     }
 
     private fun fetchPurchaseList(isRefresh: Boolean = false) {

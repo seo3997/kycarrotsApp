@@ -126,10 +126,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         // 8) 드롭다운 초기화 + 리스너 제거됨
 
-        // 9) 최초 로드
-        viewModel.resetAndLoad(currentAdCode)
+        // 9) 최초 로드 (onResume에서 처리하도록 변경)
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.resetAndLoad(currentAdCode)
+    }
 
     // === Data loads ===
     private fun applyFiltersAndReload() {

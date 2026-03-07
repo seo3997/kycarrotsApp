@@ -131,8 +131,8 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         tvOrderDate.text = "주문일시: ${order["orderedAt"] ?: order["ORDERED_AT"] ?: order["ORDER_DATE"] ?: ""}"
         
         val status = (order["orderStatus"] ?: order["ORDER_STATUS"])?.toString() ?: ""
-        val statusNm = (order["orderStatusNm"] ?: order["ORDER_STATUS_NM"])?.toString()
-        tvOrderStatus.text = statusNm ?: getOrderStatusNameFallback(status)
+        val statusNm = order["orderStatusNm"] ?: order["ORDER_STATUS_NM"] ?: status
+        tvOrderStatus.text = statusNm.toString()
 
         // Customer Info: Prefer receiverName/Phone if available, else user/branch info
         val buyerName = order["receiverName"] ?: order["USER_NM"] ?: order["BRANCH_NAME"] ?: ""
@@ -242,21 +242,6 @@ class OrderMgtDetailActivity : AppCompatActivity() {
             } finally {
                 hideProgressBar()
             }
-        }
-    }
-
-    private fun getOrderStatusNameFallback(status: String): String {
-        return when (status) {
-            "10" -> "결제대기"
-            "30" -> "결제완료"
-            "40" -> "주문취소"
-            "50" -> "배송준비"
-            "60" -> "배송중"
-            "70" -> "배송완료"
-            "80" -> "반품요청"
-            "89" -> "반품완료"
-            "99" -> "주문확정"
-            else -> status
         }
     }
 

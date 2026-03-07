@@ -71,8 +71,6 @@ class InterestListFragment : Fragment() {
         val repository = RemoteRepository(adApi)
         appService = AppService(repository)
 
-        fetchInterestList(isRefresh = true)
-
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
@@ -114,6 +112,11 @@ class InterestListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchInterestList(isRefresh = true)
     }
 
     private fun fetchInterestList(isRefresh: Boolean = false) {
