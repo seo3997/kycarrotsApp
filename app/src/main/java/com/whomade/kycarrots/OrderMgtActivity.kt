@@ -188,8 +188,9 @@ class OrderMgtActivity : AppCompatActivity() {
             holder.orderStatus.text = statusNm ?: (order["ORDER_STATUS"] ?: order["orderStatus"] ?: "").toString()
 
             holder.itemView.setOnClickListener {
+                val oid = (order["ORDER_ID"] ?: order["orderId"] ?: order["ORDER_NO"] ?: order["orderNo"])?.toString()
                 val intent = Intent(it.context, OrderMgtDetailActivity::class.java).apply {
-                    putExtra("orderNo", (order["ORDER_NO"] ?: order["orderNo"])?.toString())
+                    putExtra("orderId", oid)
                 }
                 it.context.startActivity(intent)
             }

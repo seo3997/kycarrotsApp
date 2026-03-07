@@ -33,12 +33,11 @@ import com.whomade.kycarrots.message.PushTokenUtil
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.printKakaoKeyHash
 import com.whomade.kycarrots.OrderDetailActivity
+import com.whomade.kycarrots.OrderMgtDetailActivity
 
 
 class IntroActivity : AppCompatActivity() {
-    private var pushRoomId: String? = null
-    private var pushProductId: String? = null
-    private var pushOrderId: String? = null
+    private var pushTargetId: String? = null
     private var pushType: String? = null
     private var pushMsg: String? = null
 
@@ -47,12 +46,10 @@ class IntroActivity : AppCompatActivity() {
         savePushIntentData(intent)
     }
     private fun savePushIntentData(intent: Intent?) {
-        pushRoomId = intent?.getStringExtra("roomId")
-        pushProductId = intent?.getStringExtra("productId")
-        pushOrderId = intent?.getStringExtra("order_id")
+        pushTargetId = intent?.getStringExtra("targetId") ?: intent?.getStringExtra("roomId") ?: intent?.getStringExtra("productId") ?: intent?.getStringExtra("orderId")
         pushType = intent?.getStringExtra("type")
         pushMsg = intent?.getStringExtra("msg")
-        Log.d("PushIntent", "savePushIntentData - type: $pushType, roomId: $pushRoomId, productId: $pushProductId, orderId: $pushOrderId, msg: $pushMsg")
+        Log.d("PushIntent", "savePushIntentData - type: $pushType, targetId: $pushTargetId, msg: $pushMsg")
     }
 
     // (1) Activity의 멤버 변수(필드)로 선언!
@@ -198,9 +195,7 @@ class IntroActivity : AppCompatActivity() {
         } else {
             val intent = Intent(this, LoginActivity::class.java).apply {
                 // 로그인 후 다시 채팅 or 상품 상세로 이동할 수 있도록 push 데이터 전달
-                putExtra("roomId", pushRoomId)
-                putExtra("productId", pushProductId)
-                putExtra("order_id", pushOrderId)
+                putExtra("targetId", pushTargetId)
                 putExtra("type", pushType)
                 putExtra("msg", pushMsg)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -217,9 +212,8 @@ class IntroActivity : AppCompatActivity() {
 
         return when (pushType) {
             "chat" -> {
-                // 채팅 데이터가 모두 존재해야 채팅으로 이동
-                if (!pushRoomId.isNullOrBlank()  && !pushProductId.isNullOrBlank()) {
-                    val parts = pushRoomId?.split("_") ?: emptyList()
+                if (!pushTargetId.isNullOrBlank()) {
+                    val parts = pushTargetId?.split("_") ?: emptyList()
                     var productId = ""
                     var buyerId = ""
                     var branchId = ""
@@ -229,7 +223,7 @@ class IntroActivity : AppCompatActivity() {
                         branchId = parts[2]
                     }
                     val chatIntent = Intent(this, ChatActivity::class.java).apply {
-                        putExtra("roomId", pushRoomId)
+                        putExtra("roomId", pushTargetId)
                         putExtra("buyerId", buyerId)
                         putExtra("branchId", branchId)
                         putExtra("productId", productId)
@@ -243,10 +237,9 @@ class IntroActivity : AppCompatActivity() {
             }
 
             "product" -> {
-                // productId만 있어도 상품 상세로 이동
-                if (!pushProductId.isNullOrBlank()) {
+                if (!pushTargetId.isNullOrBlank()) {
                     val productIntent = Intent(this, AdDetailActivity::class.java).apply {
-                        putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, pushProductId)
+                        putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, pushTargetId)
                         putExtra("type", pushType)
                         putExtra("msg", pushMsg)
                     }
@@ -257,9 +250,14 @@ class IntroActivity : AppCompatActivity() {
             }
 
             "order" -> {
-                if (!pushOrderId.isNullOrBlank()) {
-                    val orderIntent = Intent(this, OrderDetailActivity::class.java).apply {
-                        putExtra("ORDER_ID", pushOrderId)
+                if (!pushTargetId.isNullOrBlank()) {
+                    val targetActivity = if (memberCode == Constants.ROLE_SELL || memberCode == Constants.ROLE_PROJ || memberCode == Constants.ROLE_ADMIN) {
+                        OrderMgtDetailActivity::class.java
+                    } else {
+                        OrderDetailActivity::class.java
+                    }
+                    val orderIntent = Intent(this, targetActivity).apply {
+                        putExtra("orderId", pushTargetId)
                         putExtra("type", pushType)
                         putExtra("msg", pushMsg)
                     }

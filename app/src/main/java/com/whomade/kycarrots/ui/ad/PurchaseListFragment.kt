@@ -58,9 +58,10 @@ class PurchaseListFragment : Fragment() {
         recyclerView.adapter = adapter
 
         adapter.setOnItemClickListener { item, view ->
-            if (!item.orderNo.isNullOrEmpty()) {
+            val oid = item.orderId ?: item.orderNo
+            if (!oid.isNullOrEmpty()) {
                 val intent = Intent(requireContext(), OrderDetailActivity::class.java).apply {
-                    putExtra("orderNo", item.orderNo)
+                    putExtra("orderId", oid)
                 }
                 startActivity(intent)
             }

@@ -17,10 +17,11 @@ class OrderSuccessActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_order_success)
 
+        val orderId = intent.getStringExtra("orderId") ?: ""
         val orderNo = intent.getStringExtra("orderNo") ?: ""
         val amount = intent.getIntExtra("amount", 0)
 
-        binding.tvOrderNo.text = "주문번호: $orderNo"
+        binding.tvOrderNo.text = "주문번호: ${if (orderNo.isNotEmpty()) orderNo else orderId}"
         binding.tvPayAmount.text = "결제금액: ${formatCurrency(amount)}"
 
         setSupportActionBar(binding.toolbar)

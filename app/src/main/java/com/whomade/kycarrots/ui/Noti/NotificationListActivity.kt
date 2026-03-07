@@ -19,6 +19,9 @@ import com.whomade.kycarrots.databinding.ActivityNotificationListBinding
 import com.whomade.kycarrots.data.local.PushNotificationEntity
 import com.whomade.kycarrots.data.local.PushRepositoryProvider
 import com.whomade.kycarrots.OrderDetailActivity
+import com.whomade.kycarrots.OrderMgtDetailActivity
+import com.whomade.kycarrots.common.Constants
+import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import kotlinx.coroutines.launch
 
 class NotificationListActivity : BaseDrawerActivity() {
@@ -119,8 +122,14 @@ class NotificationListActivity : BaseDrawerActivity() {
                 startActivity(intent)
             }
             NotifType.ORDER -> {
-                val intent = Intent(this@NotificationListActivity, OrderDetailActivity::class.java).apply {
-                    putExtra("ORDER_ID", targetId)
+                val role = LoginInfoUtil.getMemberCode(this@NotificationListActivity)
+                val targetActivity = if (role == Constants.ROLE_SELL || role == Constants.ROLE_PROJ || role == Constants.ROLE_ADMIN) {
+                    OrderMgtDetailActivity::class.java
+                } else {
+                    OrderDetailActivity::class.java
+                }
+                val intent = Intent(this@NotificationListActivity, targetActivity).apply {
+                    putExtra("orderId", targetId)
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 }
                 startActivity(intent)

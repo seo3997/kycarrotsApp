@@ -49,10 +49,12 @@ class OrderActivity : AppCompatActivity() {
             val status = result.data?.getStringExtra("status")
             if (status == "SUCCESS") {
                 val orderId = result.data?.getStringExtra("orderId") ?: ""
+                val orderNo = result.data?.getStringExtra("orderNo") ?: ""
                 val amount = result.data?.getIntExtra("amount", 0) ?: 0
                 
                 val intent = Intent(this, OrderSuccessActivity::class.java).apply {
-                    putExtra("orderNo", orderId)
+                    putExtra("orderId", orderId)
+                    putExtra("orderNo", orderNo)
                     putExtra("amount", amount)
                 }
                 startActivity(intent)
@@ -315,7 +317,7 @@ class OrderActivity : AppCompatActivity() {
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     val body = response.body()!!
-                    requestPayment(body.orderNo, body.orderName, body.amount)
+                    requestPayment(body.orderId.toString(), body.orderNo, body.orderName, body.amount)
                 } else {
                     showToast("주문 생성 실패: ${response.body()?.message}")
                 }
@@ -327,9 +329,10 @@ class OrderActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestPayment(orderNo: String, orderName: String, amount: Int) {
+    private fun requestPayment(orderId: String, orderNo: String, orderName: String, amount: Int) {
         this.expectedAmount = amount
         val intent = Intent(this, PaymentWebViewActivity::class.java).apply {
+            putExtra("orderId", orderId)
             putExtra("orderNo", orderNo)
             putExtra("amount", amount)
             putExtra("productName", orderName)

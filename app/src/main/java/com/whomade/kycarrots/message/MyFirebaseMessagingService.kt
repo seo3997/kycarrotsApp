@@ -32,64 +32,65 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d("FCM", "From: ${remoteMessage.from}")
 
-        val data  = remoteMessage.data
-        val type  = data["type"] ?: "default"
-        val title = data["title"] ?: "새 알림"
-        val body  = data["body"]  ?: "알림 내용 없음"
+        val data = remoteMessage.data
+        val notification = remoteMessage.notification
+
+        // 1. Title/Body (Notification 객체 우선, 없으면 Data 페이로드)
+        val title = notification?.title ?: data["title"] ?: "새 알림"
+        val body = notification?.body ?: data["body"] ?: "알림 내용 없음"
+
+        val type = data["type"] ?: "default"
+        val targetId = data["targetId"]
 
         when (type) {
             "chat" -> {
-                val roomId    = data["roomId"]
-                val productId = data["productId"]
-                val msg       = data["msg"]
+                val rid = targetId
+                val msg = data["msg"]
 
-                // ✅ 로컬 DB 저장: targetId로 roomId 사용
                 savePushLocally(
                     type = NotifType.CHAT,
                     title = title,
                     body = body,
-                    targetId = roomId,
-                    deeplink = "app://chat/room/${roomId ?: ""}"
+                    targetId = rid,
+                    deeplink = "app://chat/room/${rid ?: ""}"
                 )
 
-                showNotification(title, body, roomId, productId, null, type, msg)
+                showNotification(title, body, rid, type, msg)
             }
             "product" -> {
-                val productId = data["productId"]
+                val pid = targetId
 
-                // ✅ 로컬 DB 저장: targetId로 productId 사용
                 savePushLocally(
                     type = NotifType.PRODUCT,
                     title = title,
                     body = body,
-                    targetId = productId,
-                    deeplink = "app://product/${productId ?: ""}"
+                    targetId = pid,
+                    deeplink = "app://product/${pid ?: ""}"
                 )
 
-                showNotification(title, body, null, productId, null, type, null)
+                showNotification(title, body, pid, type, null)
             }
             "order" -> {
-                val orderId = data["order_id"]
-                // ✅ 로컬 DB 저장: targetId로 orderId 사용
+                val oid = targetId
+                
                 savePushLocally(
                     type = NotifType.ORDER,
                     title = title,
                     body = body,
-                    targetId = orderId,
-                    deeplink = "app://order/${orderId ?: ""}"
+                    targetId = oid,
+                    deeplink = "app://order/${oid ?: ""}"
                 )
-                showNotification(title, body, null, null, orderId, type, null)
+                showNotification(title, body, oid, type, null)
             }
             else -> {
-                // 기타 유형
                 savePushLocally(
                     type = NotifType.SYS,
                     title = title,
                     body = body,
-                    targetId = null,
+                    targetId = targetId,
                     deeplink = null
                 )
-                showNotification(title, body, null,  null, null, type, null)
+                showNotification(title, body, targetId, type, null)
             }
         }
     }
@@ -132,9 +133,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun showNotification(
         title: String,
         body: String,
-        roomId: String?,
-        productId: String?,
-        orderId: String?,
+        targetId: String?,
         type: String?,
         msg: String?
     ) {
@@ -165,9 +164,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val intent = Intent(this, IntroActivity::class.java).apply {
             putExtra("type", type)
-            putExtra("roomId", roomId)
-            putExtra("productId", productId)
-            putExtra("order_id", orderId)
+            putExtra("targetId", targetId)
             putExtra("msg", msg)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }

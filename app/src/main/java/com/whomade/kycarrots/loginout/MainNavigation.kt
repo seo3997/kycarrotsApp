@@ -10,8 +10,7 @@ object MainNavigation {
     fun goMain(
         activity: AppCompatActivity,
         login: LoginResponse? = null,
-        pushRoomId: String? = null,
-        pushProductId: String? = null,
+        pushTargetId: String? = null,
         pushType: String? = null,
         pushMsg: String? = null
     ) {
@@ -30,8 +29,7 @@ object MainNavigation {
 
         activity.startActivity(
             Intent(activity, IntroActivity::class.java).apply {
-                putExtra("roomId", pushRoomId)
-                putExtra("productId", pushProductId)
+                putExtra("targetId", pushTargetId)
                 putExtra("type", pushType)
                 putExtra("msg", pushMsg)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)

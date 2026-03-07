@@ -51,16 +51,16 @@ class OrderDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_order_detail)
 
-        val orderNo = intent.getStringExtra("orderNo") ?: ""
-        if (orderNo.isEmpty()) {
-            Toast.makeText(this, "주문 번호가 없습니다.", Toast.LENGTH_SHORT).show()
+        val orderId = intent.getStringExtra("orderId") ?: ""
+        if (orderId.isEmpty()) {
+            Toast.makeText(this, "주문 정보가 없습니다.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
         setupToolbar()
         setupService()
-        loadOrderDetail(orderNo)
+        loadOrderDetail(orderId)
 
         binding.btnCancelOrder.setOnClickListener {
             showCancelConfirmDialog()

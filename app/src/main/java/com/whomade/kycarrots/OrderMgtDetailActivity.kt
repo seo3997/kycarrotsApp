@@ -56,9 +56,9 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order_mgt_detail)
 
-        orderNo = intent.getStringExtra("orderNo")
+        orderNo = intent.getStringExtra("orderId")
         if (orderNo.isNullOrEmpty()) {
-            Toast.makeText(this, "주문 번호가 없습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "주문 정보가 없습니다.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }

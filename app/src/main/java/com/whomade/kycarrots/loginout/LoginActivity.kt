@@ -36,8 +36,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     private lateinit var llProgress: LinearLayout
     private var selectedUserType: String = "1" // 기본값: 판매자
 
-    private var pushRoomId: String? = null
-    private var pushProductId: String? = null
+    private var pushTargetId: String? = null
     private var pushType: String? = null
     private var pushMsg: String? = null
 
@@ -46,8 +45,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         setContentView(R.layout.activity_login)
         CheckLoginService.mActivityList.add(this)
 
-        pushRoomId = intent?.getStringExtra("roomId")
-        pushProductId = intent?.getStringExtra("productId")
+        pushTargetId = intent?.getStringExtra("targetId") ?: intent?.getStringExtra("roomId") ?: intent?.getStringExtra("productId") ?: intent?.getStringExtra("orderId")
         pushType = intent?.getStringExtra("type")
         pushMsg = intent?.getStringExtra("msg")
 
@@ -290,7 +288,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                             appService.saveJwt(auth.token!!)
                             showLoading(false)
                             //goMain()
-                            MainNavigation.goMain(this@LoginActivity, auth, pushRoomId, pushProductId, pushType, pushMsg)
+                            MainNavigation.goMain(this@LoginActivity, auth, pushTargetId, pushType, pushMsg)
                             return@launch
                         }
                         auth.resultCode == 604 -> {
@@ -387,8 +385,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                         this@LoginActivity,
                                         IntroActivity::class.java
                                     ).apply {
-                                        putExtra("roomId", pushRoomId)
-                                        putExtra("productId", pushProductId)
+                                        putExtra("targetId", pushTargetId)
                                         putExtra("type", pushType)
                                         putExtra("msg", pushMsg)
                                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

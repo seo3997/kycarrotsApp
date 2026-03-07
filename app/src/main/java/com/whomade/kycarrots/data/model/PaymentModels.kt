@@ -35,7 +35,7 @@ data class OrderCreateResponse(
 
 data class PaymentConfirmRequest(
     val paymentKey: String,
-    val orderId: String, 
+    val orderNo: String, 
     val amount: Int,
     val userNo: Long? = null
 )

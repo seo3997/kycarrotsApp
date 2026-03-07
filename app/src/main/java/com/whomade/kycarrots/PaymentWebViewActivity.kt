@@ -25,18 +25,21 @@ import java.net.URISyntaxException
 class PaymentWebViewActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPaymentWebviewBinding
+    private var orderId: String = ""
+    private var orderNo: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPaymentWebviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val orderNo = intent.getStringExtra("orderNo") ?: ""
+        orderId = intent.getStringExtra("orderId") ?: ""
+        orderNo = intent.getStringExtra("orderNo") ?: ""
         val amount = intent.getIntExtra("amount", 0)
         var productName = intent.getStringExtra("productName") ?: ""
         val clientKey = LoginInfoUtil.getTossClientKey(this)
 
-        android.util.Log.d("PaymentWebView", "orderNo: $orderNo, amount: $amount, productName: $productName")
+        android.util.Log.d("PaymentWebView", "orderId: $orderId, orderNo: $orderNo, amount: $amount, productName: $productName")
 
         if (productName.isEmpty()) {
             productName = "상품 결제" // Fallback if server provides empty name
@@ -72,7 +75,7 @@ class PaymentWebViewActivity : AppCompatActivity() {
         return true
     }
 
-    private fun setupWebView(clientKey: String, orderNo: String, amount: Int, productName: String) {
+    private fun setupWebView(clientKey: String, paymentOrderId: String, amount: Int, productName: String) {
         binding.webView.apply {
             settings.run {
                 javaScriptEnabled = true
@@ -125,7 +128,7 @@ class PaymentWebViewActivity : AppCompatActivity() {
                                 var tossPayments = TossPayments("$clientKey");
                                 tossPayments.requestPayment('CARD', {
                                     amount: $amount,
-                                    orderId: '${orderNo.replace("'", "\\'")}',
+                                    orderId: '${paymentOrderId.replace("'", "\\'")}',
                                     orderName: '${productName.replace("'", "\\'")}',
                                     successUrl: '$successUrl',
                                     failUrl: '$failUrl',
@@ -150,11 +153,11 @@ class PaymentWebViewActivity : AppCompatActivity() {
         if (url.contains("payment-success")) {
             val uri = Uri.parse(url)
             val paymentKey = uri.getQueryParameter("paymentKey") ?: ""
-            val orderId = uri.getQueryParameter("orderId") ?: ""
+            val orderNoFromUrl = uri.getQueryParameter("orderId") ?: orderNo
             val amount = intent.getIntExtra("amount", 0) // get default from intent
             val amountVal = uri.getQueryParameter("amount")?.toIntOrNull() ?: amount
 
-            confirmPayment(paymentKey, orderId, amountVal)
+            confirmPayment(paymentKey, orderNoFromUrl, amountVal)
             return true
         } else if (url.contains("payment-fail")) {
             val uri = Uri.parse(url)
@@ -191,7 +194,7 @@ class PaymentWebViewActivity : AppCompatActivity() {
         return false
     }
 
-    private fun confirmPayment(paymentKey: String, orderId: String, amount: Int) {
+    private fun confirmPayment(paymentKey: String, paymentOrderId: String, amount: Int) {
         binding.progressBar.visibility = View.VISIBLE
         binding.webView.visibility = View.GONE
 
@@ -201,7 +204,7 @@ class PaymentWebViewActivity : AppCompatActivity() {
                 val api = RetrofitProvider.retrofit.create(AdApi::class.java)
                 val request = PaymentConfirmRequest(
                     paymentKey = paymentKey,
-                    orderId = orderId,
+                    orderNo = paymentOrderId,
                     amount = amount,
                     userNo = userNo
                 )
@@ -211,7 +214,8 @@ class PaymentWebViewActivity : AppCompatActivity() {
                     val resultIntent = Intent().apply {
                         putExtra("status", "SUCCESS")
                         putExtra("paymentKey", paymentKey)
-                        putExtra("orderId", orderId)
+                        putExtra("orderId", orderId) // PK
+                        putExtra("orderNo", orderNo)
                         putExtra("amount", amount)
                     }
                     setResult(RESULT_OK, resultIntent)
