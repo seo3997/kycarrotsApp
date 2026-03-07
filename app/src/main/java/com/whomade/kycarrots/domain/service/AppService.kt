@@ -442,9 +442,9 @@ class AppService(
         }
     }
 
-    suspend fun confirmDeposit(token: String, orderNo: String): Boolean {
+    suspend fun confirmDeposit(token: String, orderNo: String, carrier: String, trackingNo: String): Boolean {
         return try {
-            val resp = repository.confirmDeposit(token, orderNo)
+            val resp = repository.confirmDeposit(token, orderNo, carrier, trackingNo)
             resp.isSuccessful
         } catch (e: Exception) {
             false

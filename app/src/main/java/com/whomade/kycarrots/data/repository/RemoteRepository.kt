@@ -282,8 +282,8 @@ class RemoteRepository(
         return adApi.getOrderMgtDetail(orderNo, token)
     }
 
-    suspend fun confirmDeposit(token: String, orderNo: String): Response<Void> {
-        return adApi.confirmDeposit(token, orderNo)
+    suspend fun confirmDeposit(token: String, orderNo: String, carrier: String, trackingNo: String): Response<Void> {
+        return adApi.confirmDeposit(token, orderNo, carrier, trackingNo)
     }
 
     suspend fun requestBranchDeposit(token: String, orderNo: String): Response<Void> {

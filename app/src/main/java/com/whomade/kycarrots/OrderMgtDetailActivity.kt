@@ -178,17 +178,19 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         btnConfirmDelivery.visibility = if (isHQOrAdmin && status == "60") View.VISIBLE else View.GONE
         btnConfirmOrder.visibility = if (role == Constants.ROLE_PROJ && status == "70") View.VISIBLE else View.GONE
         btnCancelOrder.visibility = if (status != "40" && role != Constants.ROLE_SELL) View.VISIBLE else View.GONE
+        btnUpdateShipping.visibility = if (isHQOrAdmin && branchDepositStatus == "30") View.VISIBLE else View.GONE
 
-        // Setup Carrier Spinner
-        val carrierNames = carrierList.map { it["CODE_NM"] ?: it["codeNm"] ?: "" }.map { it.toString() }
+        // Setup Carrier Spinner with "선택하세요" placeholder
+        val carrierNames = mutableListOf("선택하세요")
+        carrierNames.addAll(carrierList.map { (it["CODE_NM"] ?: it["codeNm"] ?: "").toString() })
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, carrierNames)
         spCarrier.adapter = spinnerAdapter
         
-        // Select current carrier if exists in spinner
+        // Select current carrier if exists in spinner (adjust index for placeholder)
         val currentCarrierCode = (order["deliveryCompanyCode"] ?: order["DELIVERY_COMPANY_CODE"])?.toString() ?: ""
         if (currentCarrierCode.isNotEmpty()) {
             val idx = carrierList.indexOfFirst { (it["CODE"] ?: it["code"])?.toString() == currentCarrierCode }
-            if (idx >= 0) spCarrier.setSelection(idx)
+            if (idx >= 0) spCarrier.setSelection(idx + 1)
         }
 
         // If shipping already exists, fill it
@@ -226,14 +228,39 @@ class OrderMgtDetailActivity : AppCompatActivity() {
             showProgressBar()
             try {
                 val success = when (type) {
-                    "DEPOSIT" -> appService.confirmDeposit(token, orderId!!)
+                    "DEPOSIT" -> {
+                        val carrierPos = spCarrier.selectedItemPosition
+                        val carrier = if (carrierPos > 0 && carrierList.isNotEmpty()) {
+                            val actualIdx = carrierPos - 1
+                            (carrierList[actualIdx]["CODE"] ?: carrierList[actualIdx]["code"])?.toString() ?: ""
+                        } else ""
+                        if (carrier.isEmpty()) {
+                            Toast.makeText(this@OrderMgtDetailActivity, "입금 확인 시 택배사를 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
+                            hideProgressBar()
+                            return@launch
+                        }
+                        val tracking = etTrackingNo.text.toString()
+                        if (tracking.isEmpty()) {
+                            Toast.makeText(this@OrderMgtDetailActivity, "입금 확인 시 운송장 번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                            hideProgressBar()
+                            return@launch
+                        }
+                        appService.confirmDeposit(token, orderId!!, carrier, tracking)
+                    }
                     "BRANCH_DEPOSIT" -> appService.requestBranchDeposit(token, orderId!!)
                     "DELIVERY" -> appService.updateOrderStatus(token, orderId!!, "70")
                     "ORDER" -> appService.updateOrderStatus(token, orderId!!, "99")
                     "SHIPPING" -> {
-                        val carrier = if (carrierList.isNotEmpty()) {
-                            (carrierList[spCarrier.selectedItemPosition]["CODE"] ?: carrierList[spCarrier.selectedItemPosition]["code"])?.toString() ?: ""
+                        val carrierPos = spCarrier.selectedItemPosition
+                        val carrier = if (carrierPos > 0 && carrierList.isNotEmpty()) {
+                            val actualIdx = carrierPos - 1
+                            (carrierList[actualIdx]["CODE"] ?: carrierList[actualIdx]["code"])?.toString() ?: ""
                         } else ""
+                        if (carrier.isEmpty()) {
+                            Toast.makeText(this@OrderMgtDetailActivity, "택배사를 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
+                            hideProgressBar()
+                            return@launch
+                        }
                         val tracking = etTrackingNo.text.toString()
                         if (tracking.isEmpty()) {
                             Toast.makeText(this@OrderMgtDetailActivity, "운송장 번호를 입력해주세요.", Toast.LENGTH_SHORT).show()

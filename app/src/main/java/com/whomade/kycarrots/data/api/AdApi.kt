@@ -280,7 +280,9 @@ interface AdApi {
     @POST("api/order/confirmDeposit")
     suspend fun confirmDeposit(
         @Query("token") token: String,
-        @Query("orderId") orderId: String
+        @Query("orderId") orderId: String,
+        @Query("carrier") carrier: String,
+        @Query("trackingNo") trackingNo: String
     ): Response<Void>
 
     @POST("api/order/requestBranchDeposit")
