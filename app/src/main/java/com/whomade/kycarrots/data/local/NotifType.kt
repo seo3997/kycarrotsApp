@@ -4,4 +4,5 @@ object NotifType {
     const val CHAT = "chat"
     const val PRODUCT = "product"
     const val SYS = "sys"
+    const val ORDER = "order"
 }

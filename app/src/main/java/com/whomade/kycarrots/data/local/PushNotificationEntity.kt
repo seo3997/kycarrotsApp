@@ -10,11 +10,10 @@ import androidx.room.*
 data class PushNotificationEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val userId: String,                 // 수신자(내 계정 ID)
-    val type: String,                   // "CHAT", "PRODUCT_REGISTERED", "PRODUCT_APPROVED", ...
+    val type: String,                   // "chat", "product", "order", "sys" ...
     val title: String,
     val body: String?,
-    val productId: Long?,               // 상품 관련이면 사용
-    val roomId: String?,                // 채팅 관련이면 사용
+    val targetId: String?,              // 대상 ID (productId, roomId, orderId 등 통합)
     val deeplink: String?,              // app://product/123, app://chat/room/abc ...
     val isRead: Boolean = false,        // 미리 “읽음/안읽음” 표시용 (숫자 카운트는 관리 안 함)
     val createdAt: Long = System.currentTimeMillis()

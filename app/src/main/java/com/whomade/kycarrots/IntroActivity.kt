@@ -32,11 +32,13 @@ import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.message.PushTokenUtil
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.printKakaoKeyHash
+import com.whomade.kycarrots.OrderDetailActivity
 
 
 class IntroActivity : AppCompatActivity() {
     private var pushRoomId: String? = null
     private var pushProductId: String? = null
+    private var pushOrderId: String? = null
     private var pushType: String? = null
     private var pushMsg: String? = null
 
@@ -47,9 +49,10 @@ class IntroActivity : AppCompatActivity() {
     private fun savePushIntentData(intent: Intent?) {
         pushRoomId = intent?.getStringExtra("roomId")
         pushProductId = intent?.getStringExtra("productId")
+        pushOrderId = intent?.getStringExtra("order_id")
         pushType = intent?.getStringExtra("type")
         pushMsg = intent?.getStringExtra("msg")
-        Log.d("PushIntent", "savePushIntentData - type: $pushType, roomId: $pushRoomId, productId: $pushProductId, msg: $pushMsg")
+        Log.d("PushIntent", "savePushIntentData - type: $pushType, roomId: $pushRoomId, productId: $pushProductId, orderId: $pushOrderId, msg: $pushMsg")
     }
 
     // (1) Activity의 멤버 변수(필드)로 선언!
@@ -63,12 +66,10 @@ class IntroActivity : AppCompatActivity() {
         }
 
     companion object {
-        const val ACTION_GCM_REGISTRATION = "com.cashcuk.intent.GCM_REGISTRATION"
         const val REQUEST_ERR = 999
     }
 
     private lateinit var mThisAppVersion: String
-    private var regstrationId: String? = null
     private lateinit var mHandler: Handler
     private var mRunnable: Runnable? = null
     private var mRegHandler: Handler? = null
@@ -182,14 +183,12 @@ class IntroActivity : AppCompatActivity() {
     private fun nextPage(isLogin: Boolean, memberCode: String) {
 
         // ROLE_PUB 푸시 토픽 구독
-        if (memberCode == Constants.ROLE_PUB) {
-            FirebaseMessaging.getInstance().subscribeToTopic(Constants.ROLE_PUB)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.d("FCM", "ROLE_PUB 토픽 구독 성공")
-                    } else {
-                        Log.e("FCM", "ROLE_PUB 토픽 구독 실패", task.exception)
-                    }
+        FirebaseMessaging.getInstance().subscribeToTopic(memberCode)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("FCM", memberCode+" 토픽 구독 성공")
+                } else {
+                    Log.e("FCM", memberCode+" 토픽 구독 실패", task.exception)
                 }
         }
 
@@ -201,6 +200,7 @@ class IntroActivity : AppCompatActivity() {
                 // 로그인 후 다시 채팅 or 상품 상세로 이동할 수 있도록 push 데이터 전달
                 putExtra("roomId", pushRoomId)
                 putExtra("productId", pushProductId)
+                putExtra("order_id", pushOrderId)
                 putExtra("type", pushType)
                 putExtra("msg", pushMsg)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -251,6 +251,19 @@ class IntroActivity : AppCompatActivity() {
                         putExtra("msg", pushMsg)
                     }
                     arrayOf(defaultIntent, productIntent)
+                } else {
+                    arrayOf(defaultIntent)
+                }
+            }
+
+            "order" -> {
+                if (!pushOrderId.isNullOrBlank()) {
+                    val orderIntent = Intent(this, OrderDetailActivity::class.java).apply {
+                        putExtra("ORDER_ID", pushOrderId)
+                        putExtra("type", pushType)
+                        putExtra("msg", pushMsg)
+                    }
+                    arrayOf(defaultIntent, orderIntent)
                 } else {
                     arrayOf(defaultIntent)
                 }

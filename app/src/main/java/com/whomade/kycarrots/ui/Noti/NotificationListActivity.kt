@@ -18,6 +18,7 @@ import com.whomade.kycarrots.data.local.NotifType
 import com.whomade.kycarrots.databinding.ActivityNotificationListBinding
 import com.whomade.kycarrots.data.local.PushNotificationEntity
 import com.whomade.kycarrots.data.local.PushRepositoryProvider
+import com.whomade.kycarrots.OrderDetailActivity
 import kotlinx.coroutines.launch
 
 class NotificationListActivity : BaseDrawerActivity() {
@@ -94,15 +95,16 @@ class NotificationListActivity : BaseDrawerActivity() {
         }
 
         // 라우팅
+        val targetId = item.targetId ?: ""
         when (item.type) {
             NotifType.CHAT -> {
-                val parts = item.roomId?.split("_") ?: emptyList()
+                val parts = targetId.split("_")
                 if (parts.size >= 3) {
                     val productId = parts[0]
                     val buyerId = parts[1]
                     val branchId = parts[2]
                     openChatActivity(
-                        roomId = item.roomId ?: return,
+                        roomId = targetId,
                         buyerId = buyerId,
                         branchId = branchId,
                         productId = productId
@@ -110,15 +112,18 @@ class NotificationListActivity : BaseDrawerActivity() {
                 }
             }
             NotifType.PRODUCT -> {
-                val productId = item.productId?.toString() ?: ""
-
-
                 val intent = Intent(this@NotificationListActivity, AdDetailActivity::class.java).apply {
-                    putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, productId)
+                    putExtra(AdDetailActivity.EXTRA_PRODUCT_ID, targetId)
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 }
                 startActivity(intent)
-
+            }
+            NotifType.ORDER -> {
+                val intent = Intent(this@NotificationListActivity, OrderDetailActivity::class.java).apply {
+                    putExtra("ORDER_ID", targetId)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                }
+                startActivity(intent)
             }
             else -> {
                 // 딥링크가 있으면 우선

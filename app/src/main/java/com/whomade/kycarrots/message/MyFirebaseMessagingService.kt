@@ -15,8 +15,8 @@ import com.google.firebase.messaging.RemoteMessage
 import com.whomade.kycarrots.IntroActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.local.NotifType
-import com.whomade.kycarrots.data.local.PushNotificationEntity   // ✅ 추가
-import com.whomade.kycarrots.data.local.PushRepositoryProvider   // ✅ 추가
+import com.whomade.kycarrots.data.local.PushNotificationEntity
+import com.whomade.kycarrots.data.local.PushRepositoryProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,9 +32,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d("FCM", "From: ${remoteMessage.from}")
 
-        //val title = remoteMessage.notification?.title ?: "새 알림"
-        //val body  = remoteMessage.notification?.body  ?: "알림 내용 없음"
-
         val data  = remoteMessage.data
         val type  = data["type"] ?: "default"
         val title = data["title"] ?: "새 알림"
@@ -46,33 +43,42 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 val productId = data["productId"]
                 val msg       = data["msg"]
 
-                // ✅ 로컬 DB 저장
+                // ✅ 로컬 DB 저장: targetId로 roomId 사용
                 savePushLocally(
                     type = NotifType.CHAT,
                     title = title,
                     body = body,
-                    productId = productId?.toLongOrNull(),
-                    roomId = roomId,
+                    targetId = roomId,
                     deeplink = "app://chat/room/${roomId ?: ""}"
                 )
 
-                showNotification(title, body, roomId, productId, type, msg)
+                showNotification(title, body, roomId, productId, null, type, msg)
             }
             "product" -> {
                 val productId = data["productId"]
-                val userId    = data["userId"]
 
-                // ✅ 로컬 DB 저장
+                // ✅ 로컬 DB 저장: targetId로 productId 사용
                 savePushLocally(
                     type = NotifType.PRODUCT,
                     title = title,
                     body = body,
-                    productId = productId?.toLongOrNull(),
-                    roomId = null,
+                    targetId = productId,
                     deeplink = "app://product/${productId ?: ""}"
                 )
 
-                showNotification(title, body, null, null,  type, null)
+                showNotification(title, body, null, productId, null, type, null)
+            }
+            "order" -> {
+                val orderId = data["order_id"]
+                // ✅ 로컬 DB 저장: targetId로 orderId 사용
+                savePushLocally(
+                    type = NotifType.ORDER,
+                    title = title,
+                    body = body,
+                    targetId = orderId,
+                    deeplink = "app://order/${orderId ?: ""}"
+                )
+                showNotification(title, body, null, null, orderId, type, null)
             }
             else -> {
                 // 기타 유형
@@ -80,22 +86,20 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     type = NotifType.SYS,
                     title = title,
                     body = body,
-                    productId = null,
-                    roomId = null,
+                    targetId = null,
                     deeplink = null
                 )
-                showNotification(title, body, null,  null, type, null)
+                showNotification(title, body, null,  null, null, type, null)
             }
         }
     }
 
-    // ✅ 푸시 수신 시 로컬(Room) 저장 함수
+    // ✅ 푸시 수신 시 로컬(Room) 저장 함수 (targetId 통합 버전)
     private fun savePushLocally(
         type: String,
         title: String,
         body: String?,
-        productId: Long?,
-        roomId: String?,
+        targetId: String?,
         deeplink: String?
     ) {
         val prefs  = applicationContext.getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
@@ -110,8 +114,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             type     = type,
             title    = title,
             body     = body,
-            productId= productId,
-            roomId   = roomId,
+            targetId = targetId,
             deeplink = deeplink,
             isRead   = false
         )
@@ -131,18 +134,21 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         body: String,
         roomId: String?,
         productId: String?,
+        orderId: String?,
         type: String?,
         msg: String?
     ) {
         val channelId = when (type) {
             "chat" -> "chat_channel"
             "product" -> "product_channel"
+            "order" -> "order_channel"
             else -> "default_channel"
         }
 
         val (channelName, channelDescription) = when (type) {
             "chat" -> "채팅 알림" to "채팅 관련 알림입니다."
             "product" -> "상품 알림" to "신규 상품 관련 알림입니다."
+            "order" -> "주문 알림" to "주문 관련 알림입니다."
             else -> "일반 알림" to "기타 알림입니다."
         }
 
@@ -161,6 +167,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             putExtra("type", type)
             putExtra("roomId", roomId)
             putExtra("productId", productId)
+            putExtra("order_id", orderId)
             putExtra("msg", msg)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
