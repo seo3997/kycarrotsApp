@@ -160,6 +160,15 @@
                         android:layout_height="wrap_content"
                         android:text="주문 확정 처리"
                         android:backgroundTint="#6366F1"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp"/>
+
+                    <Button
+                        android:id="@+id/btn_cancel_order"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="주문 취소"
+                        android:backgroundTint="#EF4444"
                         android:visibility="gone"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

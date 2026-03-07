@@ -44,6 +44,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
     private lateinit var btnBranchConfirmDeposit: Button
     private lateinit var btnConfirmDelivery: Button
     private lateinit var btnConfirmOrder: Button
+    private lateinit var btnCancelOrder: Button
     private lateinit var llShippingInput: View
     private lateinit var spCarrier: Spinner
     private lateinit var etTrackingNo: EditText
@@ -90,6 +91,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         btnBranchConfirmDeposit = findViewById(R.id.btn_branch_confirm_deposit)
         btnConfirmDelivery = findViewById(R.id.btn_confirm_delivery)
         btnConfirmOrder = findViewById(R.id.btn_confirm_order)
+        btnCancelOrder = findViewById(R.id.btn_cancel_order)
         llShippingInput = findViewById(R.id.ll_shipping_input)
         spCarrier = findViewById(R.id.sp_carrier)
         etTrackingNo = findViewById(R.id.et_tracking_no)
@@ -99,6 +101,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         btnBranchConfirmDeposit.setOnClickListener { confirmAction("BRANCH_DEPOSIT") }
         btnConfirmDelivery.setOnClickListener { confirmAction("DELIVERY") }
         btnConfirmOrder.setOnClickListener { confirmAction("ORDER") }
+        btnCancelOrder.setOnClickListener { confirmAction("CANCEL") }
         btnUpdateShipping.setOnClickListener { confirmAction("SHIPPING") }
     }
 
@@ -174,6 +177,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         llShippingInput.visibility = if (isHQOrAdmin && (status == "30" || status == "50" || status == "60")) View.VISIBLE else View.GONE
         btnConfirmDelivery.visibility = if (isHQOrAdmin && status == "60") View.VISIBLE else View.GONE
         btnConfirmOrder.visibility = if (role == Constants.ROLE_PROJ && status == "70") View.VISIBLE else View.GONE
+        btnCancelOrder.visibility = if (status != "40") View.VISIBLE else View.GONE
 
         // Setup Carrier Spinner
         val carrierNames = carrierList.map { it["CODE_NM"] ?: it["codeNm"] ?: "" }.map { it.toString() }
@@ -200,6 +204,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
             "BRANCH_DEPOSIT" -> "본사에 입금 확인 요청을 하시겠습니까?"
             "DELIVERY" -> "배송 완료 처리를 하시겠습니까?"
             "ORDER" -> "주문 확정 처리를 하시겠습니까?"
+            "CANCEL" -> "주문을 취소하시겠습니까?"
             "SHIPPING" -> "배송 정보를 업데이트하시겠습니까?"
             else -> ""
         }
@@ -236,6 +241,15 @@ class OrderMgtDetailActivity : AppCompatActivity() {
                             return@launch
                         }
                         appService.updateShipping(token, orderId!!, carrier, tracking)
+                    }
+                    "CANCEL" -> {
+                        val req = com.whomade.kycarrots.data.model.OrderCancelRequest(
+                            orderId = orderId!!,
+                            cancelReason = "",
+                            userNo = 0L
+                        )
+                        val resp = adApi.cancelPayment(req)
+                        resp.isSuccessful && resp.body()?.success == true
                     }
                     else -> false
                 }
