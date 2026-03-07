@@ -417,12 +417,7 @@ class AdDetailActivity : AppCompatActivity() {
 
         val memberCode = LoginInfoUtil.getMemberCode(this)
 
-        val isReadonly = when {
-            memberCode == Constants.ROLE_PUB -> true
-            memberCode == Constants.ROLE_SELL && currentStatus == "0" -> true
-            memberCode == Constants.ROLE_PROJ && currentStatus == "98" -> true
-            else -> false
-        }
+        val isReadonly = (memberCode != Constants.ROLE_SELL)
 
         if (isReadonly) {
             // 상태만 보여주기
@@ -452,11 +447,8 @@ class AdDetailActivity : AppCompatActivity() {
 
                 filteredList = statusList.filter {
                     when {
-                        memberCode == Constants.ROLE_PROJ ->
-                            it.strIdx in listOf("0", "1", "10", "98", "99") || it.strIdx == currentStatus
                         memberCode == Constants.ROLE_SELL ->
-                            // 반려 상태인 경우 승인요청만 허용
-                            it.strIdx in listOf("0", "98")
+                            it.strIdx in listOf("0", "1", "20", "30", "99") || it.strIdx == currentStatus
                         else -> false
                     }
                 }.distinctBy { it.strIdx }
@@ -502,9 +494,8 @@ class AdDetailActivity : AppCompatActivity() {
     private fun handleStatusChange(label: String, code: String) {
         val memberCode = LoginInfoUtil.getMemberCode(this)
         val canChange = when {
-            memberCode == Constants.ROLE_PROJ -> code in listOf("1", "10", "98", "99") // 예: 승인요청, 반려
             memberCode == Constants.ROLE_SELL ->
-                currentStatus == "98" && code == "0" // 반려 → 승인요청만 허용
+                code in listOf("0", "1", "10", "20", "30", "99")
             else -> false
         }
 
