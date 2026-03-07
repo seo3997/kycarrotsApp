@@ -177,7 +177,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
         llShippingInput.visibility = if (isHQOrAdmin && (status == "30" || status == "50" || status == "60")) View.VISIBLE else View.GONE
         btnConfirmDelivery.visibility = if (isHQOrAdmin && status == "60") View.VISIBLE else View.GONE
         btnConfirmOrder.visibility = if (role == Constants.ROLE_PROJ && status == "70") View.VISIBLE else View.GONE
-        btnCancelOrder.visibility = if (status != "40") View.VISIBLE else View.GONE
+        btnCancelOrder.visibility = if (status != "40" && role != Constants.ROLE_SELL) View.VISIBLE else View.GONE
 
         // Setup Carrier Spinner
         val carrierNames = carrierList.map { it["CODE_NM"] ?: it["codeNm"] ?: "" }.map { it.toString() }
