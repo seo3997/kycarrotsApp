@@ -305,5 +305,54 @@ interface AdApi {
         @Query("orderId") orderId: String,
         @Query("status") status: String
     ): Response<Void>
+
+    // Review Endpoints
+    @GET("api/product/review/list")
+    suspend fun getReviewList(
+        @Query("productId") productId: Long
+    ): Response<Map<String, Any>>
+
+    @Multipart
+    @POST("api/product/review/insert")
+    suspend fun insertReview(
+        @Part("productId") productId: RequestBody,
+        @Part("rating") rating: RequestBody,
+        @Part("contents") contents: RequestBody,
+        @Part reviewFile: MultipartBody.Part?
+    ): Response<Map<String, Any>>
+
+    @FormUrlEncoded
+    @POST("api/product/review/delete")
+    suspend fun deleteReview(
+        @Field("reviewId") reviewId: String
+    ): Response<Map<String, Any>>
+
+    // QnA Endpoints
+    @GET("api/product/qna/list")
+    suspend fun getQnaList(
+        @Query("productId") productId: Long
+    ): Response<Map<String, Any>>
+
+    @FormUrlEncoded
+    @POST("api/product/qna/insert")
+    suspend fun insertQna(
+        @Field("productId") productId: String,
+        @Field("title") title: String,
+        @Field("contents") contents: String,
+        @Field("secretYn") secretYn: String
+    ): Response<Map<String, Any>>
+
+    @FormUrlEncoded
+    @POST("api/product/qna/delete")
+    suspend fun deleteQna(
+        @Field("qnaId") qnaId: String
+    ): Response<Map<String, Any>>
+
+    @FormUrlEncoded
+    @POST("api/product/qna/answer")
+    suspend fun answerQna(
+        @Field("qnaId") qnaId: String,
+        @Field("answerContents") answerContents: String
+    ): Response<Map<String, Any>>
 }
 

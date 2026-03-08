@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,18 +23,17 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import android.webkit.WebView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -42,140 +41,97 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.card.MaterialCardView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.whomade.kycarrots.chatting.ChatActivity
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.common.RetrofitProvider
 import com.whomade.kycarrots.data.api.AdApi
+import com.whomade.kycarrots.data.model.ChatBuyerDto
 import com.whomade.kycarrots.data.model.ChatRoomResponse
+import com.whomade.kycarrots.data.model.InterestRequest
 import com.whomade.kycarrots.data.model.ProductDetailResponse
 import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.repository.RemoteRepository
 import com.whomade.kycarrots.domain.service.AppService
 import com.whomade.kycarrots.domain.service.AppServiceProvider
+import com.whomade.kycarrots.ui.ad.ImageViewerActivity
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.TokenUtil
 import com.whomade.kycarrots.ui.common.TxtListDataInfo
-import kotlinx.coroutines.launch
-import com.whomade.kycarrots.data.model.ChatBuyerDto
-import com.whomade.kycarrots.data.model.InterestRequest
-import com.whomade.kycarrots.ui.ad.ImageViewerActivity
-import com.whomade.kycarrots.ui.ad.makead.KtMakeADDetailView
-import com.whomade.kycarrots.ui.ad.makead.KtMakeADMainActivity
 import com.whomade.kycarrots.ui.dialog.SelectOption
 import com.whomade.kycarrots.ui.dialog.SelectOptionDialogFragment
+import kotlinx.coroutines.launch
 
 class AdDetailActivity : AppCompatActivity() {
     private lateinit var productIdStr: String
     private lateinit var branchId: String
     private lateinit var spinner: AppCompatSpinner
     private var currentStatus: String? = null
-    private lateinit var filteredList: List<TxtListDataInfo>  // ← 전역 선언 필요
-    private lateinit var statusList: List<TxtListDataInfo>  // ← 전역 선언 필요
-    private lateinit var statusTextView: TextView // ← 추가
-    private var memberCode: String? = null   // ← 현재 사용자 권한 저장
+    private lateinit var filteredList: List<TxtListDataInfo>
+    private lateinit var statusList: List<TxtListDataInfo>
+    private lateinit var statusTextView: TextView
+    private var memberCode: String? = null
     private var isFav: Boolean = false
 
     private var statusChanged = false
     private var newStatus: String? = null
     private var selectedBuyerForCompletion: ChatBuyerDto? = null
-    private lateinit var btnBuy: View
     private var currentProductDetail: ProductDetailResponse? = null
-    private var orderQuantity: Int = 1
-    private var maxQuantity: Int = 1
+
+    val viewModel: AdDetailViewModel by viewModels()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
+
+        // 1. ViewModel의 로딩 상태 관찰 (Fragment 등에서 발생하는 로딩까지 처리)
+        viewModel.isLoading.observe(this) { isLoading ->
+            showLoading(isLoading)
+        }
+
         memberCode = LoginInfoUtil.getMemberCode(this)
-
-
 
         val intent = intent
         productIdStr = intent.getStringExtra(EXTRA_PRODUCT_ID) ?: "0"
         val productId = productIdStr.toLongOrNull()
         if (productId == null || productId <= 0) {
-            finish() // 유효하지 않은 ID는 종료
+            finish()
             return
         }
 
-
-        val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
-        val repository = RemoteRepository(adApi)
-        val appService = AppService(repository)
-
+        // 초기 데이터 로드
         loadProductDetail(productId)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        val collapsingToolbar: CollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar)
-        //collapsingToolbar.title = cheeseName
-        //loadBackdrop()
 
         val fab: View = findViewById(R.id.fab_send)
         fab.setOnClickListener {
             handleFabClickForSystemType2()
         }
 
+        val viewPager: ViewPager2 = findViewById(R.id.view_pager)
+        val tabLayout: TabLayout = findViewById(R.id.tab_layout)
+        val pagerAdapter = AdDetailPagerAdapter(this)
+        viewPager.adapter = pagerAdapter
 
-
-        btnBuy = findViewById(R.id.btn_buy)
-        val btnMinus: View = findViewById(R.id.btn_minus)
-        val btnPlus: View = findViewById(R.id.btn_plus)
-        val tvQuantity: TextView = findViewById(R.id.tv_quantity)
-
-        val isBuyer = (memberCode == Constants.ROLE_PUB)
-        btnBuy.visibility = if (isBuyer) View.VISIBLE else View.GONE
-        
-        btnBuy.setOnClickListener {
-            if (currentStatus != "1") {
-                Toast.makeText(this, "판매 중인 상품만 구매 가능합니다.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "상품상세"
+                1 -> "상품리뷰"
+                else -> "상품문의"
             }
-            val detail = currentProductDetail ?: return@setOnClickListener
-            val mainImageUrl = currentProductDetail?.imageMetas?.firstOrNull { it.represent == "1" }?.imageUrl
-            val intent = Intent(this, OrderActivity::class.java).apply {
-                putExtra("productId", detail.product.productId!!.toLong())
-                putExtra("productName", detail.product.title)
-                putExtra("unitPrice", detail.product.price?.toDoubleOrNull()?.toInt() ?: 0)
-                putExtra("selectedOption", detail.product.unitCodeNm)
-                putExtra("quantity", orderQuantity)
-                putExtra("productImage", mainImageUrl)
-            }
-            startActivity(intent)
-        }
+        }.attach()
 
-        btnMinus.setOnClickListener {
-            if (currentStatus != "1") return@setOnClickListener
-            if (orderQuantity > 1) {
-                orderQuantity--
-                tvQuantity.text = orderQuantity.toString()
-                updateTotalAmount()
-            }
-        }
-
-        btnPlus.setOnClickListener {
-            if (currentStatus != "1") return@setOnClickListener
-            if (orderQuantity < maxQuantity) {
-                orderQuantity++
-                tvQuantity.text = orderQuantity.toString()
-                updateTotalAmount()
-            } else {
-                Toast.makeText(this, "최대 구매 가능 수량입니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-
+        // 구매자 선택 다이얼로그 결과 리스너
         supportFragmentManager.setFragmentResultListener(
             SelectOptionDialogFragment.RESULT_KEY,
             this
         ) { _, bundle ->
             when {
                 bundle.getBoolean(SelectOptionDialogFragment.RESULT_NONE, false) -> {
-                    // "선택 안함" 눌렀을 때 처리
                     selectedBuyerForCompletion = null
                     showStatusChangeConfirmDialog("구매확정", "99", rejectReason = null)
                 }
@@ -183,21 +139,17 @@ class AdDetailActivity : AppCompatActivity() {
                     restoreSpinnerSelection()
                 }
                 else -> {
-                    val selected = bundle.getParcelable<SelectOption>(
-                        SelectOptionDialogFragment.RESULT_ITEM
-                    )
+                    val selected = bundle.getParcelable<SelectOption>(SelectOptionDialogFragment.RESULT_ITEM)
                     if (selected != null) {
-                        // ✅ 여기서 selected.name == labels 의 역할
-                        //    selected.code == buyerId
                         selectedBuyerForCompletion = ChatBuyerDto(
-                            roomId     = selected.code3,           // 예: roomId
-                            productId  = selected.code6.toLongOrNull() ?: 0L, // 예: productId
-                            branchId   = selected.code4,           // 예: branchId
-                            buyerId    = selected.code1,           // 예: buyerId
-                            buyerNo    = selected.code2.toLongOrNull() ?: 0L,   // 필요 없으면 0L
-                            buyerNm    = selected.name,            // 표시용 이름
+                            roomId     = selected.code3,
+                            productId  = selected.code6.toLongOrNull() ?: 0L,
+                            branchId   = selected.code4,
+                            buyerId    = selected.code1,
+                            buyerNo    = selected.code2.toLongOrNull() ?: 0L,
+                            buyerNm    = selected.name,
                             sellerNo   = selected.code5.toLongOrNull() ?: 0L,
-                            sellerNm   = ""                        // 필요시 추가
+                            sellerNm   = ""
                         )
                         showStatusChangeConfirmDialog("구매확정", "99", rejectReason = null)
                     }
@@ -206,6 +158,28 @@ class AdDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun loadProductDetail(productId: Long) {
+        val userNo = LoginInfoUtil.getUserNo(this).toLongOrNull() ?: return
+        showLoading(true)
+        lifecycleScope.launch {
+            try {
+                val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
+                val repository = RemoteRepository(adApi)
+                val appService = AppService(repository)
+
+                val detail = appService.getProductDetail(productId, userNo)
+                if (detail != null) {
+                    viewModel.setProductDetail(detail)
+                    showProductDetail(detail)
+                }
+            } catch (e: Exception) {
+                Log.e("AdDetail", "Error loading detail", e)
+                Toast.makeText(this@AdDetailActivity, "데이터 로딩 실패", Toast.LENGTH_SHORT).show()
+            } finally {
+                showLoading(false)
+            }
+        }
+    }
 
     private fun showProductDetail(detail: ProductDetailResponse) {
         currentProductDetail = detail
@@ -215,412 +189,96 @@ class AdDetailActivity : AppCompatActivity() {
         branchId = detail.product.branchId
         isFav = detail.product.fav == "1"
         currentStatus = detail.product.saleStatus
-        updatePurchaseUi()
-
-
-        val descriptionTextView: TextView = findViewById(R.id.product_description)
-        val descriptionWebView: WebView = findViewById(R.id.product_description_webview)
-
-        val editorMode = detail.product.editorMode
-        if (editorMode == "1" || editorMode == "2") {
-            descriptionTextView.visibility = View.GONE
-            descriptionWebView.visibility = View.VISIBLE
-
-            descriptionWebView.settings.apply {
-                javaScriptEnabled = true
-                builtInZoomControls = true
-                displayZoomControls = false
-                setSupportZoom(true)
-                loadWithOverviewMode = true
-                useWideViewPort = true
-                defaultTextEncodingName = "UTF-8"
-            }
-
-            // NestedScrollView 내에서 핀치 줌이 잘 작동하도록 터치 리스너 추가
-            descriptionWebView.setOnTouchListener { v, event ->
-                if (event.pointerCount >= 2) {
-                    v.parent.requestDisallowInterceptTouchEvent(true)
-                }
-                false
-            }
-
-            var description = detail.product.description ?: "설명이 없습니다"
-            if (description.contains("&lt;") || description.contains("&gt;")) {
-               description = android.text.Html.fromHtml(description, android.text.Html.FROM_HTML_MODE_LEGACY).toString()
-            }
-
-            val htmlContent = """
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-                    <style>
-                        body { word-wrap: break-word; padding: 0; margin: 0; }
-                        img { max-width: 100%; height: auto; }
-                    </style>
-                </head>
-                <body>
-                    $description
-                </body>
-                </html>
-            """.trimIndent()
-
-            descriptionWebView.loadDataWithBaseURL("about:blank", htmlContent, "text/html", "UTF-8", null)
-        } else {
-            descriptionTextView.visibility = View.VISIBLE
-            descriptionWebView.visibility = View.GONE
-            descriptionTextView.text = detail.product.description ?: "설명이 없습니다"
-        }
-
-        val priceTextView: TextView = findViewById(R.id.product_price)
-        val priceLong = detail.product.price?.toDoubleOrNull()?.toLong() ?: 0L
-        val formattedPrice = String.format("%,d원", priceLong)
-        priceTextView.text = formattedPrice
-
-        maxQuantity = detail.product.availableQuantity.toIntOrNull() ?: 0
-        val tvAvailableQuantity: TextView = findViewById(R.id.tv_available_quantity)
-        tvAvailableQuantity.text = "구매 가능 수량: ${String.format("%,d", maxQuantity)} 개"
-
-        // 지점 배송비 정보 설정
-        val baseShippingFee = LoginInfoUtil.getBaseShippingFee(this)
-        val freeThreshold = LoginInfoUtil.getFreeShippingThreshold(this)
-        
-        findViewById<TextView>(R.id.tv_delivery_fee).text = "배송비: ${String.format("%,d", baseShippingFee)}원"
-        findViewById<TextView>(R.id.tv_free_shipping_threshold).text = "(${String.format("%,d", freeThreshold)}원 이상 구매 시 무료)"
-        
-        updateTotalAmount()
-
-
-
-
-        // 대표 이미지 (represent == 1)
-        /*
-        val imageView: ImageView = findViewById(R.id.backdrop)
-        val mainImageUrl = detail.imageMetas.firstOrNull { it.represent == "1" }?.imageUrl
-        if (mainImageUrl != null) {
-            Glide.with(this)
-                .load(mainImageUrl)
-                .apply(RequestOptions.centerCropTransform())
-                .into(imageView)
-        }
-         */
 
         val imageView: ImageView = findViewById(R.id.backdrop)
         val mainImageUrl = detail.imageMetas.firstOrNull { it.represent == "1" }?.imageUrl
 
-        // ... Glide 로드 코드는 그대로 두고
         imageView.setOnClickListener {
             mainImageUrl?.let { openImageViewer(it) }
         }
 
-
-        // 공유 요소 전환을 위해 transition 일시 지연
-        postponeEnterTransition()
-
-        Glide.with(this)
-            .load(mainImageUrl)
-            .apply(
-                RequestOptions.centerCropTransform()
-                    .placeholder(R.color.colorRPrimary)  // 여기
-            )
-            .listener(object : RequestListener<Drawable> {
-                override fun onResourceReady(
-                    resource: Drawable,
-                    model: Any,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    startPostponedEnterTransition()
-                    return false
-                }
-
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    startPostponedEnterTransition()
-                    return false
-                }
-            })
-            .into(imageView)
-        // 서브 이미지 (represent == 0)
-        val imageCardView = findViewById<MaterialCardView>(R.id.image_card_view)
-        val subImages = detail.imageMetas.filter { it.represent == "0" }.take(3)
-
-        if (subImages.isEmpty()) {
-            imageCardView.visibility = View.GONE
+        if (mainImageUrl.isNullOrBlank()) {
+            imageView.setImageResource(R.color.colorRPrimary)
         } else {
-            imageCardView.visibility = View.VISIBLE
-            val imageViews = listOf(
-                findViewById<ImageView>(R.id.image_sub_1),
-                findViewById<ImageView>(R.id.image_sub_2),
-                findViewById<ImageView>(R.id.image_sub_3)
-            )
-            for (i in imageViews.indices) {
-                if (i < subImages.size) {
-                    val imageUrl = subImages[i].imageUrl
-                    Glide.with(this)
-                        .load(imageUrl)
-                        .apply(RequestOptions.centerCropTransform())
-                        .into(imageViews[i])
-                    imageViews[i].visibility = View.VISIBLE
-
-                    imageViews[i].setOnClickListener {
-                        openImageViewer(imageUrl!!)
+            postponeEnterTransition()
+            Glide.with(this)
+                .load(mainImageUrl)
+                .apply(RequestOptions.centerCropTransform().placeholder(R.color.colorRPrimary))
+                .listener(object : RequestListener<Drawable> {
+                    override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                        startPostponedEnterTransition()
+                        return false
                     }
-
-                } else {
-                    imageViews[i].visibility = View.GONE
-                }
-            }
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+                        startPostponedEnterTransition()
+                        return false
+                    }
+                })
+                .into(imageView)
         }
-        // TODO: 나머지 detail.product.description, price 등도 TextView에 연결 가능
-        /*
-        val spinner = findViewById<AppCompatSpinner>(R.id.spinner_product_status)
-        val statusList = listOf("승인요청","판매중", "수정요청")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusList)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedStatus = statusList[position]
-                Log.d("ProductDetail", "선택된 상태: $selectedStatus")
-                // 서버에 상태 업데이트 로직 연결 예정
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-         */
-        loadProductStatusOptions(currentStatus)
-        renderRejectReason(detail.product.saleStatus,detail.product.rejectReason)
-        updatePurchaseUi()
-
         invalidateOptionsMenu()
     }
 
-    private fun updateTotalAmount() {
-        val detail = currentProductDetail ?: return
-        val price = detail.product.price?.toDoubleOrNull() ?: 0.0
-        val totalAmount = price * orderQuantity
-        val tvTotalPrice: TextView = findViewById(R.id.tv_total_price)
-        tvTotalPrice.text = String.format("%,d원", totalAmount.toLong())
+    fun restoreSpinnerSelection() {
+        val detail = viewModel.productDetail.value ?: return
+        viewModel.setProductDetail(detail)
     }
 
-    private fun loadProductStatusOptions(currentStatus: String?) {
-        spinner = findViewById(R.id.spinner_product_status)
-        statusTextView = findViewById(R.id.text_product_status)
-
-        val memberCode = LoginInfoUtil.getMemberCode(this)
-
-        val isReadonly = (memberCode != Constants.ROLE_SELL)
-
-        if (isReadonly) {
-            // 상태만 보여주기
-            spinner.visibility = View.GONE
-            statusTextView.visibility = View.VISIBLE
-
-            lifecycleScope.launch {
-                try {
-                    val apiList = AppServiceProvider.getService().getCodeList("R010630")
-                    val label = apiList.find { it.strIdx == currentStatus }?.strMsg ?: "알 수 없음"
-                    statusTextView.text = "현재 상태: $label"
-                } catch (e: Exception) {
-                    statusTextView.text = "현재 상태: 알 수 없음"
-                }
-            }
-            return
-        }
-
-
-        // 이 아래는 Spinner 표시 및 상태 변경 가능한 경우
-        spinner.visibility = View.VISIBLE
-        statusTextView.visibility = View.GONE
-
-        lifecycleScope.launch {
-            try {
-                statusList = AppServiceProvider.getService().getCodeList("R010630")
-
-                filteredList = statusList.filter {
-                    when {
-                        memberCode == Constants.ROLE_SELL ->
-                            it.strIdx in listOf("0", "1", "20", "30", "99") || it.strIdx == currentStatus
-                        else -> false
-                    }
-                }.distinctBy { it.strIdx }
-
-                val names = filteredList.map { it.strMsg }
-
-                val adapter = ArrayAdapter(
-                    this@AdDetailActivity,
-                    android.R.layout.simple_spinner_item,
-                    names
-                )
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = adapter
-
-                currentStatus?.let {
-                    val index = filteredList.indexOfFirst { code -> code.strIdx == it }
-                    if (index != -1) spinner.setSelection(index)
-                }
-
-                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    var initialized = false
-                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                        if (!initialized) {
-                            initialized = true
-                            return
-                        }
-                        val selectedLabel = names[position]
-                        val selectedCode = filteredList[position].strIdx
-
-                        if (selectedCode == currentStatus) return
-                        handleStatusChange(selectedLabel, selectedCode)
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>) {}
-                }
-
-            } catch (e: Exception) {
-                Toast.makeText(this@AdDetailActivity, "상품 상태 로드 실패", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun handleStatusChange(label: String, code: String) {
+    fun handleStatusChange(label: String, code: String) {
         val memberCode = LoginInfoUtil.getMemberCode(this)
         val canChange = when {
-            memberCode == Constants.ROLE_SELL ->
-                code in listOf("0", "1", "10", "20", "30", "99")
+            memberCode == Constants.ROLE_SELL -> code in listOf("0", "1", "10", "20", "30", "99")
             else -> false
         }
 
         if (!canChange) {
             Toast.makeText(this, "이 상태에서는 변경할 수 없습니다.", Toast.LENGTH_SHORT).show()
-            restoreSpinnerSelection()
             return
         }
 
         if (code == "99") {
             maybePickBuyerThenConfirm(label, code)
-            return
-        }
-
-        if (currentStatus == "0" && code == "98") {
-            // 승인요청 → 반려
-            showRejectReasonDialog { reason ->
-                showStatusChangeConfirmDialog(label, code, reason)
-            }
+        } else if (currentStatus == "0" && code == "98") {
+            showRejectReasonDialog { reason -> showStatusChangeConfirmDialog(label, code, reason) }
         } else {
-            // 그 외 상태 변경
             showStatusChangeConfirmDialog(label, code, null)
         }
     }
 
     private fun maybePickBuyerThenConfirm(label: String, code: String) {
-        val pid = productIdStr.toLongOrNull()
-        var branchId = LoginInfoUtil.getBranchId(this)
-
-        if (pid == null) {
-            Toast.makeText(this, "상품 ID가 유효하지 않습니다.", Toast.LENGTH_SHORT).show()
-            restoreSpinnerSelection()
-            return
-        }
-        if (branchId.isBlank()) {
-            Toast.makeText(this, "로그인 정보를 확인해주세요.", Toast.LENGTH_SHORT).show()
-            restoreSpinnerSelection()
-            return
-        }
+        val pid = productIdStr.toLongOrNull() ?: return
+        val branchId = LoginInfoUtil.getBranchId(this)
 
         lifecycleScope.launch {
             showLoading(true)
             try {
-                // ✅ 서버에서 구매자 목록 가져오기
                 val buyers = AppServiceProvider.getService().getChatBuyers(pid, branchId)
-
                 if (buyers.isEmpty()) {
-                    // 구매자 없음 → 바로 확인 다이얼로그(= 상태만 변경)
                     selectedBuyerForCompletion = null
-                    showStatusChangeConfirmDialog(label, code, rejectReason = null)
+                    showStatusChangeConfirmDialog(label, code, null)
                 } else {
-                    // 구매자 있음 → 목록에서 선택해야 진행
-                    /*
-                    val labels = buyers.mapIndexed { i, b -> "${i+1}. ${b.buyerNm} (${b.buyerId})" }.toTypedArray()
-                    AlertDialog.Builder(this@AdDetailActivity)
-                        .setTitle("판매완료 처리 — 구매자 선택")
-                        .setItems(labels) { _, which ->
-                            selectedBuyerForCompletion = buyers[which]
-                            showStatusChangeConfirmDialog(label, code, rejectReason = null)
-                        }
-                        .setNegativeButton("취소") { _, _ ->
-                            restoreSpinnerSelection()
-                        }
-                        .show()
-                     */
-                    val options = ArrayList(
-                        buyers.map { b ->
-                            SelectOption(
-                                code1 = b.buyerId,   // 내부적으로 사용할 코드
-                                code2 = b.buyerNo.toString(),
-                                code3 = b.roomId,
-                                code4 = b.branchId,
-                                code5 = b.sellerNo.toString(),
-                                code6 = b.productId.toString(),
-                                name =  b.buyerId+"/"+b.buyerNm    // 다이얼로그에 표시될 라벨
-                            )
-                        }
-                    )
-                    SelectOptionDialogFragment
-                        .newInstance(
-                            title = "판매완료 처리 — 구매자 선택",
-                            options = options,   // name이 곧 labels
-                            numbered = true,      // 번호 붙일지 여부
-                            showNone = true
+                    val options = ArrayList(buyers.map { b ->
+                        SelectOption(
+                            code1 = b.buyerId, code2 = b.buyerNo.toString(),
+                            code3 = b.roomId, code4 = b.branchId,
+                            code5 = b.sellerNo.toString(), code6 = b.productId.toString(),
+                            name = "${b.buyerId}/${b.buyerNm}"
                         )
+                    })
+                    SelectOptionDialogFragment.newInstance("판매완료 처리 — 구매자 선택", options, true, true)
                         .show(supportFragmentManager, "SelectOptionDialog")
                 }
             } catch (e: Exception) {
-                // 에러 시에도 구매자 없이 진행(상태만 변경)
-                selectedBuyerForCompletion = null
-                showStatusChangeConfirmDialog(label, code, rejectReason = null)
+                showStatusChangeConfirmDialog(label, code, null)
             } finally {
                 showLoading(false)
             }
         }
     }
-    private fun showRejectReasonDialog(onReasonEntered: (String) -> Unit) {
-        val editText = EditText(this).apply {
-            hint = "반려 사유를 입력하세요"
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("반려 사유 입력")
-            .setView(editText)
-            .setPositiveButton("확인") { _, _ ->
-                val reason = editText.text.toString().trim()
-                if (reason.isNotEmpty()) {
-                    onReasonEntered(reason)
-                } else {
-                    Toast.makeText(this, "반려 사유를 입력해주세요.", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("취소", null)
-            .show()
-    }
 
     private fun showStatusChangeConfirmDialog(label: String, code: String, rejectReason: String?) {
         val buyer = if (code == "99") selectedBuyerForCompletion else null
-        val buyerLine = buyer?.let { "\n\n선택한 구매자: ${it.buyerNm}" } ?: ""
-
-        val message = if (rejectReason != null) {
-            "상태를 \"$label\"(으)로 변경하고 아래 사유를 저장하시겠습니까?\n\n사유: $rejectReason$buyerLine"
-        } else {
-            "상태를 \"$label\"(으)로 변경하시겠습니까?$buyerLine"
-        }
+        val message = "상태를 \"$label\"(으)로 변경하시겠습니까?" + (buyer?.let { "\n구매자: ${it.buyerNm}" } ?: "")
 
         AlertDialog.Builder(this)
             .setTitle("상태 변경 확인")
@@ -628,384 +286,160 @@ class AdDetailActivity : AppCompatActivity() {
             .setPositiveButton("확인") { _, _ ->
                 lifecycleScope.launch {
                     val (ok, msg) = createPurchaseIfNeeded(code, buyer)
-                    if (!ok && !msg.isNullOrBlank()) {
-                        Toast.makeText(this@AdDetailActivity, msg, Toast.LENGTH_SHORT).show()
-                    }                    // 🔸 최종 상태 변경
+                    if (!ok && !msg.isNullOrBlank()) Toast.makeText(this@AdDetailActivity, msg, Toast.LENGTH_SHORT).show()
                     updateProductStatus(code, rejectReason)
                 }
             }
-            .setNegativeButton("취소") { _, _ ->
-                restoreSpinnerSelection()
-            }
+            .setNegativeButton("취소") { _, _ -> restoreSpinnerSelection() }
             .show()
     }
 
-    private suspend fun createPurchaseIfNeeded(
-        code: String,
-        buyer: ChatBuyerDto?
-    ): Pair<Boolean, String?> {
+    private suspend fun createPurchaseIfNeeded(code: String, buyer: ChatBuyerDto?): Pair<Boolean, String?> {
         if (code != "99" || buyer == null) return true to null
-
-        val pid = productIdStr.toLongOrNull()
-            ?: return false to "상품 ID가 유효하지 않습니다."
-        val sellerNo = LoginInfoUtil.getUserNo(this).toLongOrNull()
-
+        val pid = productIdStr.toLongOrNull() ?: return false to "ID 오류"
         return try {
-            AppServiceProvider.getService().createPurchase(
-                productId = pid,
-                buyerNo   = buyer.buyerNo,
-                roomId    = buyer.roomId,
-                sellerNo  = buyer.sellerNo
-            )
+            AppServiceProvider.getService().createPurchase(pid, buyer.buyerNo, buyer.roomId, buyer.sellerNo)
         } catch (e: Exception) {
-            false to (e.message ?: "구매이력 생성 중 오류")
+            false to (e.message ?: "구매이력 생성 오류")
         }
     }
+
     private fun updateProductStatus(code: String, rejectReason: String?) {
         val token = TokenUtil.getToken(this)
-        val productId = productIdStr
         showLoading(true)
         lifecycleScope.launch {
             try {
-
-                val productItem = ProductItem(
-                    productId = productId,
-                    saleStatus = code,
-                    updusrNo = 0,
-                    rejectReason = rejectReason,
-                )
-
-                val success = AppServiceProvider.getService().updateProductStatus(token,productItem)
-                val statusName = getStatusName(code)
+                val productItem = ProductItem(productId = productIdStr, saleStatus = code, updusrNo = 0, rejectReason = rejectReason)
+                val success = AppServiceProvider.getService().updateProductStatus(token, productItem)
                 if (success) {
-                    Toast.makeText(this@AdDetailActivity, "상태가 \"$statusName\"(으)로 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AdDetailActivity, "상태가 변경되었습니다.", Toast.LENGTH_SHORT).show()
                     currentStatus = code
-                    updatePurchaseUi()
-                } else {
-                    Toast.makeText(this@AdDetailActivity, "상태 변경 실패", Toast.LENGTH_SHORT).show()
-                    restoreSpinnerSelection()
+                    newStatus = code
+                    statusChanged = true
                 }
-                newStatus    = code
-                statusChanged = true
-
             } catch (e: Exception) {
-                Toast.makeText(this@AdDetailActivity, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
-                restoreSpinnerSelection()
+                Toast.makeText(this@AdDetailActivity, "오류: ${e.message}", Toast.LENGTH_SHORT).show()
             } finally {
                 showLoading(false)
             }
         }
     }
 
-    private fun updatePurchaseUi() {
-        if (!::btnBuy.isInitialized) return
-        val isSale = (currentStatus == "1")
-        val alpha = if (isSale) 1.0f else 0.5f
-
-        btnBuy.alpha = alpha
-        findViewById<View>(R.id.btn_minus).alpha = alpha
-        findViewById<View>(R.id.btn_plus).alpha = alpha
-    }
-    private fun maybeSetResultAndFinish() {
-        if (statusChanged && newStatus in listOf("1", "10", "99")) {
-            setResult(
-                Activity.RESULT_OK,
-                Intent()
-                    .putExtra("status_changed", true)
-                    .putExtra("new_status", newStatus)
-            )
-        }
-        supportFinishAfterTransition()
-    }
-
-    private fun restoreSpinnerSelection() {
-        currentStatus?.let { status ->
-            val index = filteredList.indexOfFirst { it.strIdx == status }
-            if (index != -1) {
-                spinner.setSelection(index)
+    private fun toggleFavorite(menuItem: MenuItem) {
+        val userNo = LoginInfoUtil.getUserNo(this).toLongOrNull() ?: return
+        val productId = productIdStr.toLongOrNull() ?: return
+        showLoading(true)
+        lifecycleScope.launch {
+            try {
+                val req = InterestRequest(userNo = userNo, productId = productId)
+                if (AppServiceProvider.getService().toggleInterest(req)) {
+                    isFav = !isFav
+                    menuItem.setIcon(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_border)
+                    setResult(Activity.RESULT_OK, Intent().apply { putExtra("productId", productIdStr); putExtra("isInterested", isFav) })
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@AdDetailActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
+            } finally {
+                showLoading(false)
             }
         }
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        //menuInflater.inflate(R.menu.sample_actions, menu)
         menuInflater.inflate(R.menu.menu_ad_detail, menu)
         val favItem = menu.findItem(R.id.action_favorite)
         val isBuyer = (memberCode == Constants.ROLE_PUB)
-
-        // 구매자만 보이도록
         favItem.isVisible = isBuyer
-
-        // 보일 때만 아이콘 상태 반영
-        if (isBuyer) {
-            favItem.setIcon(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_border)
-            // 필요 시 틴트 강제
-            // favItem.icon?.mutate()?.setTint(ContextCompat.getColor(this, android.R.color.white))
-        }
+        if (isBuyer) favItem.setIcon(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_border)
         return true
-    }
-
-    companion object {
-        const val EXTRA_PRODUCT_ID = "product_id"
-    }
-
-    private fun loadProductDetail(productId: Long) {
-        val adApi = RetrofitProvider.retrofit.create(AdApi::class.java)
-        val repository = RemoteRepository(adApi)
-        val appService = AppService(repository)
-        val userNo = LoginInfoUtil.getUserNo(this).toLongOrNull()?: return
-        showLoading(true)
-        lifecycleScope.launch {
-            try {
-                val detail = appService.getProductDetail(productId,userNo)
-                if (detail != null) {
-                    showProductDetail(detail)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                showLoading(false)
-            }        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        val productId = productIdStr.toLongOrNull()
-        if (productId != null && productId > 0) {
-            loadProductDetail(productId)
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            android.R.id.home -> {
-                maybeSetResultAndFinish()
-                true
-            }
-            R.id.action_favorite -> {
-                if (memberCode == Constants.ROLE_PUB) {
-                    toggleFavorite(item)
-                } else {
-                    Toast.makeText(this, "구매자만 찜하기가 가능합니다", Toast.LENGTH_SHORT).show()
-                }
-                true
-            }
+            android.R.id.home -> { maybeSetResultAndFinish(); true }
+            R.id.action_favorite -> { if (memberCode == Constants.ROLE_PUB) toggleFavorite(item) else Toast.makeText(this, "구매자전용", Toast.LENGTH_SHORT).show(); true }
             else -> super.onOptionsItemSelected(item)
         }
     }
-    private fun toggleFavorite(menuItem: MenuItem) {
-        val userNo = LoginInfoUtil.getUserNo(this).toLongOrNull()?: return
-        val productId = productIdStr.toLongOrNull() ?: return
 
-        lifecycleScope.launch {
-            showLoading(true)
-            try {
-                val req = InterestRequest(userNo = userNo, productId = productId)
-                val resp = AppServiceProvider.getService().toggleInterest(req)
-
-                if (resp) {
-                    isFav =!isFav
-                    menuItem.setIcon(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_border)
-
-                    setResult(
-                        Activity.RESULT_OK,
-                        Intent().apply {
-                            putExtra("productId", productIdStr)    // String
-                            putExtra("isInterested", isFav)         // Boolean
-                        }
-                    )
-                    Toast.makeText(
-                        this@AdDetailActivity,
-                        if (isFav) "관심상품에 추가되었습니다" else "관심상품에서 제거되었습니다",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(this@AdDetailActivity, "서버 오류로 실패했습니다", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this@AdDetailActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_SHORT).show()
-            } finally {
-                showLoading(false)
-            }
+    private fun maybeSetResultAndFinish() {
+        if (statusChanged && newStatus in listOf("1", "10", "99")) {
+            setResult(Activity.RESULT_OK, Intent().putExtra("status_changed", true).putExtra("new_status", newStatus))
         }
+        supportFinishAfterTransition()
     }
 
-    override fun onBackPressed() {
-        maybeSetResultAndFinish()
-    }
-
-
+    override fun onBackPressed() { maybeSetResultAndFinish() }
 
     private fun handleFabClickForSystemType2() {
         val myId = LoginInfoUtil.getUserId(this)
         val myRole = LoginInfoUtil.getMemberCode(this)
-        val productId = productIdStr
         val mybranchId = LoginInfoUtil.getBranchId(this)
         val centerBranchId = Constants.CENTER_BRANCH_ID
+
         when (myRole) {
-            "ROLE_PUB" -> {
-                // 구매자 → 지점과 채팅 생성
-                val buyerId = myId
-                val branchId = mybranchId
-                createOrGetRoomFromServer(productId, buyerId, branchId)
-            }
-
-            "ROLE_SELL" -> {
-                // 본사 → 지점과 채팅방 입장 (생성 불가)
-                fetchRoomListForSeller(productId, centerBranchId)
-            }
-
+            "ROLE_PUB" -> createOrGetRoomFromServer(productIdStr, myId, mybranchId)
+            "ROLE_SELL" -> fetchRoomListForSeller(productIdStr, centerBranchId)
             "ROLE_PROJ" -> {
-                // 도매상 → 구매자 or 판매자 판별
                 val options = arrayOf("구매자에게 채팅", "본사와 채팅")
-                AlertDialog.Builder(this)
-                    .setTitle("채팅 대상 선택")
-                    .setItems(options) { _, which ->
-                        when (which) {
-                            0 -> {
-                                // 지점 판매자와 채팅 목록 조회
-                                fetchRoomListForSeller(productId, mybranchId)
-                            }
-                            1 -> {
-                                // 지점 → 본사: 채팅방 생성 가능
-                                createOrGetRoomFromServer(productId, mybranchId, centerBranchId)
-                            }
-                        }
-                    }
-                    .setNegativeButton("취소", null)
-                    .show()
-            }
-
-            else -> {
-                Toast.makeText(this, "알 수 없는 사용자 역할입니다.", Toast.LENGTH_SHORT).show()
+                AlertDialog.Builder(this).setItems(options) { _, which ->
+                    if (which == 0) fetchRoomListForSeller(productIdStr, mybranchId)
+                    else createOrGetRoomFromServer(productIdStr, mybranchId, centerBranchId)
+                }.show()
             }
         }
     }
 
-
-    private fun showToast(message: String) {
-        Toast.makeText(this@AdDetailActivity, message, Toast.LENGTH_SHORT).show()
-    }
-
-
     private fun createOrGetRoomFromServer(productId: String, buyerId: String, branchId: String) {
-        val appService = AppServiceProvider.getService()
-
         lifecycleScope.launch {
             try {
-                val chatRoom = appService.createOrGetChatRoom(productId, buyerId, branchId)
-                if (chatRoom != null) {
-                    openChatActivity(chatRoom.roomId,buyerId,branchId,productId)
-                } else {
-                    Toast.makeText(this@AdDetailActivity, "채팅방 생성 실패", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Log.e("FAB", "채팅방 생성 중 오류", e)
-                Toast.makeText(this@AdDetailActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
-            }
+                val chatRoom = AppServiceProvider.getService().createOrGetChatRoom(productId, buyerId, branchId)
+                chatRoom?.let { openChatActivity(it.roomId, buyerId, branchId, productId) }
+            } catch (e: Exception) { Toast.makeText(this@AdDetailActivity, "채팅방 오류", Toast.LENGTH_SHORT).show() }
         }
     }
 
     private fun fetchRoomListForSeller(productId: String, branchId: String) {
-        val appService = AppServiceProvider.getService()
-
         lifecycleScope.launch {
             try {
-                val chatRooms = appService.getUserChatRooms(productId,branchId)
-                //val chatRooms = allChatRooms.filter { it.productId == productId }
-
-                when {
-                    chatRooms.isEmpty() -> {
-                        Toast.makeText(
-                            this@AdDetailActivity,
-                            "이 상품에 대한 채팅 요청이 없습니다",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    chatRooms.size == 1 -> {
-                        val selectedRoom = chatRooms[0]
-                        openChatActivity(
-                            selectedRoom.roomId,
-                            selectedRoom.buyerId,
-                            selectedRoom.branchId,
-                            selectedRoom.productId
-                        )
-                    }
-
-                    else -> {
-                        // 여러 명의 구매자 중 선택해야 하는 경우 처리
-                        showBuyerSelectionDialog(chatRooms)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("FAB", "채팅방 조회 중 오류", e)
-                Toast.makeText(this@AdDetailActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
-            }
+                val rooms = AppServiceProvider.getService().getUserChatRooms(productId, branchId)
+                if (rooms.isEmpty()) Toast.makeText(this@AdDetailActivity, "요청 없음", Toast.LENGTH_SHORT).show()
+                else if (rooms.size == 1) openChatActivity(rooms[0].roomId, rooms[0].buyerId, rooms[0].branchId, rooms[0].productId)
+                else showBuyerSelectionDialog(rooms)
+            } catch (e: Exception) { Toast.makeText(this@AdDetailActivity, "조회 오류", Toast.LENGTH_SHORT).show() }
         }
     }
 
     private fun showBuyerSelectionDialog(chatRooms: List<ChatRoomResponse>) {
-        val buyerLabels = chatRooms.mapIndexed { index, room ->
-            "구매자 ${index + 1}: ${room.buyerId}"
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("구매자를 선택하세요")
-            .setItems(buyerLabels.toTypedArray()) { _, which ->
-                val selectedRoom = chatRooms[which]
-                openChatActivity(
-                    selectedRoom.roomId,
-                    selectedRoom.buyerId,
-                    selectedRoom.branchId,
-                    selectedRoom.productId
-                )
-            }
-            .setNegativeButton("취소", null)
-            .show()
+        val labels = chatRooms.map { "구매자: ${it.buyerId}" }.toTypedArray()
+        AlertDialog.Builder(this).setTitle("구매자 선택").setItems(labels) { _, which ->
+            val r = chatRooms[which]
+            openChatActivity(r.roomId, r.buyerId, r.branchId, r.productId)
+        }.show()
     }
 
-    private fun openChatActivity(
-        roomId: String,
-        buyerId: String,
-        branchId: String,
-        productId: String
-    ) {
-        val intent = Intent(this@AdDetailActivity, ChatActivity::class.java).apply {
-            putExtra("roomId", roomId)
-            putExtra("buyerId", buyerId)
-            putExtra("branchId", branchId)
-            putExtra("productId", productId)
+    private fun openChatActivity(roomId: String, buyerId: String, branchId: String, productId: String) {
+        startActivity(Intent(this, ChatActivity::class.java).apply {
+            putExtra("roomId", roomId); putExtra("buyerId", buyerId)
+            putExtra("branchId", branchId); putExtra("productId", productId)
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        }
-        startActivity(intent)
+        })
     }
 
     private fun showLoading(show: Boolean) {
-        findViewById<View>(R.id.ll_progress_circle).visibility =
-            if (show) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.ll_progress_circle)?.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun getStatusName(code: String): String {
-        return statusList.find { it.strIdx == code }?.strMsg ?: code
+    private fun getStatusName(code: String): String = statusList.find { it.strIdx == code }?.strMsg ?: code
+    private fun openImageViewer(url: String) = startActivity(Intent(this, ImageViewerActivity::class.java).putExtra("url", url))
+    private fun showRejectReasonDialog(onReasonEntered: (String) -> Unit) {
+        val et = EditText(this).apply { hint = "반려 사유 입력" }
+        AlertDialog.Builder(this).setTitle("반려 사유").setView(et).setPositiveButton("확인") { _, _ ->
+            val reason = et.text.toString().trim()
+            if (reason.isNotEmpty()) onReasonEntered(reason)
+            else Toast.makeText(this, "사유를 입력하세요", Toast.LENGTH_SHORT).show()
+        }.show()
     }
 
-    private fun openImageViewer(url: String) {
-        startActivity(Intent(this, ImageViewerActivity::class.java).putExtra("url", url))
-    }
-
-    private fun renderRejectReason(currentStatus: String?, rejectReason: String?) {
-        val card = findViewById<MaterialCardView>(R.id.card_reject_reason)
-        val tv = findViewById<TextView>(R.id.tv_reject_reason)
-
-        if (currentStatus == "98" && !rejectReason.isNullOrBlank()) {
-            card.visibility = View.VISIBLE
-            tv.text = rejectReason
-        } else {
-            card.visibility = View.GONE
-            tv.text = ""
-        }
-    }
+    companion object { const val EXTRA_PRODUCT_ID = "product_id" }
 }

@@ -477,5 +477,86 @@ class AppService(
             false
         }
     }
+
+    // Review
+    suspend fun getReviewList(productId: Long): List<Map<String, Any>> {
+        return try {
+            val resp = repository.fetchReviewList(productId)
+            if (resp.isSuccessful) {
+                @Suppress("UNCHECKED_CAST")
+                resp.body()?.get("list") as? List<Map<String, Any>> ?: emptyList()
+            } else emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun insertReview(
+        productId: Long,
+        rating: Int,
+        contents: String,
+        reviewFile: File?
+    ): Boolean {
+        return try {
+            val resp = repository.insertReview(productId, rating, contents, reviewFile)
+            resp.isSuccessful && resp.body()?.get("success") == true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun deleteReview(reviewId: String): Boolean {
+        return try {
+            val resp = repository.deleteReview(reviewId)
+            resp.isSuccessful && resp.body()?.get("success") == true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    // QnA
+    suspend fun getQnaList(productId: Long): List<Map<String, Any>> {
+        return try {
+            val resp = repository.fetchQnaList(productId)
+            if (resp.isSuccessful) {
+                @Suppress("UNCHECKED_CAST")
+                resp.body()?.get("list") as? List<Map<String, Any>> ?: emptyList()
+            } else emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun insertQna(
+        productId: String,
+        title: String,
+        contents: String,
+        secretYn: String
+    ): Boolean {
+        return try {
+            val resp = repository.insertQna(productId, title, contents, secretYn)
+            resp.isSuccessful && resp.body()?.get("success") == true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun deleteQna(qnaId: String): Boolean {
+        return try {
+            val resp = repository.deleteQna(qnaId)
+            resp.isSuccessful && resp.body()?.get("success") == true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun answerQna(qnaId: String, answerContents: String): Boolean {
+        return try {
+            val resp = repository.answerQna(qnaId, answerContents)
+            resp.isSuccessful && resp.body()?.get("success") == true
+        } catch (e: Exception) {
+            false
+        }
+    }
 }
 

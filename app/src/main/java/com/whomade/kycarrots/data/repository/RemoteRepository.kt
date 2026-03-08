@@ -297,5 +297,54 @@ class RemoteRepository(
     suspend fun updateOrderStatus(token: String, orderNo: String, status: String): Response<Void> {
         return adApi.updateOrderStatus(token, orderNo, status)
     }
+
+    // Review
+    suspend fun fetchReviewList(productId: Long): Response<Map<String, Any>> {
+        return adApi.getReviewList(productId)
+    }
+
+    suspend fun insertReview(
+        productId: Long,
+        rating: Int,
+        contents: String,
+        reviewFile: File?
+    ): Response<Map<String, Any>> {
+        val productIdBody = productId.toString().toRequestBody("text/plain".toMediaType())
+        val ratingBody = rating.toString().toRequestBody("text/plain".toMediaType())
+        val contentsBody = contents.toRequestBody("text/plain".toMediaType())
+        
+        val filePart = reviewFile?.let {
+            val requestFile = it.asRequestBody("image/*".toMediaType())
+            MultipartBody.Part.createFormData("reviewFile", it.name, requestFile)
+        }
+        
+        return adApi.insertReview(productIdBody, ratingBody, contentsBody, filePart)
+    }
+
+    suspend fun deleteReview(reviewId: String): Response<Map<String, Any>> {
+        return adApi.deleteReview(reviewId)
+    }
+
+    // QnA
+    suspend fun fetchQnaList(productId: Long): Response<Map<String, Any>> {
+        return adApi.getQnaList(productId)
+    }
+
+    suspend fun insertQna(
+        productId: String,
+        title: String,
+        contents: String,
+        secretYn: String
+    ): Response<Map<String, Any>> {
+        return adApi.insertQna(productId, title, contents, secretYn)
+    }
+
+    suspend fun deleteQna(qnaId: String): Response<Map<String, Any>> {
+        return adApi.deleteQna(qnaId)
+    }
+
+    suspend fun answerQna(qnaId: String, answerContents: String): Response<Map<String, Any>> {
+        return adApi.answerQna(qnaId, answerContents)
+    }
 }
 
