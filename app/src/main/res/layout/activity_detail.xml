@@ -5,22 +5,20 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    >
+    android:fitsSystemWindows="true">
 
     <!-- 1. AppBar + Collapsing Image -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/detail_backdrop_height"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        app:statusBarForeground="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/detail_backdrop_height"
             app:contentScrim="?attr/colorPrimary"
             android:fitsSystemWindows="false"
             app:expandedTitleTextAppearance="@style/ExpandedAppBar"
@@ -43,41 +41,38 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"/>
 
+            <!-- 채팅 FAB를 AppBarContent(상단 이미지 영역) 내부에 배치 -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                app:srcCompat="@drawable/ic_discuss"
+                app:backgroundTint="?attr/colorSecondary"
+                app:layout_collapseMode="parallax" />
+
         </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        <!-- TabLayout을 AppBar 하단에 배치 (ViewPager가 없어도 메뉴 탭으로 사용) -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabIndicatorColor="?attr/colorPrimary"
+            app:tabSelectedTextColor="?attr/colorPrimary"
+            app:tabTextColor="#94a3b8"
+            app:tabMode="fixed"
+            app:tabBackground="@android:color/white"
+            app:tabIndicatorHeight="3dp"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- 2. Tabs -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:tabIndicatorColor="?attr/colorPrimary"
-        app:tabSelectedTextColor="?attr/colorPrimary"
-        app:tabTextColor="#94a3b8"
-        app:tabMode="fixed"
-        app:tabBackground="@android:color/white"
-        app:tabIndicatorHeight="3dp"/>
-
-    <!-- 3. ViewPager2 -->
+    <!-- 2. ViewPager2 (스와이프 가능) -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-    <!-- 채팅 FAB -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_discuss"
-        app:backgroundTint="?attr/colorSecondary" />
-
 
     <LinearLayout
         android:id="@+id/ll_progress_circle"
