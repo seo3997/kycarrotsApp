@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.whomade.kycarrots.AdDetailViewModel
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.common.Constants
@@ -23,7 +22,7 @@ class ProductQnaFragment : Fragment() {
     private lateinit var adapter: AdQnaAdapter
     private lateinit var rvQna: RecyclerView
     private lateinit var tvEmptyQna: TextView
-    private lateinit var fabAddQna: ExtendedFloatingActionButton
+    private lateinit var fabAddQna: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_qna, container, false)
@@ -44,14 +43,14 @@ class ProductQnaFragment : Fragment() {
         fabAddQna.visibility = if (isBuyer) View.VISIBLE else View.GONE
         fabAddQna.setOnClickListener {
             val intent = Intent(requireContext(), AdQnaWriteActivity::class.java).apply {
-                putExtra("productId", viewModel.productDetail.value?.product?.productId)
+                putExtra("productId", viewModel.productDetail.value?.product?.productId?.toString())
             }
             startActivity(intent)
         }
 
         adapter = AdQnaAdapter(emptyList(), currentUserId, isAdminOrSeller, 
             onDeleteClick = { qnaId ->
-                viewModel.deleteQna(qnaId, viewModel.productDetail.value?.product?.productId?.toLongOrNull() ?: 0L)
+                viewModel.deleteQna(qnaId, viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull() ?: 0L)
             },
             onAnswerClick = { qnaId ->
                 showAnswerDialog(qnaId)
@@ -69,6 +68,12 @@ class ProductQnaFragment : Fragment() {
                 adapter.updateData(qnas)
             }
         }
+
+        viewModel.productDetail.observe(viewLifecycleOwner) { detail ->
+            detail?.product?.productId?.toString()?.toLongOrNull()?.let { pid ->
+                viewModel.loadQnas(pid)
+            }
+        }
     }
 
     private fun showAnswerDialog(qnaId: String) {
@@ -81,18 +86,10 @@ class ProductQnaFragment : Fragment() {
             .setPositiveButton("등록") { _, _ ->
                 val answer = editText.text.toString().trim()
                 if (answer.isNotEmpty()) {
-                    viewModel.answerQna(qnaId, answer, viewModel.productDetail.value?.product?.productId?.toLongOrNull() ?: 0L)
+                    viewModel.answerQna(qnaId, answer, viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull() ?: 0L)
                 }
             }
             .setNegativeButton("취소", null)
             .show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Load QnAs only when the tab becomes active and visible to prevent unnecessary traffic
-        viewModel.productDetail.value?.product?.productId?.toLongOrNull()?.let { pid ->
-            viewModel.loadQnas(pid)
-        }
     }
 }

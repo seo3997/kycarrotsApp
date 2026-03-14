@@ -28,35 +28,34 @@ class AdReviewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val review = reviews[position]
-        val reviewId = review["reviewNo"]?.toString() ?: ""
-        val rating = (review["rating"]?.toString()?.toDoubleOrNull() ?: 0.0).toFloat()
-        val contents = review["contents"]?.toString() ?: ""
-        val userNm = review["userNm"]?.toString() ?: "사용자"
-        val createDt = review["createDt"]?.toString() ?: ""
-        val imageUrl = review["imageUrl"]?.toString()
-        val writerId = review["userId"]?.toString()
+    val review = reviews[position]
+    val reviewId = review["REVIEW_ID"]?.toString() ?: review["reviewNo"]?.toString() ?: ""
+    val rating = (review["RATING"]?.toString() ?: review["rating"]?.toString())?.toDoubleOrNull()?.toFloat() ?: 0f
+    val contents = review["CONTENTS"]?.toString() ?: review["contents"]?.toString() ?: ""
+    val userNm = review["USER_NM"]?.toString() ?: review["userNm"]?.toString() ?: "사용자"
+    val createDt = review["REGIST_DT"]?.toString() ?: review["createDt"]?.toString() ?: ""
+    val imageUrl = review["FILE_RLTV_PATH"]?.toString() ?: review["imageUrl"]?.toString()
+    val writerId = review["USER_NO"]?.toString() ?: review["userId"]?.toString()
 
-        holder.ratingBar.rating = rating
-        holder.tvUserMeta.text = "$userNm | $createDt"
-        holder.tvContents.text = contents
+    holder.ratingBar.rating = rating
+    holder.tvUserMeta.text = "$userNm | $createDt"
+    holder.tvContents.text = contents
 
-        if (!imageUrl.isNullOrBlank()) {
-            holder.ivReviewImage.visibility = View.VISIBLE
-            Glide.with(holder.itemView.context).load(imageUrl).into(holder.ivReviewImage)
-        } else {
-            holder.ivReviewImage.visibility = View.GONE
-        }
-
-        // Show delete button if owner or admin
-        if (isAdmin || (currentUserId != null && currentUserId == writerId)) {
-            holder.tvDelete.visibility = View.VISIBLE
-            holder.tvDelete.setOnClickListener { onDeleteClick(reviewId) }
-        } else {
-            holder.tvDelete.visibility = View.GONE
-        }
+    if (!imageUrl.isNullOrBlank()) {
+        holder.ivReviewImage.visibility = View.VISIBLE
+        Glide.with(holder.itemView.context).load(imageUrl).into(holder.ivReviewImage)
+    } else {
+        holder.ivReviewImage.visibility = View.GONE
     }
 
+    // Show delete button if owner or admin
+    if (isAdmin || (currentUserId != null && currentUserId == writerId)) {
+        holder.tvDelete.visibility = View.VISIBLE
+        holder.tvDelete.setOnClickListener { onDeleteClick(reviewId) }
+    } else {
+        holder.tvDelete.visibility = View.GONE
+    }
+}
     override fun getItemCount(): Int = reviews.size
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

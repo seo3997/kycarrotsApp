@@ -483,8 +483,20 @@ class AppService(
         return try {
             val resp = repository.fetchReviewList(productId)
             if (resp.isSuccessful) {
-                @Suppress("UNCHECKED_CAST")
-                resp.body()?.get("list") as? List<Map<String, Any>> ?: emptyList()
+                val body = resp.body()
+                if (body != null) {
+                    if (body.containsKey("list")) {
+                        @Suppress("UNCHECKED_CAST")
+                        body["list"] as? List<Map<String, Any>> ?: emptyList()
+                    } else if (body.containsKey("data")) {
+                        @Suppress("UNCHECKED_CAST")
+                        body["data"] as? List<Map<String, Any>> ?: emptyList()
+                    } else {
+                        emptyList()
+                    }
+                } else {
+                    emptyList()
+                }
             } else emptyList()
         } catch (e: Exception) {
             emptyList()
@@ -519,8 +531,17 @@ class AppService(
         return try {
             val resp = repository.fetchQnaList(productId)
             if (resp.isSuccessful) {
-                @Suppress("UNCHECKED_CAST")
-                resp.body()?.get("list") as? List<Map<String, Any>> ?: emptyList()
+                val body = resp.body()
+                if (body != null) {
+                    if (body.containsKey("list")) {
+                        @Suppress("UNCHECKED_CAST")
+                        body["list"] as? List<Map<String, Any>> ?: emptyList()
+                    } else {
+                        emptyList()
+                    }
+                } else {
+                    emptyList()
+                }
             } else emptyList()
         } catch (e: Exception) {
             emptyList()

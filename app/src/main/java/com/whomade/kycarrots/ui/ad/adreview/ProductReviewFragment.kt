@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.whomade.kycarrots.AdDetailViewModel
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.common.Constants
@@ -21,7 +20,7 @@ class ProductReviewFragment : Fragment() {
     private lateinit var adapter: AdReviewAdapter
     private lateinit var rvReviews: RecyclerView
     private lateinit var tvEmptyReview: TextView
-    private lateinit var fabAddReview: ExtendedFloatingActionButton
+    private lateinit var fabAddReview: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_review, container, false)
@@ -42,7 +41,7 @@ class ProductReviewFragment : Fragment() {
         fabAddReview.visibility = if (isBuyer) View.VISIBLE else View.GONE
         fabAddReview.setOnClickListener {
             val intent = Intent(requireContext(), AdReviewWriteActivity::class.java).apply {
-                putExtra("productId", viewModel.productDetail.value?.product?.productId)
+                putExtra("productId", viewModel.productDetail.value?.product?.productId?.toString())
             }
             startActivity(intent)
         }
@@ -62,13 +61,11 @@ class ProductReviewFragment : Fragment() {
                 adapter.updateData(reviews)
             }
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
-        // Load reviews only when the tab becomes active and visible to prevent unnecessary traffic
-        viewModel.productDetail.value?.product?.productId?.toLongOrNull()?.let { pid ->
-            viewModel.loadReviews(pid)
+        viewModel.productDetail.observe(viewLifecycleOwner) { detail ->
+            detail?.product?.productId?.toString()?.toLongOrNull()?.let { pid ->
+                viewModel.loadReviews(pid)
+            }
         }
     }
 }
