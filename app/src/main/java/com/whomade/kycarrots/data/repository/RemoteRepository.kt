@@ -177,6 +177,10 @@ class RemoteRepository(
         return adApi.getUserInfoByToken(token)
     }
 
+    suspend fun updateUser(token: String, user: OpUserVO): Response<SimpleResultResponse> {
+        return adApi.updateUser(token, user)
+    }
+
     suspend fun fetchProductDashboard(token: String): Response<Map<String, Int>> {
         return adApi.getProductDashboard(token)
     }

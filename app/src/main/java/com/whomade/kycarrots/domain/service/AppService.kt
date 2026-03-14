@@ -194,6 +194,15 @@ class AppService(
         }
     }
 
+    suspend fun updateUser(token: String, user: OpUserVO): Boolean {
+        return try {
+            val response = repository.updateUser(token, user)
+            response.isSuccessful && response.body()?.result == true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     // 회원가입
     suspend fun registerUser(user: OpUserVO): LoginResponse? {
         val response = repository.registerUser(user)

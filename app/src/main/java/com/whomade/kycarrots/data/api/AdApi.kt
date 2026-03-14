@@ -151,6 +151,12 @@ interface AdApi {
         @Field("token") token: String
     ): Response<OpUserVO>
 
+    @POST("api/members/update")
+    suspend fun updateUser(
+        @Query("token") token: String,
+        @Body user: OpUserVO
+    ): Response<SimpleResultResponse>
+
     @GET("api/product/dashboard")
     suspend fun getProductDashboard(
         @Query("token") token: String

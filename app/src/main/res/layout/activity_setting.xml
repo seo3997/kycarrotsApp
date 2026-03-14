@@ -74,40 +74,86 @@
                 android:textSize="15sp"
                 android:fontFamily="sans-serif"
                 android:paddingStart="8dp"
+                android:layout_marginBottom="12dp"
                 android:textAlignment="viewStart"
                 />
 
-            <TextView
-                android:id="@+id/tv_user_nm"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="이름: "
-                android:textSize="15sp"
-                android:fontFamily="sans-serif"
-                android:paddingStart="8dp"
-                android:textAlignment="viewStart" />
+                android:hint="이름"
+                android:layout_marginBottom="8dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_user_nm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/tv_user_telno"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="연락처: "
-                android:textSize="15sp"
-                android:fontFamily="sans-serif"
-                android:paddingStart="8dp"
-                android:textAlignment="viewStart" />
+                android:hint="연락처"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_user_telno"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                android:id="@+id/tv_user_addr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="주소: "
-                android:textSize="15sp"
-                android:fontFamily="sans-serif"
-                android:paddingStart="8dp"
-                android:textAlignment="viewStart" />
+                android:text="주소 (지역 선택)"
+                android:textSize="14sp"
+                android:paddingStart="4dp"
+                android:layout_marginBottom="4dp" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp">
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/spinner_city"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:hint="시/도" />
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp">
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/spinner_town"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:hint="구/군" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_save_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="사용자 정보 수정 완료"
+                android:layout_marginTop="4dp"
+                android:backgroundTint="?attr/colorPrimary" />
 
             <!-- 구분선 -->
             <View
