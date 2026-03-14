@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -34,7 +35,7 @@ class AdReviewAdapter(
     val contents = review["CONTENTS"]?.toString() ?: review["contents"]?.toString() ?: ""
     val userNm = review["USER_NM"]?.toString() ?: review["userNm"]?.toString() ?: "사용자"
     val createDt = review["REGIST_DT"]?.toString() ?: review["createDt"]?.toString() ?: ""
-    val imageUrl = review["FILE_RLTV_PATH"]?.toString() ?: review["imageUrl"]?.toString()
+    val filePaths = review["FILE_PATHS"]?.toString() ?: review["imageUrl"]?.toString() ?: ""
     val writerIdRaw = review["USER_NO"] ?: review["userNo"] ?: review["userId"]
     val writerId = writerIdRaw?.toString()?.split(".")?.get(0)
     val normalizedCurrentUserId = currentUserId?.split(".")?.get(0)
@@ -43,11 +44,29 @@ class AdReviewAdapter(
     holder.tvUserMeta.text = "$userNm | $createDt"
     holder.tvContents.text = contents
 
-    if (!imageUrl.isNullOrBlank()) {
-        holder.ivReviewImage.visibility = View.VISIBLE
-        Glide.with(holder.itemView.context).load(imageUrl).into(holder.ivReviewImage)
+    holder.llReviewImages.removeAllViews()
+    if (!filePaths.isBlank()) {
+        holder.hsvReviewImages.visibility = View.VISIBLE
+        val paths = filePaths.split(",")
+        paths.forEach { path ->
+            val context = holder.itemView.context
+            val resources = context.resources
+            val imageView = ImageView(context).apply {
+                layoutParams = ViewGroup.MarginLayoutParams(
+                    (80 * resources.displayMetrics.density).toInt(),
+                    (80 * resources.displayMetrics.density).toInt()
+                ).apply {
+                    marginEnd = (8 * resources.displayMetrics.density).toInt()
+                }
+                scaleType = ImageView.ScaleType.CENTER_CROP
+                setBackgroundResource(R.drawable.bg_rounded_image)
+                clipToOutline = true
+            }
+            Glide.with(holder.itemView.context).load(path.trim()).into(imageView)
+            holder.llReviewImages.addView(imageView)
+        }
     } else {
-        holder.ivReviewImage.visibility = View.GONE
+        holder.hsvReviewImages.visibility = View.GONE
     }
 
     // Show delete/edit buttons strictly for the author
@@ -68,7 +87,8 @@ class AdReviewAdapter(
         val ratingBar: RatingBar = view.findViewById(R.id.rating_bar)
         val tvUserMeta: TextView = view.findViewById(R.id.tv_user_meta)
         val tvContents: TextView = view.findViewById(R.id.tv_contents)
-        val ivReviewImage: ImageView = view.findViewById(R.id.iv_review_image)
+        val hsvReviewImages: View = view.findViewById(R.id.hsv_review_images)
+        val llReviewImages: LinearLayout = view.findViewById(R.id.ll_review_images)
         val tvEdit: TextView = view.findViewById(R.id.tv_edit)
         val tvDelete: TextView = view.findViewById(R.id.tv_delete)
     }

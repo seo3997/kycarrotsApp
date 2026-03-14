@@ -62,7 +62,7 @@ class AdReviewWriteActivity : AppCompatActivity() {
 
         productId = intent.getLongExtra("productId", 0L)
         reviewId = intent.getStringExtra("reviewId")
-        val existingImageUrl = intent.getStringExtra("imageUrl")
+        val existingFilePaths = intent.getStringExtra("filePaths")
         
         if (productId == 0L) {
             Toast.makeText(this, "상품 정보가 없습니다.", Toast.LENGTH_SHORT).show()
@@ -86,8 +86,13 @@ class AdReviewWriteActivity : AppCompatActivity() {
             etContents.setText(intent.getStringExtra("contents"))
             btnSubmit.text = "수정하기"
             
-            if (!existingImageUrl.isNullOrBlank()) {
-                imageList.add(ReviewImage(url = existingImageUrl))
+            if (!existingFilePaths.isNullOrBlank()) {
+                val paths = existingFilePaths.split(",")
+                paths.forEach { path ->
+                    if (path.isNotBlank()) {
+                        imageList.add(ReviewImage(url = path.trim()))
+                    }
+                }
                 refreshImageInterface()
             }
         }
