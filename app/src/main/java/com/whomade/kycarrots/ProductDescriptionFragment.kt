@@ -155,7 +155,6 @@ class ProductDescriptionFragment : Fragment() {
         updateTotalAmount()
         renderSubImages(detail)
         loadProductStatusOptions(currentStatus)
-        renderRejectReason(detail.product.saleStatus, detail.product.rejectReason)
         updatePurchaseUi()
     }
 
@@ -196,18 +195,6 @@ class ProductDescriptionFragment : Fragment() {
         btnBuy.alpha = alpha
         requireView().findViewById<View>(R.id.btn_minus).alpha = alpha
         requireView().findViewById<View>(R.id.btn_plus).alpha = alpha
-    }
-
-    private fun renderRejectReason(currentStatus: String?, rejectReason: String?) {
-        val card = requireView().findViewById<MaterialCardView>(R.id.card_reject_reason)
-        val tv = requireView().findViewById<TextView>(R.id.tv_reject_reason)
-        if (currentStatus == "98" && !rejectReason.isNullOrBlank()) {
-            card.visibility = View.VISIBLE
-            tv.text = rejectReason
-        } else {
-            card.visibility = View.GONE
-            tv.text = ""
-        }
     }
 
     private fun loadProductStatusOptions(currentStatus: String?) {
