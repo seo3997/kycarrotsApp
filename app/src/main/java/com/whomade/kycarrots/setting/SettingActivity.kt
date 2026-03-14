@@ -92,6 +92,52 @@ class SettingActivity : BaseDrawerActivity() {
         findViewById<Button>(R.id.btn_save_info).setOnClickListener {
             saveUserInfo()
         }
+
+        // 비밀번호 변경 레이아웃 토글
+        val tvChangePassword = findViewById<TextView>(R.id.tv_change_password)
+        val layoutPasswordChange = findViewById<View>(R.id.layout_password_change)
+        tvChangePassword.setOnClickListener {
+            layoutPasswordChange.visibility = if (layoutPasswordChange.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+        }
+
+        findViewById<Button>(R.id.btn_execute_pw_change).setOnClickListener {
+            executePasswordChange()
+        }
+    }
+
+    private fun executePasswordChange() {
+        val currentPw = findViewById<EditText>(R.id.et_current_password).text.toString()
+        val newPw = findViewById<EditText>(R.id.et_new_password).text.toString()
+        val confirmPw = findViewById<EditText>(R.id.et_confirm_password).text.toString()
+
+        if (currentPw.isEmpty() || newPw.isEmpty() || confirmPw.isEmpty()) {
+            Toast.makeText(this, "비밀번호를 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (newPw != confirmPw) {
+            Toast.makeText(this, "새 비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val prefs = getSharedPreferences("TokenInfo", Context.MODE_PRIVATE)
+        val token = prefs.getString("token", "") ?: return
+
+        val appService = AppServiceProvider.getService()
+        lifecycleScope.launch {
+            val request = com.whomade.kycarrots.data.model.PasswordChangeRequest(currentPw, newPw, confirmPw)
+            val result = appService.changePassword(token, request)
+            if (result.first) {
+                Toast.makeText(this@SettingActivity, result.second, Toast.LENGTH_SHORT).show()
+                // 입력 필드 초기화 및 레이아웃 숨기기
+                findViewById<EditText>(R.id.et_current_password).setText("")
+                findViewById<EditText>(R.id.et_new_password).setText("")
+                findViewById<EditText>(R.id.et_confirm_password).setText("")
+                findViewById<View>(R.id.layout_password_change).visibility = View.GONE
+            } else {
+                Toast.makeText(this@SettingActivity, result.second, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun loadCityList() {

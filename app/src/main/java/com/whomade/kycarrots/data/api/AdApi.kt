@@ -157,6 +157,12 @@ interface AdApi {
         @Body user: OpUserVO
     ): Response<SimpleResultResponse>
 
+    @POST("api/members/change-password")
+    suspend fun changePassword(
+        @Query("token") token: String,
+        @Body request: com.whomade.kycarrots.data.model.PasswordChangeRequest
+    ): Response<SimpleResultResponse>
+
     @GET("api/product/dashboard")
     suspend fun getProductDashboard(
         @Query("token") token: String

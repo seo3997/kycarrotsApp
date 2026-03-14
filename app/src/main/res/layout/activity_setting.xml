@@ -71,36 +71,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="아이디: "
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:fontFamily="sans-serif"
                 android:paddingStart="8dp"
-                android:layout_marginBottom="12dp"
-                android:textAlignment="viewStart"
-                />
+                android:layout_marginBottom="8dp"
+                android:textAlignment="viewStart" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="이름"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="6dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_user_nm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:textSize="14sp"
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="연락처"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="10dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_user_telno"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:textSize="14sp"
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -108,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="주소 (지역 선택)"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:paddingStart="4dp"
                 android:layout_marginBottom="4dp" />
 
@@ -116,10 +121,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="12dp">
                 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -128,12 +133,15 @@
                         android:id="@+id/spinner_city"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        android:textSize="14sp"
                         android:inputType="none"
                         android:hint="시/도" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -142,6 +150,9 @@
                         android:id="@+id/spinner_town"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        android:textSize="14sp"
                         android:inputType="none"
                         android:hint="구/군" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -185,6 +196,61 @@
                 android:text="비밀번호 변경"
                 android:paddingVertical="12dp" />
 
+            <LinearLayout
+                android:id="@+id/layout_password_change"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:paddingBottom="8dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="현재 비밀번호"
+                    android:layout_marginBottom="6dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_current_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="새 비밀번호"
+                    android:layout_marginBottom="6dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_new_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="새 비밀번호 확인"
+                    android:layout_marginBottom="8dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_confirm_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btn_execute_pw_change"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="비밀번호 변경 실행"
+                    android:backgroundTint="?attr/colorPrimary" />
+            </LinearLayout>
+
             <!-- 로그아웃 -->
             <Button
                 android:id="@+id/btn_logout"
@@ -193,7 +259,8 @@
                 android:text="로그아웃"
                 android:backgroundTint="#D32F2F"
                 android:textColor="#FFFFFF"
-                android:layout_marginTop="24dp" />
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="40dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

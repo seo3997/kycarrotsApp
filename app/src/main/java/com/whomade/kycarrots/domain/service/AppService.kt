@@ -27,6 +27,7 @@ import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.model.PurchaseHistoryRequest
+import com.whomade.kycarrots.data.model.PasswordChangeRequest
 import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResultResponse
 import com.whomade.kycarrots.data.model.SocialAuthRequest
@@ -199,10 +200,25 @@ class AppService(
             val response = repository.updateUser(token, user)
             response.isSuccessful && response.body()?.result == true
         } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }
 
+    suspend fun changePassword(token: String, request: PasswordChangeRequest): Pair<Boolean, String> {
+        return try {
+            val response = repository.changePassword(token, request)
+            if (response.isSuccessful && response.body()?.result == true) {
+                Pair(true, response.body()?.message ?: "비밀번호가 변경되었습니다.")
+            } else {
+                val errorMsg = response.body()?.message ?: "비밀번호 변경에 실패했습니다."
+                Pair(false, errorMsg)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Pair(false, "네트워크 오류가 발생했습니다.")
+        }
+    }
     // 회원가입
     suspend fun registerUser(user: OpUserVO): LoginResponse? {
         val response = repository.registerUser(user)

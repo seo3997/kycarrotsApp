@@ -30,6 +30,7 @@ import com.whomade.kycarrots.data.model.ProductImageVo
 import com.whomade.kycarrots.data.model.ProductItem
 import com.whomade.kycarrots.data.model.ProductVo
 import com.whomade.kycarrots.data.model.PurchaseHistoryRequest
+import com.whomade.kycarrots.data.model.PasswordChangeRequest
 import com.whomade.kycarrots.data.model.PushTokenVo
 import com.whomade.kycarrots.data.model.SimpleResult
 import com.whomade.kycarrots.data.model.SimpleResultResponse
@@ -177,9 +178,10 @@ class RemoteRepository(
         return adApi.getUserInfoByToken(token)
     }
 
-    suspend fun updateUser(token: String, user: OpUserVO): Response<SimpleResultResponse> {
-        return adApi.updateUser(token, user)
-    }
+    suspend fun updateUser(token: String, user: OpUserVO): Response<SimpleResultResponse> = adApi.updateUser(token, user)
+
+    suspend fun changePassword(token: String, request: PasswordChangeRequest): Response<SimpleResultResponse> =
+        adApi.changePassword(token, request)
 
     suspend fun fetchProductDashboard(token: String): Response<Map<String, Int>> {
         return adApi.getProductDashboard(token)
