@@ -15,6 +15,7 @@ class AdQnaAdapter(
     private val currentUserId: String?,
     private val isAdminOrSeller: Boolean,
     private val onDeleteClick: (String) -> Unit,
+    private val onEditClick: (Map<String, Any>) -> Unit,
     private val onAnswerClick: (String) -> Unit
 ) : RecyclerView.Adapter<AdQnaAdapter.ViewHolder>() {
 
@@ -76,8 +77,17 @@ class AdQnaAdapter(
     if (isAdminOrSeller || (currentUserId != null && currentUserId == writerId)) {
         holder.tvDelete.visibility = View.VISIBLE
         holder.tvDelete.setOnClickListener { onDeleteClick(qnaId) }
+        
+        // Only author can edit, and typically only if not answered yet (optional policy)
+        if (currentUserId == writerId) {
+            holder.tvEdit.visibility = View.VISIBLE
+            holder.tvEdit.setOnClickListener { onEditClick(qna) }
+        } else {
+            holder.tvEdit.visibility = View.GONE
+        }
     } else {
         holder.tvDelete.visibility = View.GONE
+        holder.tvEdit.visibility = View.GONE
     }
     
     // Seller view for answering if not yet answered
@@ -96,6 +106,7 @@ class AdQnaAdapter(
         val tvTitle: TextView = view.findViewById(R.id.tv_title)
         val tvQnaMeta: TextView = view.findViewById(R.id.tv_qna_meta)
         val tvContents: TextView = view.findViewById(R.id.tv_contents)
+        val tvEdit: TextView = view.findViewById(R.id.tv_edit)
         val tvDelete: TextView = view.findViewById(R.id.tv_delete)
         val tvAnswerBtn: TextView = view.findViewById(R.id.tv_answer_btn)
         val llAnswerContainer: LinearLayout = view.findViewById(R.id.ll_answer_container)

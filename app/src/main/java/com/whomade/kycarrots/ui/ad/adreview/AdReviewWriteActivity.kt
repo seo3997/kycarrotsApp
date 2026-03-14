@@ -20,6 +20,7 @@ import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.model.ReviewVo
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.TokenUtil
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -34,6 +35,7 @@ class AdReviewWriteActivity : AppCompatActivity() {
     private lateinit var ivDeleteImage: ImageView
     
     private var productId: Long = 0
+    private var reviewId: String? = null
     private var selectedImageFile: File? = null
 
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -54,6 +56,8 @@ class AdReviewWriteActivity : AppCompatActivity() {
         setContentView(R.layout.activity_ad_review_write)
 
         productId = intent.getLongExtra("productId", 0L)
+        reviewId = intent.getStringExtra("reviewId")
+        
         if (productId == 0L) {
             Toast.makeText(this, "상품 정보가 없습니다.", Toast.LENGTH_SHORT).show()
             finish()
@@ -63,13 +67,21 @@ class AdReviewWriteActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "상품 리뷰 작성"
+        supportActionBar?.title = if (reviewId != null) "상품 리뷰 수정" else "상품 리뷰 작성"
 
         ratingBar = findViewById(R.id.rating_bar)
         etContents = findViewById(R.id.et_contents)
         btnSubmit = findViewById(R.id.btn_submit)
         ivReviewImage = findViewById(R.id.iv_review_image)
         ivDeleteImage = findViewById(R.id.iv_delete_image)
+
+        if (reviewId != null) {
+            ratingBar.rating = intent.getFloatExtra("rating", 0f)
+            etContents.setText(intent.getStringExtra("contents"))
+            btnSubmit.text = "수정하기"
+            // For editing, we might not allow changing the image path easily without server-side support for multipart update
+            ivReviewImage.visibility = View.GONE 
+        }
 
         ivReviewImage.setOnClickListener {
             pickImageLauncher.launch("image/*")
@@ -100,17 +112,32 @@ class AdReviewWriteActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val success = AppServiceProvider.getService().insertReview(
-                    productId,
-                    rating.toInt(),
-                    contents,
-                    selectedImageFile
-                )
+                val success = if (reviewId != null) {
+                    AppServiceProvider.getService().updateReview(
+                        reviewId!!,
+                        rating.toInt(),
+                        contents,
+                        TokenUtil.getToken(this@AdReviewWriteActivity),
+                        branchId
+                    )
+                } else {
+                    AppServiceProvider.getService().insertReview(
+                        productId,
+                        rating.toInt(),
+                        contents,
+                        TokenUtil.getToken(this@AdReviewWriteActivity),
+                        branchId,
+                        selectedImageFile
+                    )
+                }
+                
                 if (success) {
-                    Toast.makeText(this@AdReviewWriteActivity, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    val msg = if (reviewId != null) "리뷰가 수정되었습니다." else "리뷰가 등록되었습니다."
+                    Toast.makeText(this@AdReviewWriteActivity, msg, Toast.LENGTH_SHORT).show()
+                    setResult(RESULT_OK)
                     finish()
                 } else {
-                    Toast.makeText(this@AdReviewWriteActivity, "등록에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AdReviewWriteActivity, "실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@AdReviewWriteActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()

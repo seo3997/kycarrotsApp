@@ -14,7 +14,8 @@ class AdReviewAdapter(
     private var reviews: List<Map<String, Any>>,
     private val currentUserId: String?,
     private val isAdmin: Boolean,
-    private val onDeleteClick: (String) -> Unit
+    private val onDeleteClick: (String) -> Unit,
+    private val onEditClick: (Map<String, Any>) -> Unit
 ) : RecyclerView.Adapter<AdReviewAdapter.ViewHolder>() {
 
     fun updateData(newReviews: List<Map<String, Any>>) {
@@ -52,8 +53,17 @@ class AdReviewAdapter(
     if (isAdmin || (currentUserId != null && currentUserId == writerId)) {
         holder.tvDelete.visibility = View.VISIBLE
         holder.tvDelete.setOnClickListener { onDeleteClick(reviewId) }
+        
+        // Only author can edit
+        if (currentUserId == writerId) {
+            holder.tvEdit.visibility = View.VISIBLE
+            holder.tvEdit.setOnClickListener { onEditClick(review) }
+        } else {
+            holder.tvEdit.visibility = View.GONE
+        }
     } else {
         holder.tvDelete.visibility = View.GONE
+        holder.tvEdit.visibility = View.GONE
     }
 }
     override fun getItemCount(): Int = reviews.size
@@ -63,6 +73,7 @@ class AdReviewAdapter(
         val tvUserMeta: TextView = view.findViewById(R.id.tv_user_meta)
         val tvContents: TextView = view.findViewById(R.id.tv_contents)
         val ivReviewImage: ImageView = view.findViewById(R.id.iv_review_image)
+        val tvEdit: TextView = view.findViewById(R.id.tv_edit)
         val tvDelete: TextView = view.findViewById(R.id.tv_delete)
     }
 }

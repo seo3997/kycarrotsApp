@@ -318,13 +318,26 @@ interface AdApi {
         @Part("productId") productId: RequestBody,
         @Part("rating") rating: RequestBody,
         @Part("contents") contents: RequestBody,
+        @Part("token") token: RequestBody,
+        @Part("branchId") branchId: RequestBody,
         @Part reviewFile: MultipartBody.Part?
     ): Response<Map<String, Any>>
 
     @FormUrlEncoded
     @POST("api/product/review/delete")
     suspend fun deleteReview(
-        @Field("reviewId") reviewId: String
+        @Field("reviewId") reviewId: String,
+        @Field("token") token: String
+    ): Response<Map<String, Any>>
+
+    @FormUrlEncoded
+    @POST("api/product/review/update")
+    suspend fun updateReview(
+        @Field("reviewId") reviewId: String,
+        @Field("rating") rating: Int,
+        @Field("contents") contents: String,
+        @Field("token") token: String,
+        @Field("branchId") branchId: String
     ): Response<Map<String, Any>>
 
     // QnA Endpoints
@@ -339,20 +352,35 @@ interface AdApi {
         @Field("productId") productId: String,
         @Field("title") title: String,
         @Field("contents") contents: String,
-        @Field("secretYn") secretYn: String
+        @Field("secretYn") secretYn: String,
+        @Field("token") token: String,
+        @Field("branchId") branchId: String
+    ): Response<Map<String, Any>>
+
+    @FormUrlEncoded
+    @POST("api/product/qna/update")
+    suspend fun updateQna(
+        @Field("qnaId") qnaId: String,
+        @Field("title") title: String,
+        @Field("contents") contents: String,
+        @Field("secretYn") secretYn: String,
+        @Field("token") token: String,
+        @Field("branchId") branchId: String
     ): Response<Map<String, Any>>
 
     @FormUrlEncoded
     @POST("api/product/qna/delete")
     suspend fun deleteQna(
-        @Field("qnaId") qnaId: String
+        @Field("qnaId") qnaId: String,
+        @Field("token") token: String
     ): Response<Map<String, Any>>
 
     @FormUrlEncoded
     @POST("api/product/qna/answer")
     suspend fun answerQna(
         @Field("qnaId") qnaId: String,
-        @Field("answerContents") answerContents: String
+        @Field("answerContents") answerContents: String,
+        @Field("token") token: String
     ): Response<Map<String, Any>>
 }
 

@@ -12,7 +12,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.whomade.kycarrots.AdDetailViewModel
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.common.Constants
+import android.widget.Toast
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.TokenUtil
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 
 class ProductReviewFragment : Fragment() {
 
@@ -21,6 +25,14 @@ class ProductReviewFragment : Fragment() {
     private lateinit var rvReviews: RecyclerView
     private lateinit var tvEmptyReview: TextView
     private lateinit var fabAddReview: TextView
+
+    private val reviewWriteLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            viewModel.productDetail.value?.product?.productId?.toLongOrNull()?.let { pid ->
+                viewModel.loadReviews(pid)
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_review, container, false)
@@ -35,20 +47,37 @@ class ProductReviewFragment : Fragment() {
 
         val memberCode = LoginInfoUtil.getMemberCode(requireContext())
         val isBuyer = (memberCode == Constants.ROLE_PUB)
-        val currentUserId = LoginInfoUtil.getUserId(requireContext())
+        val currentUserId = LoginInfoUtil.getUserNo(requireContext())
         val isAdmin = (memberCode == Constants.ROLE_ADMIN)
 
         fabAddReview.visibility = if (isBuyer) View.VISIBLE else View.GONE
         fabAddReview.setOnClickListener {
-            val intent = Intent(requireContext(), AdReviewWriteActivity::class.java).apply {
-                putExtra("productId", viewModel.productDetail.value?.product?.productId?.toString())
+            viewModel.productDetail.value?.product?.productId?.toLongOrNull()?.let { pid ->
+                val intent = Intent(requireContext(), AdReviewWriteActivity::class.java).apply {
+                    putExtra("productId", pid)
+                }
+                reviewWriteLauncher.launch(intent)
+            } ?: run {
+                Toast.makeText(requireContext(), "상품 정보를 불러오는 중입니다.", Toast.LENGTH_SHORT).show()
             }
-            startActivity(intent)
         }
 
-        adapter = AdReviewAdapter(emptyList(), currentUserId, isAdmin) { reviewId ->
-            viewModel.deleteReview(reviewId, viewModel.productDetail.value?.product?.productId?.toLongOrNull() ?: 0L)
-        }
+        adapter = AdReviewAdapter(emptyList(), currentUserId, isAdmin, 
+            onDeleteClick = { reviewId ->
+                val token = TokenUtil.getToken(requireContext())
+                viewModel.deleteReview(reviewId, viewModel.productDetail.value?.product?.productId?.toLongOrNull() ?: 0L, token)
+            },
+            onEditClick = { review ->
+                val pid = viewModel.productDetail.value?.product?.productId?.toLongOrNull() ?: 0L
+                val intent = Intent(requireContext(), AdReviewWriteActivity::class.java).apply {
+                    putExtra("productId", pid)
+                    putExtra("reviewId", (review["REVIEW_ID"] ?: review["reviewNo"])?.toString())
+                    putExtra("rating", (review["RATING"] ?: review["rating"])?.toString()?.toFloatOrNull() ?: 0f)
+                    putExtra("contents", (review["CONTENTS"] ?: review["contents"])?.toString())
+                }
+                reviewWriteLauncher.launch(intent)
+            }
+        )
         rvReviews.adapter = adapter
 
         viewModel.reviewList.observe(viewLifecycleOwner) { reviews ->

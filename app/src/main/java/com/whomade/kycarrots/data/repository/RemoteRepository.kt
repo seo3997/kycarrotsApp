@@ -307,22 +307,30 @@ class RemoteRepository(
         productId: Long,
         rating: Int,
         contents: String,
+        token: String,
+        branchId: String,
         reviewFile: File?
     ): Response<Map<String, Any>> {
         val productIdBody = productId.toString().toRequestBody("text/plain".toMediaType())
         val ratingBody = rating.toString().toRequestBody("text/plain".toMediaType())
         val contentsBody = contents.toRequestBody("text/plain".toMediaType())
+        val tokenBody = token.toRequestBody("text/plain".toMediaType())
+        val branchIdBody = branchId.toRequestBody("text/plain".toMediaType())
         
         val filePart = reviewFile?.let {
             val requestFile = it.asRequestBody("image/*".toMediaType())
             MultipartBody.Part.createFormData("reviewFile", it.name, requestFile)
         }
         
-        return adApi.insertReview(productIdBody, ratingBody, contentsBody, filePart)
+        return adApi.insertReview(productIdBody, ratingBody, contentsBody, tokenBody, branchIdBody, filePart)
     }
 
-    suspend fun deleteReview(reviewId: String): Response<Map<String, Any>> {
-        return adApi.deleteReview(reviewId)
+    suspend fun deleteReview(reviewId: String, token: String): Response<Map<String, Any>> {
+        return adApi.deleteReview(reviewId, token)
+    }
+
+    suspend fun updateReview(reviewId: String, rating: Int, contents: String, token: String, branchId: String): Response<Map<String, Any>> {
+        return adApi.updateReview(reviewId, rating, contents, token, branchId)
     }
 
     // QnA
@@ -334,17 +342,23 @@ class RemoteRepository(
         productId: String,
         title: String,
         contents: String,
-        secretYn: String
+        secretYn: String,
+        token: String,
+        branchId: String
     ): Response<Map<String, Any>> {
-        return adApi.insertQna(productId, title, contents, secretYn)
+        return adApi.insertQna(productId, title, contents, secretYn, token, branchId)
     }
 
-    suspend fun deleteQna(qnaId: String): Response<Map<String, Any>> {
-        return adApi.deleteQna(qnaId)
+    suspend fun deleteQna(qnaId: String, token: String): Response<Map<String, Any>> {
+        return adApi.deleteQna(qnaId, token)
     }
 
-    suspend fun answerQna(qnaId: String, answerContents: String): Response<Map<String, Any>> {
-        return adApi.answerQna(qnaId, answerContents)
+    suspend fun updateQna(qnaId: String, title: String, contents: String, secretYn: String, token: String, branchId: String): Response<Map<String, Any>> {
+        return adApi.updateQna(qnaId, title, contents, secretYn, token, branchId)
+    }
+
+    suspend fun answerQna(qnaId: String, answerContents: String, token: String): Response<Map<String, Any>> {
+        return adApi.answerQna(qnaId, answerContents, token)
     }
 }
 

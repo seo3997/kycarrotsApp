@@ -60,11 +60,11 @@ class AdDetailViewModel : ViewModel() {
         }
     }
 
-    fun deleteReview(reviewId: String, productId: Long) {
+    fun deleteReview(reviewId: String, productId: Long, token: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val success = appService.deleteReview(reviewId)
+                val success = appService.deleteReview(reviewId, token)
                 if (success) {
                     loadReviews(productId)
                 }
@@ -76,11 +76,27 @@ class AdDetailViewModel : ViewModel() {
         }
     }
 
-    fun deleteQna(qnaId: String, productId: Long) {
+    fun updateReview(reviewId: String, rating: Int, contents: String, productId: Long, token: String, branchId: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val success = appService.deleteQna(qnaId)
+                val success = appService.updateReview(reviewId, rating, contents, token, branchId)
+                if (success) {
+                    loadReviews(productId)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun deleteQna(qnaId: String, productId: Long, token: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val success = appService.deleteQna(qnaId, token)
                 if (success) {
                     loadQnas(productId)
                 }
@@ -92,11 +108,27 @@ class AdDetailViewModel : ViewModel() {
         }
     }
 
-    fun answerQna(qnaId: String, answerContents: String, productId: Long) {
+    fun updateQna(qnaId: String, title: String, contents: String, secretYn: String, productId: Long, token: String, branchId: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val success = appService.answerQna(qnaId, answerContents)
+                val success = appService.updateQna(qnaId, title, contents, secretYn, token, branchId)
+                if (success) {
+                    loadQnas(productId)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun answerQna(qnaId: String, answerContents: String, productId: Long, token: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val success = appService.answerQna(qnaId, answerContents, token)
                 if (success) {
                     loadQnas(productId)
                 }

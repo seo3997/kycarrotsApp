@@ -13,8 +13,12 @@ import com.whomade.kycarrots.AdDetailViewModel
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.common.Constants
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.TokenUtil
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 
 class ProductQnaFragment : Fragment() {
 
@@ -23,6 +27,14 @@ class ProductQnaFragment : Fragment() {
     private lateinit var rvQna: RecyclerView
     private lateinit var tvEmptyQna: TextView
     private lateinit var fabAddQna: TextView
+
+    private val qnaWriteLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull()?.let { pid ->
+                viewModel.loadQnas(pid)
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_product_qna, container, false)
@@ -37,20 +49,36 @@ class ProductQnaFragment : Fragment() {
 
         val memberCode = LoginInfoUtil.getMemberCode(requireContext())
         val isBuyer = (memberCode == Constants.ROLE_PUB)
-        val currentUserId = LoginInfoUtil.getUserId(requireContext())
+        val currentUserId = LoginInfoUtil.getUserNo(requireContext())
         val isAdminOrSeller = (memberCode == Constants.ROLE_ADMIN || memberCode == Constants.ROLE_SELL)
 
         fabAddQna.visibility = if (isBuyer) View.VISIBLE else View.GONE
         fabAddQna.setOnClickListener {
-            val intent = Intent(requireContext(), AdQnaWriteActivity::class.java).apply {
-                putExtra("productId", viewModel.productDetail.value?.product?.productId?.toString())
+            viewModel.productDetail.value?.product?.productId?.toLongOrNull()?.let { pid ->
+                val intent = Intent(requireContext(), AdQnaWriteActivity::class.java).apply {
+                    putExtra("productId", pid)
+                }
+                qnaWriteLauncher.launch(intent)
+            } ?: run {
+                Toast.makeText(requireContext(), "상품 정보를 불러오는 중입니다.", Toast.LENGTH_SHORT).show()
             }
-            startActivity(intent)
         }
 
         adapter = AdQnaAdapter(emptyList(), currentUserId, isAdminOrSeller, 
             onDeleteClick = { qnaId ->
-                viewModel.deleteQna(qnaId, viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull() ?: 0L)
+                val token = TokenUtil.getToken(requireContext())
+                viewModel.deleteQna(qnaId, viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull() ?: 0L, token)
+            },
+            onEditClick = { qna ->
+                val pid = viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull() ?: 0L
+                val intent = Intent(requireContext(), AdQnaWriteActivity::class.java).apply {
+                    putExtra("productId", pid)
+                    putExtra("qnaId", (qna["QNA_ID"] ?: qna["qnaNo"])?.toString())
+                    putExtra("title", (qna["TITLE"] ?: qna["title"])?.toString())
+                    putExtra("contents", (qna["CONTENTS"] ?: qna["contents"])?.toString())
+                    putExtra("secretYn", (qna["SECRET_YN"] ?: qna["secretYn"])?.toString())
+                }
+                qnaWriteLauncher.launch(intent)
             },
             onAnswerClick = { qnaId ->
                 showAnswerDialog(qnaId)
@@ -86,7 +114,8 @@ class ProductQnaFragment : Fragment() {
             .setPositiveButton("등록") { _, _ ->
                 val answer = editText.text.toString().trim()
                 if (answer.isNotEmpty()) {
-                    viewModel.answerQna(qnaId, answer, viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull() ?: 0L)
+                    val token = TokenUtil.getToken(requireContext())
+                    viewModel.answerQna(qnaId, answer, viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull() ?: 0L, token)
                 }
             }
             .setNegativeButton("취소", null)

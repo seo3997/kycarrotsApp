@@ -14,6 +14,7 @@ import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.model.QnaVo
 import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
+import com.whomade.kycarrots.ui.common.TokenUtil
 import kotlinx.coroutines.launch
 
 class AdQnaWriteActivity : AppCompatActivity() {
@@ -24,12 +25,15 @@ class AdQnaWriteActivity : AppCompatActivity() {
     private lateinit var btnSubmit: Button
     
     private var productId: Long = 0
+    private var qnaId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ad_qna_write)
 
         productId = intent.getLongExtra("productId", 0L)
+        qnaId = intent.getStringExtra("qnaId")
+        
         if (productId == 0L) {
             Toast.makeText(this, "상품 정보가 없습니다.", Toast.LENGTH_SHORT).show()
             finish()
@@ -39,12 +43,19 @@ class AdQnaWriteActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "상품 문의 작성"
+        supportActionBar?.title = if (qnaId != null) "상품 문의 수정" else "상품 문의 작성"
 
         etTitle = findViewById(R.id.et_title)
         etContents = findViewById(R.id.et_contents)
         cbSecret = findViewById(R.id.cb_secret)
         btnSubmit = findViewById(R.id.btn_submit)
+
+        if (qnaId != null) {
+            etTitle.setText(intent.getStringExtra("title"))
+            etContents.setText(intent.getStringExtra("contents"))
+            cbSecret.isChecked = intent.getStringExtra("secretYn") == "Y"
+            btnSubmit.text = "수정하기"
+        }
 
         btnSubmit.setOnClickListener {
             submitQna()
@@ -66,17 +77,33 @@ class AdQnaWriteActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val success = AppServiceProvider.getService().insertQna(
-                    productId.toString(),
-                    title,
-                    contents,
-                    if (isSecret) "Y" else "N"
-                )
+                val success = if (qnaId != null) {
+                    AppServiceProvider.getService().updateQna(
+                        qnaId!!,
+                        title,
+                        contents,
+                        if (isSecret) "Y" else "N",
+                        TokenUtil.getToken(this@AdQnaWriteActivity),
+                        branchId
+                    )
+                } else {
+                    AppServiceProvider.getService().insertQna(
+                        productId.toString(),
+                        title,
+                        contents,
+                        if (isSecret) "Y" else "N",
+                        TokenUtil.getToken(this@AdQnaWriteActivity),
+                        branchId
+                    )
+                }
+                
                 if (success) {
-                    Toast.makeText(this@AdQnaWriteActivity, "문의가 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    val msg = if (qnaId != null) "문의가 수정되었습니다." else "문의가 등록되었습니다."
+                    Toast.makeText(this@AdQnaWriteActivity, msg, Toast.LENGTH_SHORT).show()
+                    setResult(RESULT_OK)
                     finish()
                 } else {
-                    Toast.makeText(this@AdQnaWriteActivity, "등록에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AdQnaWriteActivity, "실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@AdQnaWriteActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
