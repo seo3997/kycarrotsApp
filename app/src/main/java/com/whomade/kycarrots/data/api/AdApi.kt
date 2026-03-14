@@ -320,7 +320,7 @@ interface AdApi {
         @Part("contents") contents: RequestBody,
         @Part("token") token: RequestBody,
         @Part("branchId") branchId: RequestBody,
-        @Part reviewFile: MultipartBody.Part?
+        @Part reviewFile: List<MultipartBody.Part>?
     ): Response<Map<String, Any>>
 
     @FormUrlEncoded
@@ -330,14 +330,15 @@ interface AdApi {
         @Field("token") token: String
     ): Response<Map<String, Any>>
 
-    @FormUrlEncoded
+    @Multipart
     @POST("api/product/review/update")
     suspend fun updateReview(
-        @Field("reviewId") reviewId: String,
-        @Field("rating") rating: Int,
-        @Field("contents") contents: String,
-        @Field("token") token: String,
-        @Field("branchId") branchId: String
+        @Part("reviewId") reviewId: RequestBody,
+        @Part("rating") rating: RequestBody,
+        @Part("contents") contents: RequestBody,
+        @Part("token") token: RequestBody,
+        @Part("branchId") branchId: RequestBody,
+        @Part reviewFile: List<MultipartBody.Part>?
     ): Response<Map<String, Any>>
 
     // QnA Endpoints

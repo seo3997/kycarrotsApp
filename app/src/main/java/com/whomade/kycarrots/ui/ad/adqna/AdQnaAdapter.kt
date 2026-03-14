@@ -85,8 +85,6 @@ class AdQnaAdapter(
         holder.tvEdit.visibility = View.GONE
     }
     
-    // Answering button removed (managed in admin)
-    holder.tvAnswerBtn.visibility = View.GONE
 }
 
     override fun getItemCount(): Int = qnas.size
@@ -98,7 +96,6 @@ class AdQnaAdapter(
         val tvContents: TextView = view.findViewById(R.id.tv_contents)
         val tvEdit: TextView = view.findViewById(R.id.tv_edit)
         val tvDelete: TextView = view.findViewById(R.id.tv_delete)
-        val tvAnswerBtn: TextView = view.findViewById(R.id.tv_answer_btn)
         val llAnswerContainer: LinearLayout = view.findViewById(R.id.ll_answer_container)
         val tvAnswerContents: TextView = view.findViewById(R.id.tv_answer_contents)
         val tvAnswerMeta: TextView = view.findViewById(R.id.tv_answer_meta)

@@ -68,11 +68,13 @@ class ProductReviewFragment : Fragment() {
             },
             onEditClick = { review ->
                 val pid = viewModel.productDetail.value?.product?.productId?.toLongOrNull() ?: 0L
+                val imageUrl = review["FILE_RLTV_PATH"]?.toString() ?: review["imageUrl"]?.toString()
                 val intent = Intent(requireContext(), AdReviewWriteActivity::class.java).apply {
                     putExtra("productId", pid)
                     putExtra("reviewId", (review["REVIEW_ID"] ?: review["reviewNo"])?.toString())
                     putExtra("rating", (review["RATING"] ?: review["rating"])?.toString()?.toFloatOrNull() ?: 0f)
                     putExtra("contents", (review["CONTENTS"] ?: review["contents"])?.toString())
+                    putExtra("imageUrl", imageUrl)
                 }
                 reviewWriteLauncher.launch(intent)
             }

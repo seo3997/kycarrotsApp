@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,20 +32,24 @@ class AdReviewWriteActivity : AppCompatActivity() {
     private lateinit var ratingBar: RatingBar
     private lateinit var etContents: TextInputEditText
     private lateinit var btnSubmit: Button
-    private lateinit var ivReviewImage: ImageView
-    private lateinit var ivDeleteImage: ImageView
+    private lateinit var ivAddImage: ImageView
+    private lateinit var llImageList: LinearLayout
     
     private var productId: Long = 0
     private var reviewId: String? = null
-    private var selectedImageFile: File? = null
+    data class ReviewImage(val file: File? = null, val url: String? = null)
+    private val imageList = mutableListOf<ReviewImage>()
 
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
+            if (imageList.size >= 3) {
+                Toast.makeText(this, "사진은 최대 3개까지만 첨부 가능합니다.", Toast.LENGTH_SHORT).show()
+                return@let
+            }
             val file = getFileFromUri(it)
             if (file != null) {
-                selectedImageFile = file
-                ivDeleteImage.visibility = View.VISIBLE
-                Glide.with(this).load(file).into(ivReviewImage)
+                imageList.add(ReviewImage(file = file))
+                refreshImageInterface()
             } else {
                 Toast.makeText(this, "이미지를 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
@@ -57,6 +62,7 @@ class AdReviewWriteActivity : AppCompatActivity() {
 
         productId = intent.getLongExtra("productId", 0L)
         reviewId = intent.getStringExtra("reviewId")
+        val existingImageUrl = intent.getStringExtra("imageUrl")
         
         if (productId == 0L) {
             Toast.makeText(this, "상품 정보가 없습니다.", Toast.LENGTH_SHORT).show()
@@ -72,30 +78,59 @@ class AdReviewWriteActivity : AppCompatActivity() {
         ratingBar = findViewById(R.id.rating_bar)
         etContents = findViewById(R.id.et_contents)
         btnSubmit = findViewById(R.id.btn_submit)
-        ivReviewImage = findViewById(R.id.iv_review_image)
-        ivDeleteImage = findViewById(R.id.iv_delete_image)
+        ivAddImage = findViewById(R.id.iv_add_image)
+        llImageList = findViewById(R.id.ll_image_list)
 
         if (reviewId != null) {
             ratingBar.rating = intent.getFloatExtra("rating", 0f)
             etContents.setText(intent.getStringExtra("contents"))
             btnSubmit.text = "수정하기"
-            // For editing, we might not allow changing the image path easily without server-side support for multipart update
-            ivReviewImage.visibility = View.GONE 
+            
+            if (!existingImageUrl.isNullOrBlank()) {
+                imageList.add(ReviewImage(url = existingImageUrl))
+                refreshImageInterface()
+            }
         }
 
-        ivReviewImage.setOnClickListener {
-            pickImageLauncher.launch("image/*")
-        }
-
-        ivDeleteImage.setOnClickListener {
-            selectedImageFile = null
-            ivReviewImage.setImageResource(android.R.drawable.ic_menu_camera)
-            ivDeleteImage.visibility = View.GONE
+        ivAddImage.setOnClickListener {
+            if (imageList.size < 3) {
+                pickImageLauncher.launch("image/*")
+            } else {
+                Toast.makeText(this, "사진은 최대 3개까지만 첨부 가능합니다.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         btnSubmit.setOnClickListener {
             submitReview()
         }
+    }
+
+    private fun refreshImageInterface() {
+        // Remove all except the add button
+        val childCount = llImageList.childCount
+        if (childCount > 1) {
+            llImageList.removeViews(1, childCount - 1)
+        }
+
+        imageList.forEachIndexed { index, item ->
+            val itemLayout = layoutInflater.inflate(R.layout.item_review_image_upload, llImageList, false)
+            val ivThumb = itemLayout.findViewById<ImageView>(R.id.iv_thumb)
+            val ivDelete = itemLayout.findViewById<ImageView>(R.id.iv_delete)
+
+            if (item.file != null) {
+                Glide.with(this).load(item.file).into(ivThumb)
+            } else if (item.url != null) {
+                Glide.with(this).load(item.url).into(ivThumb)
+            }
+
+            ivDelete.setOnClickListener {
+                imageList.removeAt(index)
+                refreshImageInterface()
+            }
+            llImageList.addView(itemLayout)
+        }
+
+        ivAddImage.visibility = if (imageList.size < 3) View.VISIBLE else View.GONE
     }
 
     private fun submitReview() {
@@ -107,8 +142,8 @@ class AdReviewWriteActivity : AppCompatActivity() {
             return
         }
 
-        val userId = LoginInfoUtil.getUserId(this)
         val branchId = LoginInfoUtil.getBranchId(this)
+        val selectedFiles = imageList.mapNotNull { it.file }
 
         lifecycleScope.launch {
             try {
@@ -118,7 +153,8 @@ class AdReviewWriteActivity : AppCompatActivity() {
                         rating.toInt(),
                         contents,
                         TokenUtil.getToken(this@AdReviewWriteActivity),
-                        branchId
+                        branchId,
+                        if (selectedFiles.isNotEmpty()) selectedFiles else null
                     )
                 } else {
                     AppServiceProvider.getService().insertReview(
@@ -127,7 +163,7 @@ class AdReviewWriteActivity : AppCompatActivity() {
                         contents,
                         TokenUtil.getToken(this@AdReviewWriteActivity),
                         branchId,
-                        selectedImageFile
+                        if (selectedFiles.isNotEmpty()) selectedFiles else null
                     )
                 }
                 
@@ -147,7 +183,7 @@ class AdReviewWriteActivity : AppCompatActivity() {
 
     private fun getFileFromUri(uri: Uri): File? {
         val context = applicationContext
-        val fileName = getFileName(context, uri) ?: "temp_image.jpg"
+        val fileName = getFileName(context, uri) ?: "temp_review_${System.currentTimeMillis()}.jpg"
         val tempFile = File(context.cacheDir, fileName)
         try {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null

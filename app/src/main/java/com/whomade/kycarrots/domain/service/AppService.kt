@@ -509,10 +509,10 @@ class AppService(
         contents: String,
         token: String,
         branchId: String,
-        reviewFile: File?
+        reviewFiles: List<File>?
     ): Boolean {
         return try {
-            val resp = repository.insertReview(productId, rating, contents, token, branchId, reviewFile)
+            val resp = repository.insertReview(productId, rating, contents, token, branchId, reviewFiles)
             resp.isSuccessful && resp.body()?.get("success") == true
         } catch (e: Exception) {
             false
@@ -528,9 +528,9 @@ class AppService(
         }
     }
 
-    suspend fun updateReview(reviewId: String, rating: Int, contents: String, token: String, branchId: String): Boolean {
+    suspend fun updateReview(reviewId: String, rating: Int, contents: String, token: String, branchId: String, reviewFiles: List<File>? = null): Boolean {
         return try {
-            val resp = repository.updateReview(reviewId, rating, contents, token, branchId)
+            val resp = repository.updateReview(reviewId, rating, contents, token, branchId, reviewFiles)
             resp.isSuccessful && resp.body()?.get("success") == true
         } catch (e: Exception) {
             false

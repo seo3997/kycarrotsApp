@@ -309,7 +309,7 @@ class RemoteRepository(
         contents: String,
         token: String,
         branchId: String,
-        reviewFile: File?
+        reviewFiles: List<File>?
     ): Response<Map<String, Any>> {
         val productIdBody = productId.toString().toRequestBody("text/plain".toMediaType())
         val ratingBody = rating.toString().toRequestBody("text/plain".toMediaType())
@@ -317,20 +317,31 @@ class RemoteRepository(
         val tokenBody = token.toRequestBody("text/plain".toMediaType())
         val branchIdBody = branchId.toRequestBody("text/plain".toMediaType())
         
-        val filePart = reviewFile?.let {
-            val requestFile = it.asRequestBody("image/*".toMediaType())
-            MultipartBody.Part.createFormData("reviewFile", it.name, requestFile)
+        val fileParts = reviewFiles?.map { file ->
+            val requestFile = file.asRequestBody("image/*".toMediaType())
+            MultipartBody.Part.createFormData("reviewFile", file.name, requestFile)
         }
         
-        return adApi.insertReview(productIdBody, ratingBody, contentsBody, tokenBody, branchIdBody, filePart)
+        return adApi.insertReview(productIdBody, ratingBody, contentsBody, tokenBody, branchIdBody, fileParts)
     }
 
     suspend fun deleteReview(reviewId: String, token: String): Response<Map<String, Any>> {
         return adApi.deleteReview(reviewId, token)
     }
 
-    suspend fun updateReview(reviewId: String, rating: Int, contents: String, token: String, branchId: String): Response<Map<String, Any>> {
-        return adApi.updateReview(reviewId, rating, contents, token, branchId)
+    suspend fun updateReview(reviewId: String, rating: Int, contents: String, token: String, branchId: String, reviewFiles: List<File>?): Response<Map<String, Any>> {
+        val reviewIdBody = reviewId.toRequestBody("text/plain".toMediaType())
+        val ratingBody = rating.toString().toRequestBody("text/plain".toMediaType())
+        val contentsBody = contents.toRequestBody("text/plain".toMediaType())
+        val tokenBody = token.toRequestBody("text/plain".toMediaType())
+        val branchIdBody = branchId.toRequestBody("text/plain".toMediaType())
+
+        val fileParts = reviewFiles?.map { file ->
+            val requestFile = file.asRequestBody("image/*".toMediaType())
+            MultipartBody.Part.createFormData("reviewFile", file.name, requestFile)
+        }
+
+        return adApi.updateReview(reviewIdBody, ratingBody, contentsBody, tokenBody, branchIdBody, fileParts)
     }
 
     // QnA
