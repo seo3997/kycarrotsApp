@@ -39,6 +39,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
     private var pushTargetId: String? = null
     private var pushType: String? = null
     private var pushMsg: String? = null
+    private var pushTitle: String? = null
+    private var pushBody: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +50,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         pushTargetId = intent?.getStringExtra("targetId") ?: intent?.getStringExtra("roomId") ?: intent?.getStringExtra("productId") ?: intent?.getStringExtra("orderId")
         pushType = intent?.getStringExtra("type")
         pushMsg = intent?.getStringExtra("msg")
+        pushTitle = intent?.getStringExtra("title")
+        pushBody = intent?.getStringExtra("body")
 
         findViewById<Button>(R.id.btn_membership).setOnClickListener(this)
         findViewById<Button>(R.id.btn_login).setOnClickListener(this)
@@ -288,7 +292,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                             appService.saveJwt(auth.token!!)
                             showLoading(false)
                             //goMain()
-                            MainNavigation.goMain(this@LoginActivity, auth, pushTargetId, pushType, pushMsg)
+                            MainNavigation.goMain(this@LoginActivity, auth, pushTargetId, pushType, pushMsg, pushTitle, pushBody)
                             return@launch
                         }
                         auth.resultCode == 604 -> {
@@ -388,6 +392,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                         putExtra("targetId", pushTargetId)
                                         putExtra("type", pushType)
                                         putExtra("msg", pushMsg)
+                                        putExtra("title", pushTitle)
+                                        putExtra("body", pushBody)
                                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                                     })
 

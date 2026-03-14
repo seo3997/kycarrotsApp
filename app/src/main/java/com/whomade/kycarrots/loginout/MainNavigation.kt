@@ -12,7 +12,9 @@ object MainNavigation {
         login: LoginResponse? = null,
         pushTargetId: String? = null,
         pushType: String? = null,
-        pushMsg: String? = null
+        pushMsg: String? = null,
+        pushTitle: String? = null,
+        pushBody: String? = null
     ) {
         LoginInfoUtil.saveLoginInfo(
             activity,
@@ -32,6 +34,8 @@ object MainNavigation {
                 putExtra("targetId", pushTargetId)
                 putExtra("type", pushType)
                 putExtra("msg", pushMsg)
+                putExtra("title", pushTitle)
+                putExtra("body", pushBody)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             }
         )

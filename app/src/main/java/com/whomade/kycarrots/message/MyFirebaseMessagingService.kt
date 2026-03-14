@@ -166,6 +166,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             putExtra("type", type)
             putExtra("targetId", targetId)
             putExtra("msg", msg)
+            putExtra("title", title)
+            putExtra("body", body)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
 

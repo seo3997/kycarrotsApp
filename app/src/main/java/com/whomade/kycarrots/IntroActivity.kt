@@ -40,6 +40,8 @@ class IntroActivity : AppCompatActivity() {
     private var pushTargetId: String? = null
     private var pushType: String? = null
     private var pushMsg: String? = null
+    private var pushTitle: String? = null
+    private var pushBody: String? = null
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -49,7 +51,61 @@ class IntroActivity : AppCompatActivity() {
         pushTargetId = intent?.getStringExtra("targetId") ?: intent?.getStringExtra("roomId") ?: intent?.getStringExtra("productId") ?: intent?.getStringExtra("orderId")
         pushType = intent?.getStringExtra("type")
         pushMsg = intent?.getStringExtra("msg")
-        Log.d("PushIntent", "savePushIntentData - type: $pushType, targetId: $pushTargetId, msg: $pushMsg")
+        pushTitle = intent?.getStringExtra("title")
+        pushBody = intent?.getStringExtra("body")
+        Log.d("PushIntent", "savePushIntentData - type: $pushType, targetId: $pushTargetId, msg: $pushMsg, title: $pushTitle")
+
+        // 알림 클릭으로 진입한 경우 로컬 DB 저장 시도 (백그라운드 수신 시 저장 누락 대비)
+        if (!pushType.isNullOrBlank() && !pushTitle.isNullOrBlank()) {
+            handlePushStorage()
+        }
+    }
+
+    private fun handlePushStorage() {
+        val type = pushType ?: return
+        val title = pushTitle ?: return
+        val body = pushBody
+        val targetId = pushTargetId
+
+        val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
+        val userId = prefs.getString("LogIn_ID", "") ?: ""
+        if (userId.isEmpty()) return
+
+        lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val repo = com.whomade.kycarrots.data.local.PushRepositoryProvider.get(applicationContext)
+                
+                // 간단한 중복 체크 (최근 5초 이내 동일한 제목/내용이 있으면 스킵)
+                // (onMessageReceived에서 이미 저장했을 가능성이 높음)
+                val items = repo.list(userId, false, 1, 0)
+                if (items.isNotEmpty()) {
+                    val last = items[0]
+                    if (last.title == title && last.body == body && (System.currentTimeMillis() - last.createdAt < 5000)) {
+                        Log.d("PushIntent", "중복 저장 방지: 이미 저장된 푸시입니다.")
+                        return@launch
+                    }
+                }
+
+                val entity = com.whomade.kycarrots.data.local.PushNotificationEntity(
+                    userId = userId,
+                    type = type,
+                    title = title,
+                    body = body,
+                    targetId = targetId,
+                    deeplink = when(type) {
+                        "product" -> "app://product/$targetId"
+                        "chat" -> "app://chat/room/$targetId"
+                        "order" -> "app://order/$targetId"
+                        else -> null
+                    },
+                    isRead = true // 클릭해서 들어왔으므로 읽음 처리
+                )
+                repo.save(entity)
+                Log.d("PushIntent", "알림 클릭 -> 로컬 DB 저장 완료")
+            } catch (e: Exception) {
+                Log.e("PushIntent", "로컬 DB 저장 실패", e)
+            }
+        }
     }
 
     // (1) Activity의 멤버 변수(필드)로 선언!
@@ -198,6 +254,8 @@ class IntroActivity : AppCompatActivity() {
                 putExtra("targetId", pushTargetId)
                 putExtra("type", pushType)
                 putExtra("msg", pushMsg)
+                putExtra("title", pushTitle)
+                putExtra("body", pushBody)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             }
             startActivity(intent)
