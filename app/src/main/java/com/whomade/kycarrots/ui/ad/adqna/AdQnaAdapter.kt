@@ -13,10 +13,8 @@ import com.whomade.kycarrots.R
 class AdQnaAdapter(
     private var qnas: List<Map<String, Any>>,
     private val currentUserId: String?,
-    private val isAdminOrSeller: Boolean,
     private val onDeleteClick: (String) -> Unit,
-    private val onEditClick: (Map<String, Any>) -> Unit,
-    private val onAnswerClick: (String) -> Unit
+    private val onEditClick: (Map<String, Any>) -> Unit
 ) : RecyclerView.Adapter<AdQnaAdapter.ViewHolder>() {
 
     fun updateData(newQnas: List<Map<String, Any>>) {
@@ -37,7 +35,9 @@ class AdQnaAdapter(
     val userNm = qna["USER_NM"]?.toString() ?: qna["userNm"]?.toString() ?: "사용자"
     val createDt = qna["REGIST_DT"]?.toString() ?: qna["createDt"]?.toString() ?: ""
     val status = qna["QNA_STATUS"]?.toString() ?: qna["status"]?.toString() ?: "10"
-    val writerId = qna["USER_NO"]?.toString() ?: qna["userId"]?.toString()
+    val writerIdRaw = qna["USER_NO"] ?: qna["userNo"] ?: qna["userId"]
+    val writerId = writerIdRaw?.toString()?.split(".")?.get(0)
+    val normalizedCurrentUserId = currentUserId?.split(".")?.get(0)
     val secretYn = qna["SECRET_YN"]?.toString() ?: qna["secretYn"]?.toString() ?: "N"
     
     val answerContents = qna["ANSWER_CONTENTS"]?.toString() ?: qna["answerContents"]?.toString()
@@ -46,7 +46,7 @@ class AdQnaAdapter(
     holder.tvTitle.text = title
     holder.tvQnaMeta.text = "$userNm | $createDt"
     
-    val canSee = !secretYn.equals("Y", true) || (currentUserId == writerId) || isAdminOrSeller
+    val canSee = !secretYn.equals("Y", true) || (normalizedCurrentUserId != null && normalizedCurrentUserId == writerId)
     
     if (canSee) {
         holder.tvContents.text = contents
@@ -74,29 +74,19 @@ class AdQnaAdapter(
     
     holder.ivSecretIcon.visibility = if (secretYn.equals("Y", true)) View.VISIBLE else View.GONE
 
-    if (isAdminOrSeller || (currentUserId != null && currentUserId == writerId)) {
+    if (normalizedCurrentUserId != null && normalizedCurrentUserId == writerId) {
         holder.tvDelete.visibility = View.VISIBLE
         holder.tvDelete.setOnClickListener { onDeleteClick(qnaId) }
         
-        // Only author can edit, and typically only if not answered yet (optional policy)
-        if (currentUserId == writerId) {
-            holder.tvEdit.visibility = View.VISIBLE
-            holder.tvEdit.setOnClickListener { onEditClick(qna) }
-        } else {
-            holder.tvEdit.visibility = View.GONE
-        }
+        holder.tvEdit.visibility = View.VISIBLE
+        holder.tvEdit.setOnClickListener { onEditClick(qna) }
     } else {
         holder.tvDelete.visibility = View.GONE
         holder.tvEdit.visibility = View.GONE
     }
     
-    // Seller view for answering if not yet answered
-    if (isAdminOrSeller && answerContents.isNullOrBlank()) {
-        holder.tvAnswerBtn.visibility = View.VISIBLE
-        holder.tvAnswerBtn.setOnClickListener { onAnswerClick(qnaId) }
-    } else {
-        holder.tvAnswerBtn.visibility = View.GONE
-    }
+    // Answering button removed (managed in admin)
+    holder.tvAnswerBtn.visibility = View.GONE
 }
 
     override fun getItemCount(): Int = qnas.size

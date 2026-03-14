@@ -50,7 +50,6 @@ class ProductQnaFragment : Fragment() {
         val memberCode = LoginInfoUtil.getMemberCode(requireContext())
         val isBuyer = (memberCode == Constants.ROLE_PUB)
         val currentUserId = LoginInfoUtil.getUserNo(requireContext())
-        val isAdminOrSeller = (memberCode == Constants.ROLE_ADMIN || memberCode == Constants.ROLE_SELL)
 
         fabAddQna.visibility = if (isBuyer) View.VISIBLE else View.GONE
         fabAddQna.setOnClickListener {
@@ -64,7 +63,7 @@ class ProductQnaFragment : Fragment() {
             }
         }
 
-        adapter = AdQnaAdapter(emptyList(), currentUserId, isAdminOrSeller, 
+        adapter = AdQnaAdapter(emptyList(), currentUserId, 
             onDeleteClick = { qnaId ->
                 val token = TokenUtil.getToken(requireContext())
                 viewModel.deleteQna(qnaId, viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull() ?: 0L, token)
@@ -79,9 +78,6 @@ class ProductQnaFragment : Fragment() {
                     putExtra("secretYn", (qna["SECRET_YN"] ?: qna["secretYn"])?.toString())
                 }
                 qnaWriteLauncher.launch(intent)
-            },
-            onAnswerClick = { qnaId ->
-                showAnswerDialog(qnaId)
             }
         )
         rvQna.adapter = adapter
@@ -104,21 +100,4 @@ class ProductQnaFragment : Fragment() {
         }
     }
 
-    private fun showAnswerDialog(qnaId: String) {
-        val editText = EditText(requireContext())
-        editText.hint = "답변 내용을 입력하세요"
-
-        AlertDialog.Builder(requireContext())
-            .setTitle("답변 등록")
-            .setView(editText)
-            .setPositiveButton("등록") { _, _ ->
-                val answer = editText.text.toString().trim()
-                if (answer.isNotEmpty()) {
-                    val token = TokenUtil.getToken(requireContext())
-                    viewModel.answerQna(qnaId, answer, viewModel.productDetail.value?.product?.productId?.toString()?.toLongOrNull() ?: 0L, token)
-                }
-            }
-            .setNegativeButton("취소", null)
-            .show()
-    }
 }

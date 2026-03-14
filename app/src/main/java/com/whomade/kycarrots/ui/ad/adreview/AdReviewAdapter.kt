@@ -13,7 +13,6 @@ import com.whomade.kycarrots.R
 class AdReviewAdapter(
     private var reviews: List<Map<String, Any>>,
     private val currentUserId: String?,
-    private val isAdmin: Boolean,
     private val onDeleteClick: (String) -> Unit,
     private val onEditClick: (Map<String, Any>) -> Unit
 ) : RecyclerView.Adapter<AdReviewAdapter.ViewHolder>() {
@@ -36,7 +35,9 @@ class AdReviewAdapter(
     val userNm = review["USER_NM"]?.toString() ?: review["userNm"]?.toString() ?: "사용자"
     val createDt = review["REGIST_DT"]?.toString() ?: review["createDt"]?.toString() ?: ""
     val imageUrl = review["FILE_RLTV_PATH"]?.toString() ?: review["imageUrl"]?.toString()
-    val writerId = review["USER_NO"]?.toString() ?: review["userId"]?.toString()
+    val writerIdRaw = review["USER_NO"] ?: review["userNo"] ?: review["userId"]
+    val writerId = writerIdRaw?.toString()?.split(".")?.get(0)
+    val normalizedCurrentUserId = currentUserId?.split(".")?.get(0)
 
     holder.ratingBar.rating = rating
     holder.tvUserMeta.text = "$userNm | $createDt"
@@ -49,18 +50,13 @@ class AdReviewAdapter(
         holder.ivReviewImage.visibility = View.GONE
     }
 
-    // Show delete button if owner or admin
-    if (isAdmin || (currentUserId != null && currentUserId == writerId)) {
+    // Show delete/edit buttons strictly for the author
+    if (normalizedCurrentUserId != null && normalizedCurrentUserId == writerId) {
         holder.tvDelete.visibility = View.VISIBLE
         holder.tvDelete.setOnClickListener { onDeleteClick(reviewId) }
         
-        // Only author can edit
-        if (currentUserId == writerId) {
-            holder.tvEdit.visibility = View.VISIBLE
-            holder.tvEdit.setOnClickListener { onEditClick(review) }
-        } else {
-            holder.tvEdit.visibility = View.GONE
-        }
+        holder.tvEdit.visibility = View.VISIBLE
+        holder.tvEdit.setOnClickListener { onEditClick(review) }
     } else {
         holder.tvDelete.visibility = View.GONE
         holder.tvEdit.visibility = View.GONE

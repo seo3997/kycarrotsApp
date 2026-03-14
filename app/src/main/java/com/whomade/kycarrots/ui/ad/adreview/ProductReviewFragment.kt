@@ -48,7 +48,6 @@ class ProductReviewFragment : Fragment() {
         val memberCode = LoginInfoUtil.getMemberCode(requireContext())
         val isBuyer = (memberCode == Constants.ROLE_PUB)
         val currentUserId = LoginInfoUtil.getUserNo(requireContext())
-        val isAdmin = (memberCode == Constants.ROLE_ADMIN)
 
         fabAddReview.visibility = if (isBuyer) View.VISIBLE else View.GONE
         fabAddReview.setOnClickListener {
@@ -62,7 +61,7 @@ class ProductReviewFragment : Fragment() {
             }
         }
 
-        adapter = AdReviewAdapter(emptyList(), currentUserId, isAdmin, 
+        adapter = AdReviewAdapter(emptyList(), currentUserId, 
             onDeleteClick = { reviewId ->
                 val token = TokenUtil.getToken(requireContext())
                 viewModel.deleteReview(reviewId, viewModel.productDetail.value?.product?.productId?.toLongOrNull() ?: 0L, token)
