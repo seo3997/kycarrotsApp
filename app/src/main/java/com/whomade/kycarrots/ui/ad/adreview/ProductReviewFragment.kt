@@ -17,6 +17,7 @@ import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.TokenUtil
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.whomade.kycarrots.ui.ad.ImageViewerActivity
 
 class ProductReviewFragment : Fragment() {
 
@@ -77,6 +78,12 @@ class ProductReviewFragment : Fragment() {
                     putExtra("filePaths", filePaths)
                 }
                 reviewWriteLauncher.launch(intent)
+            },
+            onImageClick = { imageUrl ->
+                val intent = Intent(requireContext(), ImageViewerActivity::class.java).apply {
+                    putExtra("url", imageUrl)
+                }
+                startActivity(intent)
             }
         )
         rvReviews.adapter = adapter

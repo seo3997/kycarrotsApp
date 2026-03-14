@@ -15,7 +15,8 @@ class AdReviewAdapter(
     private var reviews: List<Map<String, Any>>,
     private val currentUserId: String?,
     private val onDeleteClick: (String) -> Unit,
-    private val onEditClick: (Map<String, Any>) -> Unit
+    private val onEditClick: (Map<String, Any>) -> Unit,
+    private val onImageClick: (String) -> Unit
 ) : RecyclerView.Adapter<AdReviewAdapter.ViewHolder>() {
 
     fun updateData(newReviews: List<Map<String, Any>>) {
@@ -61,6 +62,7 @@ class AdReviewAdapter(
                 scaleType = ImageView.ScaleType.CENTER_CROP
                 setBackgroundResource(R.drawable.bg_rounded_image)
                 clipToOutline = true
+                setOnClickListener { onImageClick(path.trim()) }
             }
             Glide.with(holder.itemView.context).load(path.trim()).into(imageView)
             holder.llReviewImages.addView(imageView)
