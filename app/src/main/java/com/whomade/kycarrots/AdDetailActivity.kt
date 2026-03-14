@@ -363,7 +363,7 @@ class AdDetailActivity : AppCompatActivity() {
     }
 
     private fun maybeSetResultAndFinish() {
-        if (statusChanged && newStatus in listOf("1", "10", "99")) {
+        if (statusChanged) {
             setResult(Activity.RESULT_OK, Intent().putExtra("status_changed", true).putExtra("new_status", newStatus))
         }
         supportFinishAfterTransition()
