@@ -38,14 +38,32 @@
             android:padding="16dp">
 
             <!-- 프로필 이미지 -->
-            <ImageView
-                android:id="@+id/profile_image"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+            <FrameLayout
+                android:id="@+id/profile_image_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_profile_placeholder"
-                android:background="@drawable/profile_circle_background"
-                android:scaleType="centerCrop" />
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_profile_placeholder"
+                    android:background="@drawable/profile_circle_background"
+                    android:scaleType="centerCrop" />
+
+                <!-- 변경 아이콘 (카메라) -->
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="bottom|end"
+                    android:src="@drawable/ic_edit_camera"
+                    android:padding="6dp"
+                    android:background="@drawable/profile_circle_background"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:elevation="4dp" />
+            </FrameLayout>
 
             <!-- 주요 사용자 정보 -->
             <TextView
@@ -89,31 +107,7 @@
                 android:paddingStart="8dp"
                 android:textAlignment="viewStart" />
 
-            <!-- 재배 품목 태그 -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp">
 
-                <TextView
-                    android:text="상추"
-                    android:backgroundTint="#E0F2F1"
-                    android:textColor="#00796B"
-                    android:padding="6dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:layout_marginEnd="6dp" />
-
-                <TextView
-                    android:text="배추"
-                    android:backgroundTint="#E0F2F1"
-                    android:textColor="#00796B"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:padding="6dp" />
-            </LinearLayout>
 
             <!-- 구분선 -->
             <View

@@ -137,6 +137,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         type: String?,
         msg: String?
     ) {
+        // 푸시 알림 설정 확인
+        val pushPrefs = applicationContext.getSharedPreferences("PushSettings", MODE_PRIVATE)
+        if (!pushPrefs.getBoolean("push_enabled", true)) {
+            Log.d("FCM", "푸시 알림 비활성화 상태 -> 알림 생략")
+            return
+        }
+
         val channelId = when (type) {
             "chat" -> "chat_channel"
             "product" -> "product_channel"
