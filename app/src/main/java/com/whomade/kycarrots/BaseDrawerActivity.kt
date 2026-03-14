@@ -6,6 +6,10 @@ import android.view.MenuItem
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import java.io.File
+import android.content.Context
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -24,6 +28,7 @@ import com.whomade.kycarrots.webview.WebViewActivity
 open class BaseDrawerActivity : AppCompatActivity() {
     protected lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
+    private var profileImageView: ImageView? = null
 
     override fun setContentView(layoutResID: Int) {
         val fullView = layoutInflater.inflate(R.layout.activity_base_drawer, null)
@@ -43,6 +48,9 @@ open class BaseDrawerActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
         val userId = prefs.getString("LogIn_ID", "") ?: ""
         navUserIdTextView.text = userId
+
+        profileImageView = headerView.findViewById(R.id.profile_image)
+        loadProfileImage()
 
         val userRole: String? = LoginInfoUtil.getMemberCode(this) // 예: ROLE_PUB / ROLE_SELL / ROLE_PROJ
         applyMenuForRole(userRole)
@@ -113,6 +121,29 @@ open class BaseDrawerActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadProfileImage()
+    }
+
+    private fun loadProfileImage() {
+        val path = getSharedPreferences("ProfileSettings", Context.MODE_PRIVATE)
+            .getString("local_profile_path", null)
+        
+        profileImageView?.let { imageView ->
+            if (path != null) {
+                val file = File(path)
+                if (file.exists()) {
+                    Glide.with(this).load(file).circleCrop().into(imageView)
+                } else {
+                    imageView.setImageResource(R.drawable.ic_profile_placeholder)
+                }
+            } else {
+                imageView.setImageResource(R.drawable.ic_profile_placeholder)
+            }
         }
     }
 
