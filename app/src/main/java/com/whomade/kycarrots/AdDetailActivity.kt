@@ -23,7 +23,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
+
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -133,7 +133,7 @@ class AdDetailActivity : AppCompatActivity() {
             when {
                 bundle.getBoolean(SelectOptionDialogFragment.RESULT_NONE, false) -> {
                     selectedBuyerForCompletion = null
-                    showStatusChangeConfirmDialog("구매확정", "99", rejectReason = null)
+                    showStatusChangeConfirmDialog("구매확정", "99")
                 }
                 bundle.getBoolean(SelectOptionDialogFragment.RESULT_CANCELED, false) -> {
                     restoreSpinnerSelection()
@@ -151,7 +151,7 @@ class AdDetailActivity : AppCompatActivity() {
                             sellerNo   = selected.code5.toLongOrNull() ?: 0L,
                             sellerNm   = ""
                         )
-                        showStatusChangeConfirmDialog("구매확정", "99", rejectReason = null)
+                        showStatusChangeConfirmDialog("구매확정", "99")
                     }
                 }
             }
@@ -238,10 +238,9 @@ class AdDetailActivity : AppCompatActivity() {
 
         if (code == "99") {
             maybePickBuyerThenConfirm(label, code)
-        } else if (currentStatus == "0" && code == "98") {
-            showRejectReasonDialog { reason -> showStatusChangeConfirmDialog(label, code, reason) }
+
         } else {
-            showStatusChangeConfirmDialog(label, code, null)
+            showStatusChangeConfirmDialog(label, code)
         }
     }
 
@@ -255,7 +254,7 @@ class AdDetailActivity : AppCompatActivity() {
                 val buyers = AppServiceProvider.getService().getChatBuyers(pid, branchId)
                 if (buyers.isEmpty()) {
                     selectedBuyerForCompletion = null
-                    showStatusChangeConfirmDialog(label, code, null)
+                    showStatusChangeConfirmDialog(label, code)
                 } else {
                     val options = ArrayList(buyers.map { b ->
                         SelectOption(
@@ -269,14 +268,14 @@ class AdDetailActivity : AppCompatActivity() {
                         .show(supportFragmentManager, "SelectOptionDialog")
                 }
             } catch (e: Exception) {
-                showStatusChangeConfirmDialog(label, code, null)
+                showStatusChangeConfirmDialog(label, code)
             } finally {
                 showLoading(false)
             }
         }
     }
 
-    private fun showStatusChangeConfirmDialog(label: String, code: String, rejectReason: String?) {
+    private fun showStatusChangeConfirmDialog(label: String, code: String) {
         val buyer = if (code == "99") selectedBuyerForCompletion else null
         val message = "상태를 \"$label\"(으)로 변경하시겠습니까?" + (buyer?.let { "\n구매자: ${it.buyerNm}" } ?: "")
 
@@ -287,7 +286,7 @@ class AdDetailActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     val (ok, msg) = createPurchaseIfNeeded(code, buyer)
                     if (!ok && !msg.isNullOrBlank()) Toast.makeText(this@AdDetailActivity, msg, Toast.LENGTH_SHORT).show()
-                    updateProductStatus(code, rejectReason)
+                    updateProductStatus(code)
                 }
             }
             .setNegativeButton("취소") { _, _ -> restoreSpinnerSelection() }
@@ -304,12 +303,12 @@ class AdDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateProductStatus(code: String, rejectReason: String?) {
+    private fun updateProductStatus(code: String) {
         val token = TokenUtil.getToken(this)
         showLoading(true)
         lifecycleScope.launch {
             try {
-                val productItem = ProductItem(productId = productIdStr, saleStatus = code, updusrNo = 0, rejectReason = rejectReason)
+                val productItem = ProductItem(productId = productIdStr, saleStatus = code, updusrNo = 0)
                 val success = AppServiceProvider.getService().updateProductStatus(token, productItem)
                 if (success) {
                     Toast.makeText(this@AdDetailActivity, "상태가 변경되었습니다.", Toast.LENGTH_SHORT).show()
@@ -432,14 +431,7 @@ class AdDetailActivity : AppCompatActivity() {
 
     private fun getStatusName(code: String): String = statusList.find { it.strIdx == code }?.strMsg ?: code
     private fun openImageViewer(url: String) = startActivity(Intent(this, ImageViewerActivity::class.java).putExtra("url", url))
-    private fun showRejectReasonDialog(onReasonEntered: (String) -> Unit) {
-        val et = EditText(this).apply { hint = "반려 사유 입력" }
-        AlertDialog.Builder(this).setTitle("반려 사유").setView(et).setPositiveButton("확인") { _, _ ->
-            val reason = et.text.toString().trim()
-            if (reason.isNotEmpty()) onReasonEntered(reason)
-            else Toast.makeText(this, "사유를 입력하세요", Toast.LENGTH_SHORT).show()
-        }.show()
-    }
+
 
     companion object { const val EXTRA_PRODUCT_ID = "product_id" }
 }
