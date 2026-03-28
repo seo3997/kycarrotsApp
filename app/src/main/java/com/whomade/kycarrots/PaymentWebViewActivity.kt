@@ -54,7 +54,7 @@ class PaymentWebViewActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu?.add(0, 1, 0, "성공확인")?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        //menu?.add(0, 1, 0, "성공확인")?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         return true
     }
 

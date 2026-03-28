@@ -131,15 +131,22 @@ class OrderActivity : AppCompatActivity() {
 
     private fun loadDefaultAddress() {
         val token = TokenUtil.getToken(this)
+        if (token.isEmpty()) return
+        
         lifecycleScope.launch {
             try {
                 val api = RetrofitProvider.retrofit.create(AdApi::class.java)
                 val response = api.getAddressList(token)
                 if (response.isSuccessful) {
                     val list = response.body() ?: return@launch
-                    val defaultAddr = list.find { it["IS_DEFAULT"]?.toString() == "1.0" || it["IS_DEFAULT"]?.toString() == "1" }
-                    defaultAddr?.let {
-                        applyAddress(it)
+                    if (list.isNotEmpty()) {
+                        // Find default or use the most recent one (first in list)
+                        val defaultAddr = list.find { 
+                            val isDefaultValue = it["IS_DEFAULT"]?.toString() ?: it["is_default"]?.toString() ?: ""
+                            isDefaultValue == "1" || isDefaultValue == "1.0" || isDefaultValue == "Y" || isDefaultValue == "true"
+                        } ?: list.first()
+                        
+                        applyAddress(defaultAddr)
                     }
                 }
             } catch (e: Exception) {
@@ -182,11 +189,11 @@ class OrderActivity : AppCompatActivity() {
     }
 
     private fun applyAddress(addr: Map<String, Any>) {
-        binding.etReceiverName.setText(addr["RECIPIENT_NAME"]?.toString() ?: "")
-        binding.etReceiverPhone.setText(addr["RECIPIENT_PHONE"]?.toString() ?: "")
-        binding.etZipCode.setText(addr["ZIP_CODE"]?.toString() ?: "")
-        binding.etAddress1.setText(addr["ADDRESS_MAIN"]?.toString() ?: "")
-        binding.etAddress2.setText(addr["ADDRESS_DETAIL"]?.toString() ?: "")
+        binding.etReceiverName.setText((addr["RECIPIENT_NAME"] ?: addr["recipientName"] ?: "").toString())
+        binding.etReceiverPhone.setText((addr["RECIPIENT_PHONE"] ?: addr["recipientPhone"] ?: "").toString())
+        binding.etZipCode.setText((addr["ZIP_CODE"] ?: addr["zipCode"] ?: "").toString())
+        binding.etAddress1.setText((addr["ADDRESS_MAIN"] ?: addr["addressMain"] ?: "").toString())
+        binding.etAddress2.setText((addr["ADDRESS_DETAIL"] ?: addr["addressDetail"] ?: "").toString())
     }
 
     private fun setupPhoneNumberFormatting() {
