@@ -106,23 +106,27 @@ class OrderMgtDetailActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
-        val token = TokenUtil.getToken(this)
+        lifecycleScope.launch {
+            loadDataSuspend()
+        }
+    }
+
+    private suspend fun loadDataSuspend() {
+        val token = TokenUtil.getToken(this@OrderMgtDetailActivity)
         if (token.isEmpty()) return
 
         showProgressBar()
-        lifecycleScope.launch {
-            try {
-                val result = appService.getOrderMgtDetail(orderId!!, token)
-                if (result != null) {
-                    updateUI(result)
-                } else {
-                    Toast.makeText(this@OrderMgtDetailActivity, "주문 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                hideProgressBar()
+        try {
+            val result = appService.getOrderMgtDetail(orderId!!, token)
+            if (result != null) {
+                updateUI(result)
+            } else {
+                Toast.makeText(this@OrderMgtDetailActivity, "주문 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            hideProgressBar()
         }
     }
 
@@ -283,7 +287,7 @@ class OrderMgtDetailActivity : AppCompatActivity() {
 
                 if (success) {
                     Toast.makeText(this@OrderMgtDetailActivity, "처리가 완료되었습니다.", Toast.LENGTH_SHORT).show()
-                    loadData()
+                    loadDataSuspend()
                 } else {
                     Toast.makeText(this@OrderMgtDetailActivity, "처리에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
