@@ -15,7 +15,7 @@
 -->
 
 <resources>
-    <string name="app_name">Carrot Market KY</string>
+    <string name="app_name">asagong</string>
 
     <string name="cheese_ipsum">Jarlsberg lancashire edam. Dolcelatte hard cheese brie st. agur blue
     cheese caerphilly bavarian bergkase cheese and biscuits mascarpone. Cheeseburger swiss bavarian
@@ -38,9 +38,9 @@
     <string name="str_http_error_no_save">통신오류로 적립이 되지 않습니다.</string>
     <string name="str_msg_send_error">통신오류로 이용이 제한됩니다.\n앱 재실행 후 다시 시도해 주세요.</string>
 
-    <string name="str_dlg_title">Cashcuk</string>
+    <string name="str_dlg_title">asagong</string>
 
-    <string name="str_cashcuk">cashcuk</string>
+    <string name="str_asagong">asagong</string>
 
     <string name="str_search">검색</string>
     <string name="str_ok">확인</string>
@@ -54,7 +54,7 @@
     <string name="str_out_membeship">탈퇴하기</string>
 
     <string name="str_app_finish_msg">\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.</string>
-    <string name="str_app_msg">캐시쿡!!!!\n500캐시 적립받고 시작하기\n1234</string>
+    <string name="str_app_msg">아사공!!!!\n500캐시 적립받고 시작하기\n1234</string>
     <string name="str_clipboard_copy">클립보드에 복사 되었습니다.</string>
 
     <string name="str_list_empty">내역이 존재하지 않습니다.</string>
@@ -147,7 +147,7 @@
     <!-- 추천인 -->
     <string name="str_recommender">추천인(선택사항)</string>
     <string name="str_recommender_title">추천인\nE-mail</string>
-    <string name="str_input_recommender_hint">ex)cashcuk@cashcuk.com</string>
+    <string name="str_input_recommender_hint">ex)asagong@asagong.com</string>
 
     <string name="str_bitrh_day_max_year">잘못입력 된 값입니다.(범위: 1900~올해)</string>
     <string name="str_bitrh_day_err">잘못입력 된 값입니다.</string>
@@ -156,7 +156,7 @@
     <!-- 가입완료 -->
     <string name="str_membership_success">가입완료</string>
     <string name="str_welcome">회원가입이 정상적으로\n완료되었습니다.</string>
-    <string name="str_welcome_sub">로그인 후 캐시쿡만의\n특별한 Cash Save를 즐겨보세요!</string>
+    <string name="str_welcome_sub">로그인 후 아사공만의\n특별한 Cash Save를 즐겨보세요!</string>
     <string name="str_go_login">로그인 하기</string>
 
     <!-- 약관동의 -->
@@ -319,7 +319,7 @@
     <string name="str_setting_faq">FAQ</string>
     <string name="str_setting_service_agreement">서비스 이용약관</string>
     <string name="str_setting_privacy_policy">개인정보 취급방침</string>
-    <string name="str_setting_company_introduction">캐시쿡(회사소개)</string>
+    <string name="str_setting_company_introduction">아사공(회사소개)</string>
     <string name="str_setting_app_version">App 버전정보</string>
     <string name="str_phone_number">휴대폰번호</string>
     <string name="str_mobile_en">Mobile</string>
@@ -328,8 +328,8 @@
     <string name="str_mobile_en3">Mobile3</string>
     <string name="str_setting_logout">Logout</string>
 
-    <string name="str_company_introduction_msg">누구나 바로 광고 보고\n적립 받는 캐시쿡!</string>
-    <string name="str_company_url">www.cashcuk.com</string>
+    <string name="str_company_introduction_msg">누구나 바로 광고 보고\n적립 받는 아사공!</string>
+    <string name="str_company_url">www.asagong.com</string>
     <string name="str_set_nofi_sound_dig">알림음</string>
     <string name="str_set_nofi_dig_always">항상받기</string>
     <string name="str_set_nofi_dig_on_dp">화면 켜짐 시</string>
@@ -367,7 +367,7 @@
     <!-- 회원탈퇴 -->
     <string name="str_dlg_chk_unregister">탈퇴 후 해당계정으로\n재가입 및 사용이 불가능합니다.\n\n정말 탈퇴하시겠습니까?</string>
     <string name="str_chk_unregister">정말 탈퇴하시겠습니까?</string>
-    <string name="str_case_unregister">회원탈퇴 사유를 알려주세요.\n고객님이 작성해주신 설문조사는 더 좋은 캐시쿡을 위해 귀기울여 듣겠습니다.</string>
+    <string name="str_case_unregister">회원탈퇴 사유를 알려주세요.\n고객님이 작성해주신 설문조사는 더 좋은 아사공을 위해 귀기울여 듣겠습니다.</string>
     <string name="str_etc_hint">기타 (100자 이내)</string>
     <string name="str_unregister">탈퇴되었습니다.</string>
     <string name="str_input_cause_unregiste_err">탈퇴 사유를 입력해주세요.</string>
@@ -380,20 +380,20 @@
     <!-- webView 연결 url -->
     <string name="str_url_join_terms1">link/join_terms1.do</string>
     <string name="str_url_join_terms2">link/join_terms2.do</string>
-    <string name="str_url_terms1">http://cashcuk.com/link/terms1</string>
-    <string name="str_url_terms2">http://cashcuk.com/link/terms2</string>
-    <string name="str_url_notice">http://cashcuk.com/link/notice</string>
-    <string name="str_url_faq">http://cashcuk.com/link/faq</string>
+    <string name="str_url_terms1">http://asagong.com/link/terms1</string>
+    <string name="str_url_terms2">http://asagong.com/link/terms2</string>
+    <string name="str_url_notice">http://asagong.com/link/notice</string>
+    <string name="str_url_faq">http://asagong.com/link/faq</string>
 
     <!-- 회사소개 -->
-    <string name="str_company_introduce_main1">캐시쿡은 모바일 광고 장치\n특허 제 10-1233721호로 회원이면 누구나 통화화면을 통해 캐릭터와 메세지를 전송할 수 있는 플랫폼을 구축하였습니다.\n또한, 푸시광고를 통해 원하는 시간, 연령, 지역별 등 맞춤타깃을 설정해 효율적인 광고효과를 낼 수 있습니다.</string>
+    <string name="str_company_introduce_main1">아사공은 모바일 광고 장치\n특허 제 10-1233721호로 회원이면 누구나 통화화면을 통해 캐릭터와 메세지를 전송할 수 있는 플랫폼을 구축하였습니다.\n또한, 푸시광고를 통해 원하는 시간, 연령, 지역별 등 맞춤타깃을 설정해 효율적인 광고효과를 낼 수 있습니다.</string>
     <string name="str_company_introduce_main2">이뿐 아니라 리워드앱 중 가장 높은 리워드로 회원들의 만족도를 높이고 더불어 더 많은 회원들을 확보해 광고주와 회원 간의 소통구가 될 것입니다.</string>
-    <string name="str_company_introduce1">캐시쿡은 회원 스스로가 주인이 되는 국민 어플리케이션으로서, 모바일 광고업계를 선도하는 기업으로 성장 할 것입니다.</string>
-    <string name="str_company_introduce2">2017년을 기점으로 캐시쿡은 중국, 미국, 인도, 아시아, 유럽, 등으로 사업영역을 확장해 글로벌 기업이 될 것입니다.</string>
+    <string name="str_company_introduce1">아사공은 회원 스스로가 주인이 되는 국민 어플리케이션으로서, 모바일 광고업계를 선도하는 기업으로 성장 할 것입니다.</string>
+    <string name="str_company_introduce2">2017년을 기점으로 아사공은 중국, 미국, 인도, 아시아, 유럽, 등으로 사업영역을 확장해 글로벌 기업이 될 것입니다.</string>
     <string name="str_company_introduce3">최고의 O2O 어플리케이션으로서 실시간 맞춤광고라는 혁신적인 플랫폼으로 광고시장의 패러다임을 다시 세워 가치 있는 어플리케이션이 될 것입니다.</string>
 
     <!-- 고객센터 -->
-    <string name="str_customer_service_info1">캐시쿡을 찾아주신 유저분들께 감사드립니다.\n이용 중 불편하신 사항이나 궁금하신 사항을 작성하여 보내주세요.\n문의사항은 24시간 이내에 메일로 발송해 드립니다.\n주말/공휴일의 경우 답변이 늦어질 수 있습니다.</string>
+    <string name="str_customer_service_info1">아사공을 찾아주신 유저분들께 감사드립니다.\n이용 중 불편하신 사항이나 궁금하신 사항을 작성하여 보내주세요.\n문의사항은 24시간 이내에 메일로 발송해 드립니다.\n주말/공휴일의 경우 답변이 늦어질 수 있습니다.</string>
     <!--<string name="str_customer_service_info2">전화 문의의 경우 평일</string>-->
     <string name="str_customer_service_info2">전화문의는 평일 <![CDATA[<b><font color=#ffba00>AM 09:00~PM06:00</b>]]>까지 가능합니다.</string>
     <string name="str_customer_service_info3">더 좋은 서비스를 위해 최선을 다하겠습니다.</string>
@@ -603,7 +603,7 @@
     <string name="str_del_character">캐릭터 삭제</string>
     <string name="str_add_character">캐릭터 추가</string>
     <string name="str_other_category">다른 카테고리</string>
-    <string name="str_preview_character_title">안녕하세요. 캐시쿡입니다.</string>
+    <string name="str_preview_character_title">안녕하세요. 아사공입니다.</string>
     <string name="str_preview_character_send_msg">안녕하세요. 전하는 글입니다.</string>
     <string name="str_empty_character_send_msg">대표이미지와\n전하는글을 설정하세요.</string>
     <string name="str_img_view">이미지 확대 보기</string>
@@ -662,7 +662,7 @@
     <string name="str_regi_request_success">광고주 신청이 완료되었습니다.\n승인 시 광고주 기능 이용이 가능합니다.</string>
 
     <string name="str_setting_info1">이 애플리케이션은 저작권의 보호를 받습니다.</string>
-    <string name="str_setting_info2">캐시쿡은 세계최초 스마트폰 광고 특허\n제 10-1233721호를 보유하고 있습니다.</string>
+    <string name="str_setting_info2">아사공은 세계최초 스마트폰 광고 특허\n제 10-1233721호를 보유하고 있습니다.</string>
 
     <string name="str_no_advertiser">광고주 등록 시 이용가능합니다.\n광고주로 등록 하시겠습니까?</string>
     <string name="str_wait_advertiser">광고주 승인 대기 중입니다.\n광고주 승인 완료 시 이용가능합니다.</string>
@@ -703,11 +703,11 @@
     <string name="str_push_img_ingo">* 등록 광고 유도하는 이미지와 메시지로 만드세요.</string>
     <string name="str_new_url">http://172.30.1.20:8080/</string>
     <!--
-  <string name="str_new_url">http://cashcuk.com/</string>
+  <string name="str_new_url">http://asagong.com/</string>
   <string name="str_new_url">http://112.175.76.139/</string>
   -->
 
-    <string name="str_url">http://cashcuk.com/app/</string>
+    <string name="str_url">http://asagong.com/app/</string>
     <string name="str_token">token</string>
 
     <string name="str_push_chk">push/check</string>
@@ -797,7 +797,7 @@
     <string name="str_push_view">push/view</string>
     <string name="str_push_repository">push/repository</string>
 
-    <string name="str_action_sms_msg">com.cashcuk.intent.SMS_MSG</string>
+    <string name="str_action_sms_msg">com.asagong.intent.SMS_MSG</string>
 
 
     <string name="str_user_page">Login/user_setting.asp</string>
@@ -897,7 +897,7 @@
 
     <string name="str_total_cost">푸시 비용</string>
 
-    <string name="str_reject_empty">승인거부 사유는\n캐시쿡으로 문의바랍니다.\nTel: 1661-6185</string>
+    <string name="str_reject_empty">승인거부 사유는\n아사공으로 문의바랍니다.\nTel: 1661-6185</string>
     <string name="str_max_length">100자이내</string>
     <string name="str_kakao_key">af0a4f593cde8b77d95ec2072e6a22db</string>
     <string name="str_kakao_login">카카오 로그인</string>
