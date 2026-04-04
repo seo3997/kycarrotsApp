@@ -12,6 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import android.graphics.drawable.Drawable
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.whomade.kycarrots.AdDetailActivity
 import com.whomade.kycarrots.R
 import com.whomade.kycarrots.data.model.AdItem
@@ -90,11 +95,49 @@ class AdAdapter(
             onItemClick?.invoke(item, holder.image)
         }
 
+        val requestListener = object : RequestListener<Drawable> {
+            var retryCount = 0
+            val maxRetries = 3
+
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable>,
+                isFirstResource: Boolean
+            ): Boolean {
+                if (retryCount < maxRetries) {
+                    retryCount++
+                    holder.image.postDelayed({
+                        Glide.with(holder.image.context)
+                            .load(item.imageUrl)
+                            .placeholder(R.drawable.ic_placeholder_default)
+                            .error(R.drawable.ic_placeholder_default)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .listener(this)
+                            .into(holder.image)
+                    }, 1000)
+                    return true
+                }
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable,
+                model: Any,
+                target: Target<Drawable>?,
+                dataSource: DataSource,
+                isFirstResource: Boolean
+            ): Boolean {
+                return false
+            }
+        }
+
         Glide.with(holder.image.context)
             .load(item.imageUrl)
             .placeholder(R.drawable.ic_placeholder_default)
             .error(R.drawable.ic_placeholder_default)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .listener(requestListener)
             .into(holder.image)
 
         // 주문 목록(구매 내역)인 경우와 일반 상품 목록인 경우를 구분하여 처리

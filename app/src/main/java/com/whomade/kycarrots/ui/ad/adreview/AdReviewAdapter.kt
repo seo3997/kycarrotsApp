@@ -8,8 +8,13 @@ import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
 import com.whomade.kycarrots.R
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 
 class AdReviewAdapter(
     private var reviews: List<Map<String, Any>>,
@@ -64,7 +69,46 @@ class AdReviewAdapter(
                 clipToOutline = true
                 setOnClickListener { onImageClick(path.trim()) }
             }
-            Glide.with(holder.itemView.context).load(path.trim()).into(imageView)
+            val trimmedPath = path.trim()
+            val requestListener = object : RequestListener<Drawable> {
+                var retryCount = 0
+                val maxRetries = 3
+
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    if (retryCount < maxRetries) {
+                        retryCount++
+                        imageView.postDelayed({
+                            Glide.with(context)
+                                .load(trimmedPath)
+                                .listener(this)
+                                .into(imageView)
+                        }, 1000) // 1초 후 재시도
+                        return true
+                    }
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable,
+                    model: Any,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
+            }
+
+            Glide.with(context)
+                .load(trimmedPath)
+                .placeholder(R.drawable.bg_rounded_image)
+                .listener(requestListener)
+                .into(imageView)
             holder.llReviewImages.addView(imageView)
         }
     } else {

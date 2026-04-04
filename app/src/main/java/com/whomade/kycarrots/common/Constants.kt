@@ -7,20 +7,20 @@ object Constants {
     }
 
     //여기서 서버 선택만 바꾸면 전체가 따라감
-    private val currentServer = ServerType.DEV
+    private val currentServer = ServerType.PROD
 
     val BASE_URL: String
         get() = when (currentServer) {
             ServerType.LOCAL  -> "http://10.69.122.25:9000/"
             ServerType.DEV -> "http://www.kycarrots.com:9000/"
-            ServerType.PROD -> "http://52.231.229.156:9000/"
+            ServerType.PROD -> "http://www.asagong.com/"
         }
 
     val BASE_CHAT_URL: String
         get() = when (currentServer) {
             ServerType.LOCAL  -> "ws://10.69.122.25:9000/chat-ws?userId="
             ServerType.DEV -> "ws://www.kycarrots.com:9000/chat-ws?userId="
-            ServerType.PROD -> "ws://52.231.229.156:9000/chat-ws?userId="
+            ServerType.PROD -> "ws://www.asagong.com/chat-ws?userId="
         }
 
 

@@ -205,11 +205,25 @@ class AdDetailActivity : AppCompatActivity() {
                 .load(mainImageUrl)
                 .apply(RequestOptions.centerCropTransform().placeholder(R.color.colorRPrimary))
                 .listener(object : RequestListener<Drawable> {
+                    var retryCount = 0
+                    val maxRetries = 3
+
                     override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
                         startPostponedEnterTransition()
                         return false
                     }
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+                        if (retryCount < maxRetries) {
+                            retryCount++
+                            imageView.postDelayed({
+                                Glide.with(this@AdDetailActivity)
+                                    .load(mainImageUrl)
+                                    .apply(RequestOptions.centerCropTransform().placeholder(R.color.colorRPrimary))
+                                    .listener(this)
+                                    .into(imageView)
+                            }, 1000)
+                            return true
+                        }
                         startPostponedEnterTransition()
                         return false
                     }

@@ -26,6 +26,9 @@ public class ImageLoader {
                 .load(imageUrl)
                 .centerCrop()
                 .listener(new RequestListener<Drawable>() {
+                    private int retryCount = 0;
+                    private final int maxRetries = 3;
+
                     @Override
                     public boolean onLoadFailed(
                             @Nullable GlideException e,
@@ -33,10 +36,21 @@ public class ImageLoader {
                             Target<Drawable> target,
                             boolean isFirstResource
                     ) {
+                        if (retryCount < maxRetries) {
+                            retryCount++;
+                            imageView.postDelayed(() ->
+                                Glide.with(context)
+                                    .load(imageUrl)
+                                    .centerCrop()
+                                    .listener(this)
+                                    .into(imageView)
+                            , 1000);
+                            return true;
+                        }
                         if (progressBar != null) {
                             progressBar.setVisibility(View.GONE);
                         }
-                        return false; // Glide가 오류를 처리하도록 false 반환
+                        return false;
                     }
 
                     @Override
@@ -50,7 +64,7 @@ public class ImageLoader {
                         if (progressBar != null) {
                             progressBar.setVisibility(View.GONE);
                         }
-                        return false; // Glide가 리소스를 처리하도록 false 반환
+                        return false;
                     }
                 })
                 .into(imageView);
