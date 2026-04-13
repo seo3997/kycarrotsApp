@@ -23,7 +23,7 @@
         android:layout_centerInParent="true"
         android:paddingBottom="@dimen/item_padding"
         android:paddingTop="@dimen/item_padding"
-        android:src="@drawable/title_logo" />
+        android:src="@drawable/title_asagong" />
 
     <ImageButton
         android:id="@+id/ib_home"

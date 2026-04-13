@@ -19,7 +19,7 @@
             android:layout_gravity="center"
             android:paddingLeft="45dp"
             android:paddingRight="45dp"
-            android:src="@drawable/logo3" />
+            android:src="@drawable/logo4" />
 
         <EditText
             android:id="@+id/et_email"
