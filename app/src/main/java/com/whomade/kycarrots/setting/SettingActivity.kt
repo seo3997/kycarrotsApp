@@ -7,8 +7,6 @@ import android.widget.TextView
 import android.widget.Switch
 import android.widget.EditText
 import android.widget.Toast
-import android.widget.ArrayAdapter
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -31,8 +29,6 @@ class SettingActivity : BaseDrawerActivity() {
     private lateinit var profileImageView: ImageView
     private lateinit var etUserNm: EditText
     private lateinit var etUserTelno: EditText
-    private lateinit var spinnerCity: MaterialAutoCompleteTextView
-    private lateinit var spinnerTown: MaterialAutoCompleteTextView
     
     private var selectedCityValue = ""
     private var selectedTownValue = ""
@@ -84,10 +80,6 @@ class SettingActivity : BaseDrawerActivity() {
         // 사용자 정보 수정 UI 초기화
         etUserNm = findViewById(R.id.et_user_nm)
         etUserTelno = findViewById(R.id.et_user_telno)
-        spinnerCity = findViewById(R.id.spinner_city)
-        spinnerTown = findViewById(R.id.spinner_town)
-        
-        loadCityList()
         
         findViewById<Button>(R.id.btn_save_info).setOnClickListener {
             saveUserInfo()
@@ -140,58 +132,7 @@ class SettingActivity : BaseDrawerActivity() {
         }
     }
 
-    private fun loadCityList() {
-        val appService = AppServiceProvider.getService()
-        lifecycleScope.launch {
-            try {
-                val codeList = appService.getCodeList("R010070")
-                val cityNames = codeList.map { it.strMsg }
-                val adapter = ArrayAdapter(this@SettingActivity, android.R.layout.simple_list_item_1, cityNames)
-                spinnerCity.setAdapter(adapter)
 
-                spinnerCity.setOnItemClickListener { _, _, position, _ ->
-                    selectedCityValue = codeList[position].strIdx
-                    resetTownSelection()
-                    loadTownList()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private fun resetTownSelection() {
-        selectedTownValue = ""
-        spinnerTown.setText("", false)
-        spinnerTown.isEnabled = false
-    }
-
-    private fun loadTownList(preselectedTown: String? = null) {
-        val appService = AppServiceProvider.getService()
-        lifecycleScope.launch {
-            try {
-                val codeList = appService.getSCodeList("R010070", selectedCityValue)
-                val townNames = codeList.map { it.strMsg }
-                val adapter = ArrayAdapter(this@SettingActivity, android.R.layout.simple_list_item_1, townNames)
-                spinnerTown.setAdapter(adapter)
-                spinnerTown.isEnabled = true
-
-                spinnerTown.setOnItemClickListener { _, _, position, _ ->
-                    selectedTownValue = codeList[position].strIdx
-                }
-
-                if (preselectedTown != null) {
-                    val index = codeList.indexOfFirst { it.strIdx == preselectedTown }
-                    if (index != -1) {
-                        spinnerTown.setText(codeList[index].strMsg, false)
-                        selectedTownValue = preselectedTown
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
 
     private fun saveUserInfo() {
         val prefs = getSharedPreferences("TokenInfo", Context.MODE_PRIVATE)
@@ -200,7 +141,7 @@ class SettingActivity : BaseDrawerActivity() {
         val name = etUserNm.text.toString().trim()
         val telno = etUserTelno.text.toString().trim()
         
-        if (name.isEmpty() || telno.isEmpty() || selectedCityValue.isEmpty() || selectedTownValue.isEmpty()) {
+        if (name.isEmpty() || telno.isEmpty()) {
             Toast.makeText(this, "모든 정보를 입력해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -276,8 +217,7 @@ class SettingActivity : BaseDrawerActivity() {
                     // 지역 정보 설정
                     if (!it.areaCode.isNullOrEmpty()) {
                         selectedCityValue = it.areaCode
-                        spinnerCity.setText(it.areaCodeNm ?: "", false)
-                        loadTownList(it.areaSeCodeS)
+                        selectedTownValue = it.areaSeCodeS ?: ""
                     }
                 }
             } catch (e: Exception) {

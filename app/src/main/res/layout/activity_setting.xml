@@ -109,54 +109,7 @@
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="주소 (지역 선택)"
-                android:textSize="13sp"
-                android:paddingStart="4dp"
-                android:layout_marginBottom="4dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="12dp">
-                
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp">
-                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/spinner_city"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp"
-                        android:textSize="14sp"
-                        android:inputType="none"
-                        android:hint="시/도" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="4dp">
-                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/spinner_town"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp"
-                        android:textSize="14sp"
-                        android:inputType="none"
-                        android:hint="구/군" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
 
             <Button
                 android:id="@+id/btn_save_info"
