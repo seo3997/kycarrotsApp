@@ -34,6 +34,7 @@ class AdReviewWriteActivity : AppCompatActivity() {
     private lateinit var btnSubmit: Button
     private lateinit var ivAddImage: ImageView
     private lateinit var llImageList: LinearLayout
+    private lateinit var loadingLayout: View
     
     private var productId: Long = 0
     private var reviewId: String? = null
@@ -80,6 +81,7 @@ class AdReviewWriteActivity : AppCompatActivity() {
         btnSubmit = findViewById(R.id.btn_submit)
         ivAddImage = findViewById(R.id.iv_add_image)
         llImageList = findViewById(R.id.ll_image_list)
+        loadingLayout = findViewById(R.id.loading_layout)
 
         if (reviewId != null) {
             ratingBar.rating = intent.getFloatExtra("rating", 0f)
@@ -150,6 +152,7 @@ class AdReviewWriteActivity : AppCompatActivity() {
         val branchId = LoginInfoUtil.getBranchId(this)
         val selectedFiles = imageList.mapNotNull { it.file }
 
+        loadingLayout.visibility = View.VISIBLE
         lifecycleScope.launch {
             try {
                 val success = if (reviewId != null) {
@@ -182,6 +185,8 @@ class AdReviewWriteActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@AdReviewWriteActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
+            } finally {
+                loadingLayout.visibility = View.GONE
             }
         }
     }

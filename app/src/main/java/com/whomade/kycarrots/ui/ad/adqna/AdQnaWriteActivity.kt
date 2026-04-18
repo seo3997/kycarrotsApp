@@ -16,6 +16,7 @@ import com.whomade.kycarrots.domain.service.AppServiceProvider
 import com.whomade.kycarrots.ui.common.LoginInfoUtil
 import com.whomade.kycarrots.ui.common.TokenUtil
 import kotlinx.coroutines.launch
+import android.view.View
 
 class AdQnaWriteActivity : AppCompatActivity() {
 
@@ -23,6 +24,7 @@ class AdQnaWriteActivity : AppCompatActivity() {
     private lateinit var etContents: TextInputEditText
     private lateinit var cbSecret: CheckBox
     private lateinit var btnSubmit: Button
+    private lateinit var loadingLayout: View
     
     private var productId: Long = 0
     private var qnaId: String? = null
@@ -49,6 +51,7 @@ class AdQnaWriteActivity : AppCompatActivity() {
         etContents = findViewById(R.id.et_contents)
         cbSecret = findViewById(R.id.cb_secret)
         btnSubmit = findViewById(R.id.btn_submit)
+        loadingLayout = findViewById(R.id.loading_layout)
 
         if (qnaId != null) {
             etTitle.setText(intent.getStringExtra("title"))
@@ -75,6 +78,7 @@ class AdQnaWriteActivity : AppCompatActivity() {
         val userId = LoginInfoUtil.getUserId(this)
         val branchId = LoginInfoUtil.getBranchId(this)
 
+        loadingLayout.visibility = View.VISIBLE
         lifecycleScope.launch {
             try {
                 val success = if (qnaId != null) {
@@ -107,6 +111,8 @@ class AdQnaWriteActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@AdQnaWriteActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
+            } finally {
+                loadingLayout.visibility = View.GONE
             }
         }
     }
