@@ -19,35 +19,50 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:gravity="top"
             android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/product_title"
-                android:layout_width="100dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="상품 상세"
-                android:textAppearance="?attr/textAppearanceHeadline6" />
+                android:layout_weight="1"
+                android:text=""
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceHeadline5" />
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/spinner_product_status"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="wrap_content"
+                android:minHeight="32dp"
                 android:spinnerMode="dropdown"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:paddingEnd="32dp"
-                android:paddingStart="8dp"
+                android:paddingEnd="28dp"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
                 android:visibility="gone"
-                android:background="@drawable/spinner_warning_background"/>
+                android:overlapAnchor="false"
+                android:background="@drawable/bg_spinner_status_badge"/>
+
             <TextView
                 android:id="@+id/text_product_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="상태 표시"
-                android:textSize="16sp"
-                android:textColor="#444444"
-                android:padding="8dp"
+                android:text=""
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#2196F3"
+                android:layout_marginStart="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:background="@drawable/bg_product_status_text_badge"
                 android:visibility="gone" />
         </LinearLayout>
 

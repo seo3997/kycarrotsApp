@@ -208,7 +208,7 @@ class ProductDescriptionFragment : Fragment() {
                 try {
                     val apiList = AppServiceProvider.getService().getCodeList("R010630")
                     val label = apiList.find { it.strIdx == currentStatus }?.strMsg ?: "알 수 없음"
-                    statusTextView.text = "현재 상태: $label"
+                    statusTextView.text = label
                 } catch (_: Exception) {}
             }
             return
