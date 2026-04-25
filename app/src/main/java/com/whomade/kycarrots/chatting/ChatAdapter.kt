@@ -7,8 +7,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.whomade.kycarrots.R
 
-class ChatAdapter(private val messages: List<ChatMessage>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(
+    private val messages: List<ChatMessage>,
+    private val myMemberCode: String
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val VIEW_TYPE_ME = 1
@@ -16,7 +18,9 @@ class ChatAdapter(private val messages: List<ChatMessage>) :
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (messages[position].isMe) VIEW_TYPE_ME else VIEW_TYPE_OTHER
+        val msg = messages[position]
+        // 내 권한(그룹)과 발신자의 그룹이 같으면 오른쪽 정렬
+        return if (msg.senderGroup == myMemberCode) VIEW_TYPE_ME else VIEW_TYPE_OTHER
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

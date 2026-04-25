@@ -35,9 +35,10 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var buyerId: String
     private lateinit var branchId: String
     private lateinit var productId: String
-    private lateinit var currentUserId: String
     private lateinit var senderId: String
     private lateinit var otherId : String
+    private lateinit var currentMemberCode: String
+    private lateinit var currentUserId: String
     private var isBuyer: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +67,10 @@ class ChatActivity : AppCompatActivity() {
         messageEditText = findViewById(R.id.messageEditText)
         sendButton = findViewById(R.id.sendButton)
 
-        chatAdapter = ChatAdapter(chatMessages)
+        val prefs = getSharedPreferences("SaveLoginInfo", MODE_PRIVATE)
+        currentMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
+
+        chatAdapter = ChatAdapter(chatMessages, currentMemberCode)
         chatRecyclerView.layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
         }
@@ -129,9 +133,10 @@ class ChatActivity : AppCompatActivity() {
                 roomId = roomId,
                 type = "text",
                 time = currentTime,
+                senderGroup = currentMemberCode,
                 isMe = true
             )
-
+            
             chatMessages.add(message)
             chatAdapter.notifyItemInserted(chatMessages.size - 1)
             chatRecyclerView.scrollToPosition(chatMessages.size - 1)
@@ -165,10 +170,11 @@ class ChatActivity : AppCompatActivity() {
                         ChatMessage(
                             roomId = it.roomId,
                             senderId = it.senderId,
+                            senderGroup = it.senderGroup,
                             message = it.message,
                             type = "text",
                             time = it.time,
-                            isMe = it.senderId == currentUserId
+                            isMe = it.senderGroup == currentMemberCode
                         )
                     }
                     chatMessages.clear()
