@@ -235,13 +235,27 @@ class IntroActivity : AppCompatActivity() {
 
     private fun nextPage(isLogin: Boolean, memberCode: String) {
 
-        // ROLE_PUB 푸시 토픽 구독
+        // 1. 권한별 토픽 구독 (ROLE_PUB, ROLE_SELL 등)
         FirebaseMessaging.getInstance().subscribeToTopic(memberCode)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("FCM", memberCode+" 토픽 구독 성공")
+                    Log.d("FCM", memberCode + " 토픽 구독 성공")
                 } else {
-                    Log.e("FCM", memberCode+" 토픽 구독 실패", task.exception)
+                    Log.e("FCM", memberCode + " 토픽 구독 실패", task.exception)
+                }
+            }
+
+        // 2. 지점별 토픽 구독 (지점 권한 ROLE_PROJ 인 경우)
+        val branchId = LoginInfoUtil.getBranchId(this)
+        if (memberCode == Constants.ROLE_PROJ) {
+            val branchTopic = "BRANCH_" + branchId + "_ROLE_PROJ"
+            FirebaseMessaging.getInstance().subscribeToTopic(branchTopic)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("FCM", branchTopic + " 지점 토픽 구독 성공")
+                    } else {
+                        Log.e("FCM", branchTopic + " 지점 토픽 구독 실패", task.exception)
+                    }
                 }
         }
 
