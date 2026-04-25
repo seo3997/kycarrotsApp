@@ -276,6 +276,10 @@ class RemoteRepository(
         return adApi.getBranchList()
     }
 
+    suspend fun fetchBranchInfo(branchId: Long): Response<BranchInfoVo> {
+        return adApi.getBranchInfo(branchId)
+    }
+
     suspend fun fetchDashboardMgtData(token: String): Response<Map<String, Any>> {
         return adApi.getDashboardData(token)
     }

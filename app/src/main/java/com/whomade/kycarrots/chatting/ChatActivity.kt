@@ -49,7 +49,6 @@ class ChatActivity : AppCompatActivity() {
         initializeChat()
         setupSendButton()
         subscribeToMessages()
-        setupToolbar()
     }
 
     private fun setupToolbar() {
@@ -87,7 +86,10 @@ class ChatActivity : AppCompatActivity() {
         val sUID = prefs.getString("LogIn_ID", "") ?: ""
         val sMemberCode = prefs.getString("LogIn_MEMBERCODE", "") ?: ""
 
-        otherId = resolveOtherId(sUID, buyerId, branchId)
+        lifecycleScope.launch {
+            otherId = resolveOtherId(sUID, buyerId, branchId)
+            setupToolbar()
+        }
 
         currentUserId = sUID
         isBuyer = sMemberCode == Constants.ROLE_PUB
@@ -98,27 +100,31 @@ class ChatActivity : AppCompatActivity() {
         loadChatMessages(roomId)
     }
 
-    private fun resolveOtherId(myId: String, buyerId: String, branchId: String): String {
-        var memberCode=LoginInfoUtil.getMemberCode(this)
-        var branchName=LoginInfoUtil.getBranchName(this)
-        var sRetrun =""
-        if(memberCode==Constants.ROLE_PUB) {
-            sRetrun = branchName
-        } else if(memberCode==Constants.ROLE_PROJ){
-            if(branchId.equals("2")) sRetrun = "본사"
-            else sRetrun = buyerId
-        } else if(memberCode==Constants.ROLE_SELL){
-            sRetrun = buyerId+" 지점"
+    private suspend fun resolveOtherId(myId: String, buyerId: String, branchId: String): String {
+        val intentName = intent.getStringExtra("otherUserNm")
+        if (!intentName.isNullOrEmpty()) return intentName
+
+        val memberCode = LoginInfoUtil.getMemberCode(this)
+        val branchNameFromPrefs = LoginInfoUtil.getBranchName(this)
+        var sReturn = ""
+        
+        when (memberCode) {
+            Constants.ROLE_PUB -> {
+                sReturn = branchNameFromPrefs
+            }
+            Constants.ROLE_PROJ -> {
+                sReturn = if (branchId == "2") "본사" else buyerId
+            }
+            Constants.ROLE_SELL -> {
+                try {
+                    val branchInfo = AppServiceProvider.getService().getBranchInfo(buyerId.toLong())
+                    sReturn = branchInfo?.branchName ?: (buyerId + " 지점")
+                } catch (e: Exception) {
+                    sReturn = buyerId + " 지점"
+                }
+            }
         }
-        return sRetrun
-        /*
-        return when (myId) {
-            buyerId -> branchId
-            branchId -> buyerId
-            else -> if (myId.isNotBlank()) listOf(buyerId, branchId).firstOrNull { it != myId } ?: branchId
-            else branchId
-        }
-        */
+        return if (sReturn.isEmpty()) buyerId else sReturn
     }
 
     private fun setupSendButton() {
@@ -126,12 +132,10 @@ class ChatActivity : AppCompatActivity() {
             val text = messageEditText.text.toString().trim()
             if (text.isEmpty()) return@setOnClickListener
 
-            // 사용자 지정 규칙 반영
             val receiveGroup = when (currentMemberCode) {
                 Constants.ROLE_PUB -> Constants.ROLE_PROJ
                 Constants.ROLE_SELL -> Constants.ROLE_PROJ
                 Constants.ROLE_PROJ -> {
-                    // 상대방이 본사('2')면 ROLE_SELL, 아니면 ROLE_PUB
                     if (branchId == "2") Constants.ROLE_SELL else Constants.ROLE_PUB
                 }
                 else -> Constants.ROLE_PROJ
@@ -170,7 +174,6 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         }
-        // 명시적 진입 신호 전송
         StompManager.sendEnterRoom(roomId, currentUserId)
     }
 

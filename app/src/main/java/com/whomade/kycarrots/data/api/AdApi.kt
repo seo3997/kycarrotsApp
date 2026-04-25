@@ -269,6 +269,9 @@ interface AdApi {
     @GET("/api/branch/list")
     suspend fun getBranchList(): Response<List<BranchInfoVo>>
 
+    @GET("/api/branch/info")
+    suspend fun getBranchInfo(@Query("branchId") branchId: Long): Response<BranchInfoVo>
+
     @GET("api/dashboard")
     suspend fun getDashboardData(
         @Query("token") token: String

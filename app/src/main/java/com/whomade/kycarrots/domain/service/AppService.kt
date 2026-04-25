@@ -437,6 +437,16 @@ class AppService(
         }
     }
 
+    suspend fun getBranchInfo(branchId: Long): BranchInfoVo? {
+        return try {
+            val resp = repository.fetchBranchInfo(branchId)
+            if (resp.isSuccessful) resp.body() else null
+        } catch (e: Exception) {
+            Log.e("AppService", "getBranchInfo error", e)
+            null
+        }
+    }
+
     suspend fun getDashboardMgtData(token: String): Map<String, Any>? {
         return try {
             val resp = repository.fetchDashboardMgtData(token)
