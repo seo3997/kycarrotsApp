@@ -126,6 +126,17 @@ class ChatActivity : AppCompatActivity() {
             val text = messageEditText.text.toString().trim()
             if (text.isEmpty()) return@setOnClickListener
 
+            // 사용자 지정 규칙 반영
+            val receiveGroup = when (currentMemberCode) {
+                Constants.ROLE_PUB -> Constants.ROLE_PROJ
+                Constants.ROLE_SELL -> Constants.ROLE_PROJ
+                Constants.ROLE_PROJ -> {
+                    // 상대방이 본사('2')면 ROLE_SELL, 아니면 ROLE_PUB
+                    if (branchId == "2") Constants.ROLE_SELL else Constants.ROLE_PUB
+                }
+                else -> Constants.ROLE_PROJ
+            }
+
             val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
             val message = ChatMessage(
                 senderId = senderId,
@@ -134,6 +145,7 @@ class ChatActivity : AppCompatActivity() {
                 type = "text",
                 time = currentTime,
                 senderGroup = currentMemberCode,
+                receiveGroup = receiveGroup,
                 isMe = true
             )
             

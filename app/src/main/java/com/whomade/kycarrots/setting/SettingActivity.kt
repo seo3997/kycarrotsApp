@@ -47,6 +47,23 @@ class SettingActivity : BaseDrawerActivity() {
         val btnLogout = findViewById<Button>(R.id.btn_logout)
 
         btnLogout.setOnClickListener {
+            // FCM 토픽 구독 해제
+            val memberCode = com.whomade.kycarrots.ui.common.LoginInfoUtil.getMemberCode(this)
+            val branchId = com.whomade.kycarrots.ui.common.LoginInfoUtil.getBranchId(this)
+            
+            // 1. 기본 그룹 토픽 해제 (ROLE_SELL 등)
+            if (memberCode.isNotEmpty()) {
+                android.util.Log.d("FCM_UNSUB", "Unsubscribing from role topic: $memberCode")
+                com.google.firebase.messaging.FirebaseMessaging.getInstance().unsubscribeFromTopic(memberCode)
+            }
+            
+            // 2. 지점별 토픽 해제
+            if (branchId.isNotEmpty()) {
+                val branchTopic = "BRANCH_${branchId}_${com.whomade.kycarrots.common.Constants.ROLE_PROJ}"
+                android.util.Log.d("FCM_UNSUB", "Unsubscribing from branch topic: $branchTopic")
+                com.google.firebase.messaging.FirebaseMessaging.getInstance().unsubscribeFromTopic(branchTopic)
+            }
+
             // 로그아웃 처리
             AuthManager.logout(this)
         }
