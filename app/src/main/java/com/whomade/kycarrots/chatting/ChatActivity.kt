@@ -158,6 +158,8 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         }
+        // 명시적 진입 신호 전송
+        StompManager.sendEnterRoom(roomId, currentUserId)
     }
 
     private fun loadChatMessages(roomId: String) {
@@ -204,6 +206,8 @@ class ChatActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         topicPath?.let { StompManager.unsubscribe(it) }
+        // 명시적 퇴장 신호 전송
+        StompManager.sendExitRoom(roomId, currentUserId)
         StompManager.disconnect() // 방을(화면을) 완전히 나갈 때 소켓 종료
     }
 }

@@ -71,6 +71,36 @@ object StompManager {
                 { e -> Log.e("STOMP", "❌ 전송 실패 (destination: $destination)", e) })
     }
 
+    fun sendEnterRoom(roomId: String, senderId: String) {
+        val message = mapOf("roomId" to roomId, "senderId" to senderId)
+        val json = Gson().toJson(message)
+        val destination = "/app/chat.enter.$roomId"
+        Log.d("STOMP", "방 진입 신호 전송: $destination")
+        stompClient?.send(destination, json)
+            ?.subscribeOn(Schedulers.io())
+            ?.subscribe({ Log.d("STOMP", "✅ 방 진입 신호 전송 성공") }, {})
+    }
+
+    fun sendExitRoom(roomId: String, senderId: String) {
+        val message = mapOf("roomId" to roomId, "senderId" to senderId)
+        val json = Gson().toJson(message)
+        val destination = "/app/chat.exit.$roomId"
+        Log.d("STOMP", "방 퇴장 신호 전송: $destination")
+        stompClient?.send(destination, json)
+            ?.subscribeOn(Schedulers.io())
+            ?.subscribe({ Log.d("STOMP", "✅ 방 퇴장 신호 전송 성공") }, {})
+    }
+
+    fun sendExitMe(senderId: String) {
+        val message = mapOf("senderId" to senderId)
+        val json = Gson().toJson(message)
+        val destination = "/app/chat.me.exit"
+        Log.d("STOMP", "나만 오프라인 신호 전송: $destination")
+        stompClient?.send(destination, json)
+            ?.subscribeOn(Schedulers.io())
+            ?.subscribe({ Log.d("STOMP", "✅ 나만 오프라인 신호 전송 성공") }, {})
+    }
+
     /** 구독: Disposable을 저장해두고, 나중에 topicPath로 해제 가능 */
     fun subscribe(topicPath: String, onMessageReceived: (ChatMessage) -> Unit) {
         // 중복 구독 방지
