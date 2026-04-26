@@ -119,7 +119,7 @@ class DashboardActivity : BaseDrawerActivity() {
                 Constants.ROLE_SELL -> {
                     setStat(1, "미처리 주문", stats["unprocessedOrders"], "#1E293B")
                     setStat(2, "지점 미입금액", stats["branchPendingAmount"], "#EF4444", isCurrency = true)
-                    setStat(3, "출고 대기", stats["shipmentPending"], "#10B981")
+                    setStat(3, "오늘의 수금액", stats["todayCollectionAmount"], "#10B981", isCurrency = true)
                     setStat(4, "배송 중", stats["inTransit"], "#3B82F6")
                 }
                 Constants.ROLE_PROJ -> {
