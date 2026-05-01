@@ -33,11 +33,13 @@ class TermsAgreeActivity : Activity(), View.OnClickListener {
     private val NOT_TERMS_AGREE = 0
     private val MOBILE_AUTHENTICATION = 1
     private val REQUEST_OK = 999
+    private var fromOnboarding: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_terms_agree)
         CheckLoginService.mActivityList.add(this)
+        fromOnboarding = intent.getBooleanExtra("fromOnboarding", false)
 
         val layoutBG = findViewById<FrameLayout>(R.id.fl_bg)
         layoutBG.background = BitmapDrawable(
@@ -231,10 +233,16 @@ class TermsAgreeActivity : Activity(), View.OnClickListener {
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivityForResult(i, REQUEST_OK)
                  */
-                val intent = Intent(this, MembershipActivity::class.java)
-                intent.putExtra("ReturnCd", 1)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
+                if (fromOnboarding) {
+                    setResult(RESULT_OK)
+                    finish()
+                } else {
+                    val intent = Intent(this, MembershipActivity::class.java)
+                    intent.putExtra("ReturnCd", 1)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(intent)
+                    finish()
+                }
             }
         }
 

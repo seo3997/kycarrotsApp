@@ -1,5 +1,7 @@
 package com.whomade.kycarrots.loginout
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -39,6 +41,7 @@ class OnboardingActivity : AppCompatActivity() {
     private var isEmailChecked = false
     private var branchList: List<com.whomade.kycarrots.data.model.BranchInfoVo> = emptyList()
     private var selectedBranchId: String? = null
+    private val REQUEST_TERMS = 1001
 
     private val provider by lazy { intent.getStringExtra("provider") ?: "KAKAO" }
     private val providerUserId by lazy { intent.getStringExtra("providerUserId").orEmpty() }
@@ -178,13 +181,24 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun openFullOnboarding() {
+        startActivityForResult(Intent(this, com.whomade.kycarrots.membership.TermsAgreeActivity::class.java).apply {
+            putExtra("fromOnboarding", true)
+        }, REQUEST_TERMS)
+    }
+
+    private fun showOnboardingForm() {
         tvEmailStatus.visibility = View.VISIBLE
         tvEmailStatus.text = "신규 가입입니다. 추가 정보를 입력해 주세요."
         if (groupMore.visibility != View.VISIBLE) {
             groupMore.visibility = View.VISIBLE
         }
-        // 여기서부터는 너가 만들어둔 인증코드 발송/검증 + postOnboarding 흐름 그대로 진행
-        // (postOnboarding 성공 시 서버가 TB_USER 생성 & TB_SOCIAL_ACCOUNT insert까지 처리하도록 해두면 베스트)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_TERMS && resultCode == RESULT_OK) {
+            showOnboardingForm()
+        }
     }
 
     private fun registerUser() {
