@@ -398,5 +398,10 @@ interface AdApi {
         @Field("answerContents") answerContents: String,
         @Field("token") token: String
     ): Response<Map<String, Any>>
+    @GET("api/appversion/check")
+    suspend fun checkVersion(
+        @Query("osType") osType: String,
+        @Query("appVersion") appVersion: String
+    ): Response<com.whomade.kycarrots.data.model.AppVersionResponse>
 }
 

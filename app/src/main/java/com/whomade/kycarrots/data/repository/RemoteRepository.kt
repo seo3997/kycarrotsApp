@@ -381,5 +381,9 @@ class RemoteRepository(
     suspend fun answerQna(qnaId: String, answerContents: String, token: String): Response<Map<String, Any>> {
         return adApi.answerQna(qnaId, answerContents, token)
     }
+
+    suspend fun checkVersion(osType: String, appVersion: String): Response<com.whomade.kycarrots.data.model.AppVersionResponse> {
+        return adApi.checkVersion(osType, appVersion)
+    }
 }
 

@@ -162,16 +162,8 @@ class IntroActivity : AppCompatActivity() {
             }, REQUEST_ERR)
             return
         } else {
-            val prefs = getSharedPreferences("SaveAppVersion", MODE_PRIVATE)
-            val savedVersion = prefs.getString("AppVersion", "")
             mThisAppVersion = getAppVersion()
-
-            if (savedVersion.isNullOrEmpty() || savedVersion != mThisAppVersion) {
-                saveAppVersion(mThisAppVersion)
-                isVersionMatch = false
-            }
-
-            runAutoLoginCheck()
+            chkAppVersion()
         }
 
     }
@@ -371,24 +363,49 @@ class IntroActivity : AppCompatActivity() {
         }
     }
 
-    private fun showUpdateAlert() {
-        mHandler.postDelayed({
-            ad.setMessage(R.string.str_update_message)
-                .setCancelable(false)
-                .setPositiveButton(R.string.str_yes) { _, _ ->
-                    startActivity(Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse("market://details?id=$packageName")
-                    })
-                    finish()
+    private fun chkAppVersion() {
+        val appService = AppServiceProvider.getService()
+        lifecycleScope.launch {
+            try {
+                val response = appService.checkVersion("ANDROID", mThisAppVersion)
+                if (response != null && response.success) {
+                    when (response.updateType) {
+                        "FORCE" -> showUpdatePopup(response, true)
+                        "OPTIONAL" -> showUpdatePopup(response, false)
+                        else -> runAutoLoginCheck()
+                    }
+                } else {
+                    runAutoLoginCheck()
                 }
-                .setNegativeButton(R.string.str_no) { _, _ ->
-                    finish()
-                }
-            ad.create().apply {
-                setTitle(R.string.str_update_title)
-                show()
+            } catch (e: Exception) {
+                runAutoLoginCheck()
             }
-        }, 1000)
+        }
+    }
+
+    private fun showUpdatePopup(response: com.whomade.kycarrots.data.model.AppVersionResponse, isForce: Boolean) {
+        val message = response.updateMsg ?: getString(R.string.str_update_message)
+        val storeUrl = response.storeUrl ?: "market://details?id=$packageName"
+
+        val builder = AlertDialog.Builder(this)
+            .setMessage(message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.str_yes) { _, _ ->
+                val uri = if (storeUrl.startsWith("http")) Uri.parse(storeUrl) else Uri.parse("market://details?id=$packageName")
+                startActivity(Intent(Intent.ACTION_VIEW, uri))
+                finish()
+            }
+
+        if (!isForce) {
+            builder.setNegativeButton(R.string.str_no) { _, _ ->
+                runAutoLoginCheck()
+            }
+        }
+
+        builder.create().apply {
+            setTitle(R.string.str_update_title)
+            show()
+        }
     }
 
 

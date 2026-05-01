@@ -636,5 +636,14 @@ class AppService(
             false
         }
     }
+
+    suspend fun checkVersion(osType: String, appVersion: String): com.whomade.kycarrots.data.model.AppVersionResponse? {
+        return try {
+            val resp = repository.checkVersion(osType, appVersion)
+            if (resp.isSuccessful) resp.body() else null
+        } catch (e: Exception) {
+            null
+        }
+    }
 }
 
