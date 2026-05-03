@@ -58,9 +58,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:valueFrom="0"
-                android:valueTo="9990000"
+                android:valueTo="200000"
                 app:values="@array/initial_price_range"
-                android:stepSize="5000"
+                android:stepSize="1000"
                 android:paddingVertical="8dp"/>
 
             <LinearLayout
