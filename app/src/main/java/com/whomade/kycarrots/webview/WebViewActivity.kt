@@ -181,9 +181,9 @@ class WebViewActivity : BaseDrawerActivity() {
         // ===== ChromeClient (프로그레스/파일선택/새창) =====
         webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView, newProgress: Int) {
-                binding.progress.visibility = View.VISIBLE
-                binding.progress.setProgressCompat(newProgress, true)
-                if (newProgress >= 100) binding.progress.visibility = View.GONE
+                binding.circularProgress.visibility = View.VISIBLE
+                binding.circularProgress.setProgressCompat(newProgress, true)
+                if (newProgress >= 100) binding.circularProgress.visibility = View.GONE
             }
             override fun onReceivedTitle(view: WebView?, title: String?) {
                 super.onReceivedTitle(view, title)

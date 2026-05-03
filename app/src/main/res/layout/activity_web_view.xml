@@ -25,17 +25,10 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- 2) 콘텐츠 영역 (AppBar와 스크롤 연동) -->
-    <LinearLayout
-        android:orientation="vertical"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progress"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:visibility="gone"/>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe"
@@ -47,6 +40,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </LinearLayout>
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/circularProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:indicatorSize="80dp"
+            app:trackThickness="8dp"
+            app:trackCornerRadius="4dp"
+            android:indeterminate="false"
+            android:max="100"
+            android:visibility="gone"/>
+    </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
