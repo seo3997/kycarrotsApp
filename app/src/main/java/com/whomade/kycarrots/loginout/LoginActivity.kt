@@ -63,6 +63,14 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         etPwd = findViewById(R.id.et_pwd)
         llProgress = findViewById(R.id.ll_progress_circle)
 
+        if (Constants.APP_TEST_YN == "Y") {
+            etEmail.setText("gmail.com")
+            findViewById<Button>(R.id.btn_kakaounlink).visibility = View.VISIBLE
+        } else {
+            etEmail.setText("")
+            findViewById<Button>(R.id.btn_kakaounlink).visibility = View.GONE
+        }
+
         etEmail.onFocusChangeListener = this
         etPwd.onFocusChangeListener = this
 

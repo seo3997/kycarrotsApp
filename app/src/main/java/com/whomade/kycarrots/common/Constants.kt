@@ -31,6 +31,7 @@ object Constants {
     const val ROLE_PROJ = "ROLE_PROJ"
 
     const val CENTER_BRANCH_ID = "2"
+    const val APP_TEST_YN = "N"   //N 일때 패스워드 안나옴
 
 
 }
