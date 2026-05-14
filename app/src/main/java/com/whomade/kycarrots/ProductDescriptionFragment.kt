@@ -127,14 +127,57 @@ class ProductDescriptionFragment : Fragment() {
             descriptionWebView.visibility = View.VISIBLE
             descriptionWebView.settings.javaScriptEnabled = true
             descriptionWebView.settings.defaultTextEncodingName = "UTF-8"
+            descriptionWebView.settings.loadWithOverviewMode = true
+            descriptionWebView.settings.useWideViewPort = true
+            descriptionWebView.settings.domStorageEnabled = true
+            descriptionWebView.settings.setSupportZoom(true)
+            descriptionWebView.settings.builtInZoomControls = true
+            descriptionWebView.settings.displayZoomControls = false
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                descriptionWebView.settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            }
+
+            // NestedScrollView 안에서 줌이 잘 동작하도록 터치 이벤트 처리
+            descriptionWebView.setOnTouchListener { v, event ->
+                if (event.pointerCount > 1) {
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                }
+                false
+            }
             
             var description = detail.product.description ?: "설명이 없습니다"
             if (description.contains("&lt;") || description.contains("&gt;")) {
                description = android.text.Html.fromHtml(description, android.text.Html.FROM_HTML_MODE_LEGACY).toString()
             }
 
-            val htmlContent = "<html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><style>img{max-width:100%!;height:auto!;} body{word-wrap:break-word;}</style></head><body>$description</body></html>"
-            descriptionWebView.loadDataWithBaseURL("about:blank", htmlContent, "text/html", "UTF-8", null)
+            val htmlContent = """
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0, user-scalable=yes">
+                    <style>
+                        * { box-sizing: border-box; }
+                        html, body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
+                        img { max-width: 100% !important; height: auto !important; display: block; margin: 8px 0; }
+                        table { width: 100% !important; border-collapse: collapse; table-layout: fixed; }
+                        td, th { word-wrap: break-word; overflow-wrap: break-word; }
+                        video, iframe { max-width: 100% !important; height: auto !important; }
+                        body { 
+                            word-wrap: break-word; 
+                            padding: 16px;
+                            font-size: 16px;
+                            line-height: 1.6;
+                            color: #333333;
+                            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                        }
+                        /* Remove fixed widths from inline styles */
+                        [style*="width"] { max-width: 100% !important; }
+                    </style>
+                </head>
+                <body>$description</body>
+                </html>
+            """.trimIndent()
+            descriptionWebView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
         } else {
             descriptionTextView.visibility = View.VISIBLE
             descriptionWebView.visibility = View.GONE
