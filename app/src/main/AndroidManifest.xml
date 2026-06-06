@@ -206,5 +206,12 @@
         <package android:name="com.kbcard.kbanswcard" />
         <package android:name="com.shinhan.smartcare" />
         <package android:name="shunhan.pay" />
+        <package android:name="com.wooricard.wpay" /> <!-- Woori WON Pay -->
+        <package android:name="com.shcard.smartpay" /> <!-- Shinhan SOL Pay -->
+        <package android:name="com.hyundaicard.appcard" /> <!-- Hyundai Card -->
+        <package android:name="kr.co.samsungcard.mpocket" /> <!-- Samsung Card -->
+        <package android:name="com.hanaskcard.pay1" /> <!-- Hana Pay -->
+        <package android:name="kvp.jjy.MispAndroid320" /> <!-- ISP/Paybooc -->
+        <package android:name="nh.smart.nhallonepay" /> <!-- NH 올원페이 -->
     </queries>
 </manifest>

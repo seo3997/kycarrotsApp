@@ -107,6 +107,11 @@ class PaymentWebViewActivity : AppCompatActivity() {
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                     return checkAndHandleRedirect(request?.url.toString())
                 }
+
+                override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: android.webkit.WebResourceError?) {
+                    super.onReceivedError(view, request, error)
+                    request?.url?.toString()?.let { checkAndHandleRedirect(it) }
+                }
             }
 
             // Load Toss Payments Checkout HTML
@@ -168,30 +173,74 @@ class PaymentWebViewActivity : AppCompatActivity() {
 
         // Handle intent schemes for banking/card apps
         if (!url.startsWith("http")) {
-            try {
-                val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
-                if (intent.resolveActivity(packageManager) != null) {
-                    try {
-                        startActivity(intent)
-                    } catch (e: Exception) {
-                        val packageName = intent.`package`
-                        if (packageName != null) {
-                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
+            if (url.startsWith("intent://")) {
+                val parsed = parseIntentUrl(url)
+                if (parsed != null) {
+                    val schemeUrl = parsed["schemeUrl"] ?: ""
+                    val packageName = parsed["package"] ?: ""
+
+                    if (schemeUrl.isNotEmpty()) {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(schemeUrl))
+                            startActivity(intent)
+                            return true
+                        } catch (e: Exception) {
+                            // ignore and try fallback
                         }
                     }
-                    return true
+
+                    if (packageName.isNotEmpty()) {
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
+                            return true
+                        } catch (e: Exception) {
+                            // ignore
+                        }
+                    }
                 }
-                val packageName = intent.`package`
-                if (packageName != null) {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
-                    return true
-                }
-            } catch (e: URISyntaxException) {
-                e.printStackTrace()
+                return true
+            }
+
+            // Normal custom schemes (wooripay://, kakaotalk://, etc.)
+            try {
+                val decodedUrl = Uri.decode(url)
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(decodedUrl))
+                startActivity(intent)
+            } catch (e: Exception) {
+                // ignore
             }
             return true
         }
         return false
+    }
+
+    private fun parseIntentUrl(url: String): Map<String, String>? {
+        try {
+            if (!url.startsWith("intent://")) return null
+            val intentIndex = url.indexOf("#Intent;")
+            if (intentIndex == -1) return null
+
+            val uriPath = url.substring(9, intentIndex)
+            val paramsStr = url.substring(intentIndex + 8)
+            val params = paramsStr.split(";")
+
+            var scheme = ""
+            var packageName = ""
+            for (param in params) {
+                if (param.startsWith("scheme=")) {
+                    scheme = param.substring(7)
+                } else if (param.startsWith("package=")) {
+                    packageName = param.substring(8)
+                }
+            }
+
+            return mapOf(
+                "schemeUrl" to if (scheme.isNotEmpty()) "$scheme://$uriPath" else "",
+                "package" to packageName
+            )
+        } catch (e: Exception) {
+            return null
+        }
     }
 
     private fun confirmPayment(paymentKey: String, paymentOrderId: String, amount: Int) {
