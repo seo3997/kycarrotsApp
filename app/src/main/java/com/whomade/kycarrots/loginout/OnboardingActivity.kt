@@ -71,8 +71,8 @@ class OnboardingActivity : AppCompatActivity() {
         groupMore.visibility = View.GONE
 
         etPhoneFirst= findViewById<MaterialAutoCompleteTextView>(R.id.et_phone_first)
-        etPhoneFirst.setAdapter(ArrayAdapter.createFromResource(this, R.array.first_phone_num, android.R.layout.simple_list_item_1))
-        if (etPhoneFirst.text.isNullOrBlank()) etPhoneFirst.setText("010", false)
+        etPhoneFirst.setText("010", false)
+        etPhoneFirst.isEnabled = false
         etPhoneMid = findViewById(R.id.et_phone_mid)
         etPhoneLast = findViewById(R.id.et_phone_last)
 
