@@ -205,7 +205,7 @@ class OnboardingActivity : AppCompatActivity() {
         val name = etName.text.toString().trim()
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
-        val phone = etPhoneFirst.text.toString().trim()+"-"+ etPhoneMid.text.toString().trim()+"-"+ etPhoneLast.text.toString().trim()
+        val phone = "010-" + etPhoneMid.text.toString().trim() + "-" + etPhoneLast.text.toString().trim()
         val birth = etBirth.text.toString().trim()
         val genderId = rgSex.checkedRadioButtonId
         val gender = if (genderId == R.id.rb_man) "1" else if (genderId == R.id.rb_woman) "2" else ""
