@@ -13,14 +13,14 @@ object Constants {
         get() = when (currentServer) {
             ServerType.LOCAL  -> "http://10.69.122.25:9000/"
             ServerType.DEV -> "http://www.kycarrots.com:9000/"
-            ServerType.PROD -> "http://www.asagong.com/"
+            ServerType.PROD -> "https://www.asagong.com/"
         }
 
     val BASE_CHAT_URL: String
         get() = when (currentServer) {
             ServerType.LOCAL  -> "ws://10.69.122.25:9000/chat-ws?userId="
             ServerType.DEV -> "ws://www.kycarrots.com:9000/chat-ws?userId="
-            ServerType.PROD -> "ws://www.asagong.com/chat-ws?userId="
+            ServerType.PROD -> "wss://www.asagong.com/chat-ws?userId="
         }
 
 

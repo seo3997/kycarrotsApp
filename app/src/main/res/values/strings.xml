@@ -380,10 +380,10 @@
     <!-- webView 연결 url -->
     <string name="str_url_join_terms1">link/join_terms1.do</string>
     <string name="str_url_join_terms2">link/join_terms2.do</string>
-    <string name="str_url_terms1">http://asagong.com/link/terms1</string>
-    <string name="str_url_terms2">http://asagong.com/link/terms2</string>
-    <string name="str_url_notice">http://asagong.com/link/notice</string>
-    <string name="str_url_faq">http://asagong.com/link/faq</string>
+    <string name="str_url_terms1">https://asagong.com/link/terms1</string>
+    <string name="str_url_terms2">https://asagong.com/link/terms2</string>
+    <string name="str_url_notice">https://asagong.com/link/notice</string>
+    <string name="str_url_faq">https://asagong.com/link/faq</string>
 
     <!-- 회사소개 -->
     <string name="str_company_introduce_main1">아사공은 모바일 광고 장치\n특허 제 10-1233721호로 회원이면 누구나 통화화면을 통해 캐릭터와 메세지를 전송할 수 있는 플랫폼을 구축하였습니다.\n또한, 푸시광고를 통해 원하는 시간, 연령, 지역별 등 맞춤타깃을 설정해 효율적인 광고효과를 낼 수 있습니다.</string>
@@ -703,11 +703,11 @@
     <string name="str_push_img_ingo">* 등록 광고 유도하는 이미지와 메시지로 만드세요.</string>
     <string name="str_new_url">http://172.30.1.20:8080/</string>
     <!--
-  <string name="str_new_url">http://asagong.com/</string>
+  <string name="str_new_url">https://asagong.com/</string>
   <string name="str_new_url">http://112.175.76.139/</string>
   -->
 
-    <string name="str_url">http://asagong.com/app/</string>
+    <string name="str_url">https://asagong.com/app/</string>
     <string name="str_token">token</string>
 
     <string name="str_push_chk">push/check</string>
