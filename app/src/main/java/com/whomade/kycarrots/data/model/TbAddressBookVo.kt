@@ -3,6 +3,7 @@ package com.whomade.kycarrots.data.model
 data class TbAddressBookVo(
     val addressId: Long? = null,
     val userNo: String? = null,
+    val addressName: String? = "기본배송지",
     val recipientName: String? = null,
     val recipientPhone: String? = null,
     val zipCode: String? = null,

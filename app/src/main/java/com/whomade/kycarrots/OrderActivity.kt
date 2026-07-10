@@ -309,6 +309,7 @@ class OrderActivity : AppCompatActivity() {
                 if (binding.cbSaveAddress.isChecked) {
                     val token = TokenUtil.getToken(this@OrderActivity)
                     val addressVo = com.whomade.kycarrots.data.model.TbAddressBookVo(
+                        addressName = "기본배송지",
                         recipientName = binding.etReceiverName.text.toString(),
                         recipientPhone = binding.etReceiverPhone.text.toString(),
                         zipCode = binding.etZipCode.text.toString(),
