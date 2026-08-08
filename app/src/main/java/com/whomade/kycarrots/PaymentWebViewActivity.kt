@@ -116,8 +116,8 @@ class PaymentWebViewActivity : AppCompatActivity() {
             }
 
             // Load Toss Payments Checkout HTML
-            val successUrl = "http://localhost/payment-success"
-            val failUrl = "http://localhost/payment-fail"
+            val successUrl = "https://www.asagong.com/payment-success"
+            val failUrl = "https://www.asagong.com/payment-fail"
             
             val html = """
                 <!DOCTYPE html>
