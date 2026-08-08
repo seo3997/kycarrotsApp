@@ -40,7 +40,6 @@ class PaymentWebViewActivity : AppCompatActivity() {
         val clientKey = LoginInfoUtil.getTossClientKey(this)
 
         android.util.Log.d("PaymentWebView", "orderId: $orderId, orderNo: $orderNo, amount: $amount, productName: $productName")
-        android.util.Log.d("PaymentWebView", "clientKey: [$clientKey]")
 
         if (productName.isEmpty()) {
             productName = "상품 결제" // Fallback if server provides empty name
